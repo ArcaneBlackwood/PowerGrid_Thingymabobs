@@ -1,0 +1,59 @@
+{
+	"format_version": "1.21.11",
+	"credit": "Made with Blockbench",
+	"render_type": "minecraft:cutout",
+	"textures": {
+		"0": "moregrid:block/component/solar_intensity",
+		"particle": "moregrid:block/component/solar_intensity"
+	},
+	"elements": [
+		{
+			"from": [0, 0, 0],
+			"to": [5, 3, 5],
+			"faces": {
+				"north": {"uv": [2, 0, 7, 3], "rotation": 180, "texture": "#0"},
+				"east": {"uv": [6, 2, 9, 7], "rotation": 90, "texture": "#0"},
+				"south": {"uv": [2, 6, 7, 9], "texture": "#0"},
+				"west": {"uv": [0, 2, 3, 7], "rotation": 270, "texture": "#0"},
+				"up": {"uv": [2, 2, 7, 7], "texture": "#0"}
+			}
+		},
+		{
+			"from": [0, 2, 0],
+			"to": [5, 2, 5],
+			"rotation": {"angle": 0, "axis": "y", "origin": [1, 0, 0]},
+			"faces": {
+				"up": {"uv": [9, 0, 14, 5], "texture": "#0"}
+			}
+		},
+		{
+			"from": [0, 2, 0],
+			"to": [0, 3, 5],
+			"faces": {
+				"east": {"uv": [9, 5, 14, 6], "texture": "#0"}
+			}
+		},
+		{
+			"from": [5, 2, 0],
+			"to": [5, 3, 5],
+			"faces": {
+				"west": {"uv": [9, 5, 14, 6], "texture": "#0"}
+			}
+		},
+		{
+			"from": [0, 2, 5],
+			"to": [5, 3, 5],
+			"faces": {
+				"north": {"uv": [9, 5, 14, 6], "texture": "#0"}
+			}
+		},
+		{
+			"from": [0, 2, 0],
+			"to": [5, 3, 0],
+			"faces": {
+				"south": {"uv": [9, 5, 14, 6], "texture": "#0"}
+			}
+		}
+	],
+	"display": {}
+}

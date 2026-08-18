@@ -1,10 +1,19 @@
 package com.feb.moregrid.registry;
 
 import com.feb.moregrid.MoreGrid;
+import com.feb.moregrid.component.BuzzerComponent;
+import com.feb.moregrid.component.CeramicCapacitorComponent;
+import com.feb.moregrid.component.DIPSwitchComponent;
 import com.feb.moregrid.component.DryCellComponent;
-import com.feb.moregrid.component.FuseComponent;
 import com.feb.moregrid.component.SCRComponent;
+import com.feb.moregrid.component.ShuntComponent;
+import com.feb.moregrid.component.SmallDiodeComponent;
+import com.feb.moregrid.component.SmallResistorComponent;
+import com.feb.moregrid.component.SwitchDPDTComponent;
+import com.feb.moregrid.component.TallConnectorComponent;
 import com.feb.moregrid.component.TransformerComponent;
+import com.feb.moregrid.component.VariableBuzzerComponent;
+
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -34,21 +43,6 @@ public final class ModComponents {
                 .withOutline()
                 .build();
         return new TransformerComponent(footprint);
-    }
-
-    private static FuseComponent buildFuse() {
-        ComponentFootprint footprint = new ComponentFootprint.Builder(
-                5,
-                3,
-                "component." + MoreGrid.MOD_ID + ".fuse",
-                null
-        )
-                .addPad(0, 1, 0)
-                .addPad(4, 1, 1)
-                .withItem()
-                .withOutline()
-                .build();
-        return new FuseComponent(footprint);
     }
 
     private static SCRComponent buildScr() {
@@ -88,9 +82,17 @@ public final class ModComponents {
             return;
         }
         register(event, "transformer", buildTransformer());
-        register(event, "fuse", buildFuse());
         register(event, "scr", buildScr());
         register(event, "dry_cell", buildDryCell());
+        register(event, "dip_switch", new DIPSwitchComponent());
+        register(event, "ceramic_capacitor", new CeramicCapacitorComponent());
+        register(event, "small_diode", new SmallDiodeComponent());
+        register(event, "small_resistor", new SmallResistorComponent());
+        register(event, "tall_connector", new TallConnectorComponent());
+        register(event, "buzzer", new BuzzerComponent());
+        register(event, "variable_buzzer", new VariableBuzzerComponent());
+        register(event, "shunt", new ShuntComponent());
+        register(event, "switch_dpdt", new SwitchDPDTComponent());
     }
 
     private static void register(RegisterEvent event, String id, org.patryk3211.powergrid.circuits.components.Component component) {

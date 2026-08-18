@@ -3,11 +3,13 @@ package com.feb.moregrid.registry;
 import com.feb.moregrid.MoreGrid;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 public final class ModItems {
@@ -20,25 +22,68 @@ public final class ModItems {
             ResourceLocation.fromNamespaceAndPath("powergrid", "base")
     );
 
-    public static final DeferredHolder<Item, Item> TRANSFORMER =
+    public static final DeferredItem<Item> TRANSFORMER =
             ITEMS.registerSimpleItem("transformer", new Item.Properties());
-    public static final DeferredHolder<Item, Item> FUSE =
-            ITEMS.registerSimpleItem("fuse", new Item.Properties());
-    public static final DeferredHolder<Item, Item> SCR =
+    public static final DeferredItem<Item> SCR =
             ITEMS.registerSimpleItem("scr", new Item.Properties());
-    public static final DeferredHolder<Item, Item> DRY_CELL =
+    public static final DeferredItem<Item> DRY_CELL =
             ITEMS.registerSimpleItem("dry_cell", new Item.Properties().stacksTo(16));
+    public static final DeferredItem<Item> DIP_SWITCH =
+            ITEMS.registerSimpleItem("dip_switch", new Item.Properties());
+    public static final DeferredItem<Item> CERAMIC_CAPACITOR =
+            ITEMS.registerSimpleItem("ceramic_capacitor", new Item.Properties());
+    public static final DeferredItem<Item> SMALL_DIODE =
+            ITEMS.registerSimpleItem("small_diode", new Item.Properties());
+    public static final DeferredItem<Item> SMALL_RESISTOR =
+            ITEMS.registerSimpleItem("small_resistor", new Item.Properties());
+    public static final DeferredItem<Item> TALL_CONNECTOR =
+            ITEMS.registerSimpleItem("tall_connector", new Item.Properties());
+    public static final DeferredItem<Item> BUZZER =
+            ITEMS.registerSimpleItem("buzzer", new Item.Properties());
+    public static final DeferredItem<Item> VARIABLE_BUZZER =
+            ITEMS.registerSimpleItem("variable_buzzer", new Item.Properties());
+    public static final DeferredItem<Item> SHUNT =
+            ITEMS.registerSimpleItem("shunt", new Item.Properties());
 
+    public static final DeferredItem<BlockItem> LV_SWITCH_DPDT =
+            ITEMS.registerSimpleBlockItem("lv_switch_dpdt", ModBlocks.LV_SWITCH_DPDT,
+                new Item.Properties());
+    public static final DeferredItem<BlockItem> LV_SWITCH_SPDT =
+            ITEMS.registerSimpleBlockItem("lv_switch_spdt", ModBlocks.LV_SWITCH_SPDT,
+                new Item.Properties());
+    public static final DeferredItem<BlockItem> LV_SWITCH_TPST =
+            ITEMS.registerSimpleBlockItem("lv_switch_tpst", ModBlocks.LV_SWITCH_TPST,
+                new Item.Properties());
+    public static final DeferredItem<BlockItem> LV_SWITCH_DPST =
+            ITEMS.registerSimpleBlockItem("lv_switch_dpst", ModBlocks.LV_SWITCH_DPST,
+                new Item.Properties());
+
+    public static final DeferredItem<BlockItem> MV_SWITCH_DPDT =
+            ITEMS.registerSimpleBlockItem("mv_switch_dpdt", ModBlocks.MV_SWITCH_DPDT,
+                new Item.Properties());
+    public static final DeferredItem<BlockItem> MV_SWITCH_SPDT =
+            ITEMS.registerSimpleBlockItem("mv_switch_spdt", ModBlocks.MV_SWITCH_SPDT,
+                new Item.Properties());
+    public static final DeferredItem<BlockItem> MV_SWITCH_TPST =
+            ITEMS.registerSimpleBlockItem("mv_switch_tpst", ModBlocks.MV_SWITCH_TPST,
+                new Item.Properties());
+    public static final DeferredItem<BlockItem> MV_SWITCH_DPST =
+            ITEMS.registerSimpleBlockItem("mv_switch_dpst", ModBlocks.MV_SWITCH_DPST,
+                new Item.Properties());
+
+    public static final DeferredItem<?>[] ALL_ITEMS = {
+        TRANSFORMER, SCR, DRY_CELL, DIP_SWITCH, BUZZER, VARIABLE_BUZZER, SHUNT,
+        CERAMIC_CAPACITOR, SMALL_DIODE, SMALL_RESISTOR, TALL_CONNECTOR,
+        LV_SWITCH_DPDT, LV_SWITCH_SPDT, LV_SWITCH_TPST, LV_SWITCH_DPST,
+        MV_SWITCH_DPDT, MV_SWITCH_SPDT, MV_SWITCH_TPST, MV_SWITCH_DPST
+    };
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MAIN_TAB =
             CREATIVE_TABS.register("main", () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.moregrid"))
                     .withTabsAfter(POWERGRID_TAB)
                     .icon(() -> TRANSFORMER.get().getDefaultInstance())
                     .displayItems((parameters, output) -> {
-                        output.accept(TRANSFORMER.get());
-                        output.accept(FUSE.get());
-                        output.accept(SCR.get());
-                        output.accept(DRY_CELL.get());
+                        for (var item : ALL_ITEMS) output.accept(item.get());
                     })
                     .build());
 
