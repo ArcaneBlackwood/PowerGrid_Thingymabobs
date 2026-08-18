@@ -4,3 +4,6 @@ run/
 .idea/
 *.iml
 libs/*.jar
+.vscode/
+bin/
+tmp/
