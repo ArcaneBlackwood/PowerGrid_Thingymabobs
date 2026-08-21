@@ -1,3 +1,7 @@
+This is a fork of the original  CPG MoreGrid mod.  Please give the original creator some love too!
+For the original creator, please feel free to copy/pull anything from my fork without permission or credit.
+Also check out W00PKER's fork, they added some cool stuff too at https://github.com/W00PKER/CPG_MoreGrid !
+
 # MoreGrid
 
 A NeoForge 1.21.1 add-on for Create: Power Grid 0.5.5.1, adding four compact and rotatable circuit-board parts:
