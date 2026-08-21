@@ -7,3 +7,4 @@ libs/*.jar
 .vscode/
 bin/
 tmp/
+**/generated/
