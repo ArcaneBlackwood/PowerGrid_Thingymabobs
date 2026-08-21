@@ -34,7 +34,10 @@ public class BuzzerSoundInstance extends AbstractTickableSoundInstance {
     @Override
     public void tick() {
 		Level world = placed.getWorld();
-		if (!world.isClientSide) return;
+		if (!world.isClientSide) {
+			stop();
+			return;
+		}
 		if(placed.component instanceof ABuzzerComponent buzzer) {
 			BlockEntity blockEntity = world.getBlockEntity(placed.getPos());
 			if(blockEntity == null || blockEntity.isRemoved()) {

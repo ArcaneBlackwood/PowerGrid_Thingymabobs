@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "moregrid:block/battery/potato_battery_block"
+    }
+  }
+}

@@ -18,4 +18,9 @@ public class ModSounds {
               ResourceLocation.fromNamespaceAndPath(MoreGrid.MOD_ID, "buzzer")
           )
       );
+  public static final DeferredHolder<SoundEvent, SoundEvent> POTATO_ELECTROCUTE =
+      SOUND_EVENTS.register("potato_electrocute", () ->
+          SoundEvent.createVariableRangeEvent(
+              ResourceLocation.fromNamespaceAndPath(MoreGrid.MOD_ID, "potato_electrocute"))
+      );
 }

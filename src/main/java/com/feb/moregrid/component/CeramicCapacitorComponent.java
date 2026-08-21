@@ -11,11 +11,6 @@ import org.patryk3211.powergrid.circuits.schematic.PlacedComponent;
 import org.patryk3211.powergrid.circuits.thermal.ThermalBuilder;
 import org.patryk3211.powergrid.electricity.sim.special.CRSeriesWire;
 import org.patryk3211.powergrid.circuits.components.OrientableComponent;
-import org.patryk3211.powergrid.circuits.components.IInteractableComponent;
-import org.patryk3211.powergrid.circuits.components.IGoggleLabel;
-import org.patryk3211.powergrid.circuits.components.Component;
-import org.patryk3211.powergrid.circuits.components.SwitchComponent;
-import org.patryk3211.powergrid.circuits.components.CapacitorComponent;
 
 public class CeramicCapacitorComponent extends OrientableComponent {
     private static final ComponentFootprint FOOTPRINT = new ComponentFootprint.Builder(

@@ -3,5 +3,10 @@
     "sounds": [
       "moregrid:buzzer"
     ]
+  },
+  "potato_electrocute": {
+    "sounds": [
+      "moregrid:potato_electrocute"
+    ]
   }
 }

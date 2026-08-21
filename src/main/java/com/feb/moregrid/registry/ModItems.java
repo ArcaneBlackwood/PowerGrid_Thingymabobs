@@ -1,6 +1,12 @@
 package com.feb.moregrid.registry;
 
+import java.util.function.Function;
+
 import com.feb.moregrid.MoreGrid;
+import com.feb.moregrid.blocks.PoisonousPotatoBatteryBlockItem;
+import com.feb.moregrid.blocks.PotatoBatteryBlock;
+import com.feb.moregrid.blocks.PotatoBatteryBlockItem;
+
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.BlockItem;
@@ -71,11 +77,23 @@ public final class ModItems {
             ITEMS.registerSimpleBlockItem("mv_switch_dpst", ModBlocks.MV_SWITCH_DPST,
                 new Item.Properties());
 
+    public static final DeferredItem<BlockItem> POTATO_BATTERY_ARRAY =
+            ITEMS.registerSimpleBlockItem("potato_battery_array", ModBlocks.POTATO_BATTERY_ARRAY,
+                new Item.Properties());
+    public static final DeferredItem<BlockItem> POISONOUS_POTATO_BATTERY_ARRAY =
+            ITEMS.registerSimpleBlockItem("poisonous_potato_battery_array", ModBlocks.POISONOUS_POTATO_BATTERY_ARRAY,
+                new Item.Properties());
+    public static final DeferredItem<BlockItem> POTATO_BATTERY_BLOCK =
+                ITEMS.registerItem("potato_battery_block", PotatoBatteryBlockItem.CONSTRUCTOR, new Item.Properties());
+    public static final DeferredItem<BlockItem> POISONOUS_POTATO_BATTERY_BLOCK =
+                ITEMS.registerItem("poisonous_potato_battery_block", PoisonousPotatoBatteryBlockItem.CONSTRUCTOR, new Item.Properties());
+
     public static final DeferredItem<?>[] ALL_ITEMS = {
         TRANSFORMER, SCR, DRY_CELL, DIP_SWITCH, BUZZER, VARIABLE_BUZZER, SHUNT,
         CERAMIC_CAPACITOR, SMALL_DIODE, SMALL_RESISTOR, TALL_CONNECTOR,
         LV_SWITCH_DPDT, LV_SWITCH_SPDT, LV_SWITCH_TPST, LV_SWITCH_DPST,
-        MV_SWITCH_DPDT, MV_SWITCH_SPDT, MV_SWITCH_TPST, MV_SWITCH_DPST
+        MV_SWITCH_DPDT, MV_SWITCH_SPDT, MV_SWITCH_TPST, MV_SWITCH_DPST,
+        POTATO_BATTERY_ARRAY, POISONOUS_POTATO_BATTERY_ARRAY, POTATO_BATTERY_BLOCK, POISONOUS_POTATO_BATTERY_BLOCK
     };
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MAIN_TAB =
             CREATIVE_TABS.register("main", () -> CreativeModeTab.builder()
