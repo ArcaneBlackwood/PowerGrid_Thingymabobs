@@ -1,3 +1,3 @@
 {
-  "parent": "moregrid:block/mv_switch_spdt_down_v"
+  "parent": "moregrid:block/switch/mv_switch_spdt_down_v"
 }

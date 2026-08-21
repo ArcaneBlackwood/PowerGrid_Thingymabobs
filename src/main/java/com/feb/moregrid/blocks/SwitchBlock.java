@@ -48,7 +48,7 @@ import java.util.function.Function;
 public abstract class SwitchBlock extends ElectricBlock implements IBE<SwitchBlockEntity>, IHaveElectricProperties {
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
     public static final IntegerProperty ROTATION = CustomProperties.ROTATION_4;
-    public static final IntegerProperty STATE = IntegerProperty.create("state", 0, 3);
+    public static final IntegerProperty STATE = IntegerProperty.create("state", 0, 2);
 
     protected float maxVoltage = 200f;
     protected boolean isButton = false;
@@ -105,9 +105,7 @@ public abstract class SwitchBlock extends ElectricBlock implements IBE<SwitchBlo
         return InteractionResult.PASS;
     }
 
-    public void useSound(Level world, BlockPos pos, boolean open) {
-
-    }
+    abstract public void useSound(Level world, BlockPos pos, boolean open);
 
     @Override
     public Class<SwitchBlockEntity> getBlockEntityClass() {
@@ -149,12 +147,6 @@ public abstract class SwitchBlock extends ElectricBlock implements IBE<SwitchBlo
                 .style(ChatFormatting.GRAY)
                 .component();
     }
-
-
-
-
-
-	
 
     public static BlockStateTerminalCollection switchDownTerminals(Block block, TerminalBoundingBox[] terminals, VoxelShape downShape) {
         var shapers = new VoxelShaper[] {

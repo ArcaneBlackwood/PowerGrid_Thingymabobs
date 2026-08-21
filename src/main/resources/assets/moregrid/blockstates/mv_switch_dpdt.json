@@ -1,321 +1,321 @@
 {
   "variants": {
     "facing=down,state=2,rotation=0": {
-      "model": "moregrid:block/mv_switch_dpdt_up_v",
+      "model": "moregrid:block/switch/mv_switch_dpdt_up_v",
       "y": -90
     },
     "facing=down,state=2,rotation=1": {
-      "model": "moregrid:block/mv_switch_dpdt_up_v"
+      "model": "moregrid:block/switch/mv_switch_dpdt_up_v"
     },
     "facing=down,state=2,rotation=2": {
-      "model": "moregrid:block/mv_switch_dpdt_up_v",
+      "model": "moregrid:block/switch/mv_switch_dpdt_up_v",
       "y": 90
     },
     "facing=down,state=2,rotation=3": {
-      "model": "moregrid:block/mv_switch_dpdt_up_v",
+      "model": "moregrid:block/switch/mv_switch_dpdt_up_v",
       "y": 180
     },
     "facing=down,state=1,rotation=0": {
-      "model": "moregrid:block/mv_switch_dpdt_down_v",
+      "model": "moregrid:block/switch/mv_switch_dpdt_down_v",
       "y": -90
     },
     "facing=down,state=1,rotation=1": {
-      "model": "moregrid:block/mv_switch_dpdt_down_v"
+      "model": "moregrid:block/switch/mv_switch_dpdt_down_v"
     },
     "facing=down,state=1,rotation=2": {
-      "model": "moregrid:block/mv_switch_dpdt_down_v",
+      "model": "moregrid:block/switch/mv_switch_dpdt_down_v",
       "y": 90
     },
     "facing=down,state=1,rotation=3": {
-      "model": "moregrid:block/mv_switch_dpdt_down_v",
+      "model": "moregrid:block/switch/mv_switch_dpdt_down_v",
       "y": 180
     },
     "facing=down,state=0,rotation=0": {
-      "model": "moregrid:block/mv_switch_dpdt_off_v",
+      "model": "moregrid:block/switch/mv_switch_dpdt_off_v",
       "y": -90
     },
     "facing=down,state=0,rotation=1": {
-      "model": "moregrid:block/mv_switch_dpdt_off_v"
+      "model": "moregrid:block/switch/mv_switch_dpdt_off_v"
     },
     "facing=down,state=0,rotation=2": {
-      "model": "moregrid:block/mv_switch_dpdt_off_v",
+      "model": "moregrid:block/switch/mv_switch_dpdt_off_v",
       "y": 90
     },
     "facing=down,state=0,rotation=3": {
-      "model": "moregrid:block/mv_switch_dpdt_off_v",
+      "model": "moregrid:block/switch/mv_switch_dpdt_off_v",
       "y": 180
     },
     "facing=east,state=2,rotation=0": {
-      "model": "moregrid:block/mv_switch_dpdt_up_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_up_h",
       "x": -90
     },
     "facing=east,state=2,rotation=1": {
-      "model": "moregrid:block/mv_switch_dpdt_up_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_up_h",
       "x": 180
     },
     "facing=east,state=2,rotation=2": {
-      "model": "moregrid:block/mv_switch_dpdt_up_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_up_h",
       "x": 90
     },
     "facing=east,state=2,rotation=3": {
-      "model": "moregrid:block/mv_switch_dpdt_up_h"
+      "model": "moregrid:block/switch/mv_switch_dpdt_up_h"
     },
     "facing=east,state=1,rotation=0": {
-      "model": "moregrid:block/mv_switch_dpdt_down_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_down_h",
       "x": -90
     },
     "facing=east,state=1,rotation=1": {
-      "model": "moregrid:block/mv_switch_dpdt_down_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_down_h",
       "x": 180
     },
     "facing=east,state=1,rotation=2": {
-      "model": "moregrid:block/mv_switch_dpdt_down_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_down_h",
       "x": 90
     },
     "facing=east,state=1,rotation=3": {
-      "model": "moregrid:block/mv_switch_dpdt_down_h"
+      "model": "moregrid:block/switch/mv_switch_dpdt_down_h"
     },
     "facing=east,state=0,rotation=0": {
-      "model": "moregrid:block/mv_switch_dpdt_off_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_off_h",
       "x": -90
     },
     "facing=east,state=0,rotation=1": {
-      "model": "moregrid:block/mv_switch_dpdt_off_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_off_h",
       "x": 180
     },
     "facing=east,state=0,rotation=2": {
-      "model": "moregrid:block/mv_switch_dpdt_off_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_off_h",
       "x": 90
     },
     "facing=east,state=0,rotation=3": {
-      "model": "moregrid:block/mv_switch_dpdt_off_h"
+      "model": "moregrid:block/switch/mv_switch_dpdt_off_h"
     },
     "facing=north,state=2,rotation=0": {
-      "model": "moregrid:block/mv_switch_dpdt_up_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_up_h",
       "x": -90,
       "y": -90
     },
     "facing=north,state=2,rotation=1": {
-      "model": "moregrid:block/mv_switch_dpdt_up_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_up_h",
       "x": 180,
       "y": -90
     },
     "facing=north,state=2,rotation=2": {
-      "model": "moregrid:block/mv_switch_dpdt_up_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_up_h",
       "x": 90,
       "y": -90
     },
     "facing=north,state=2,rotation=3": {
-      "model": "moregrid:block/mv_switch_dpdt_up_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_up_h",
       "y": -90
     },
     "facing=north,state=1,rotation=0": {
-      "model": "moregrid:block/mv_switch_dpdt_down_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_down_h",
       "x": -90,
       "y": -90
     },
     "facing=north,state=1,rotation=1": {
-      "model": "moregrid:block/mv_switch_dpdt_down_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_down_h",
       "x": 180,
       "y": -90
     },
     "facing=north,state=1,rotation=2": {
-      "model": "moregrid:block/mv_switch_dpdt_down_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_down_h",
       "x": 90,
       "y": -90
     },
     "facing=north,state=1,rotation=3": {
-      "model": "moregrid:block/mv_switch_dpdt_down_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_down_h",
       "y": -90
     },
     "facing=north,state=0,rotation=0": {
-      "model": "moregrid:block/mv_switch_dpdt_off_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_off_h",
       "x": -90,
       "y": -90
     },
     "facing=north,state=0,rotation=1": {
-      "model": "moregrid:block/mv_switch_dpdt_off_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_off_h",
       "x": 180,
       "y": -90
     },
     "facing=north,state=0,rotation=2": {
-      "model": "moregrid:block/mv_switch_dpdt_off_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_off_h",
       "x": 90,
       "y": -90
     },
     "facing=north,state=0,rotation=3": {
-      "model": "moregrid:block/mv_switch_dpdt_off_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_off_h",
       "y": -90
     },
     "facing=south,state=2,rotation=0": {
-      "model": "moregrid:block/mv_switch_dpdt_up_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_up_h",
       "x": -90,
       "y": 90
     },
     "facing=south,state=2,rotation=1": {
-      "model": "moregrid:block/mv_switch_dpdt_up_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_up_h",
       "x": 180,
       "y": 90
     },
     "facing=south,state=2,rotation=2": {
-      "model": "moregrid:block/mv_switch_dpdt_up_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_up_h",
       "x": 90,
       "y": 90
     },
     "facing=south,state=2,rotation=3": {
-      "model": "moregrid:block/mv_switch_dpdt_up_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_up_h",
       "y": 90
     },
     "facing=south,state=1,rotation=0": {
-      "model": "moregrid:block/mv_switch_dpdt_down_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_down_h",
       "x": -90,
       "y": 90
     },
     "facing=south,state=1,rotation=1": {
-      "model": "moregrid:block/mv_switch_dpdt_down_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_down_h",
       "x": 180,
       "y": 90
     },
     "facing=south,state=1,rotation=2": {
-      "model": "moregrid:block/mv_switch_dpdt_down_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_down_h",
       "x": 90,
       "y": 90
     },
     "facing=south,state=1,rotation=3": {
-      "model": "moregrid:block/mv_switch_dpdt_down_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_down_h",
       "y": 90
     },
     "facing=south,state=0,rotation=0": {
-      "model": "moregrid:block/mv_switch_dpdt_off_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_off_h",
       "x": -90,
       "y": 90
     },
     "facing=south,state=0,rotation=1": {
-      "model": "moregrid:block/mv_switch_dpdt_off_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_off_h",
       "x": 180,
       "y": 90
     },
     "facing=south,state=0,rotation=2": {
-      "model": "moregrid:block/mv_switch_dpdt_off_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_off_h",
       "x": 90,
       "y": 90
     },
     "facing=south,state=0,rotation=3": {
-      "model": "moregrid:block/mv_switch_dpdt_off_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_off_h",
       "y": 90
     },
     "facing=up,state=2,rotation=0": {
-      "model": "moregrid:block/mv_switch_dpdt_up_v",
+      "model": "moregrid:block/switch/mv_switch_dpdt_up_v",
       "x": 180,
       "y": -90
     },
     "facing=up,state=2,rotation=1": {
-      "model": "moregrid:block/mv_switch_dpdt_up_v",
+      "model": "moregrid:block/switch/mv_switch_dpdt_up_v",
       "x": 180
     },
     "facing=up,state=2,rotation=2": {
-      "model": "moregrid:block/mv_switch_dpdt_up_v",
+      "model": "moregrid:block/switch/mv_switch_dpdt_up_v",
       "x": 180,
       "y": 90
     },
     "facing=up,state=2,rotation=3": {
-      "model": "moregrid:block/mv_switch_dpdt_up_v",
+      "model": "moregrid:block/switch/mv_switch_dpdt_up_v",
       "x": 180,
       "y": 180
     },
     "facing=up,state=1,rotation=0": {
-      "model": "moregrid:block/mv_switch_dpdt_down_v",
+      "model": "moregrid:block/switch/mv_switch_dpdt_down_v",
       "x": 180,
       "y": -90
     },
     "facing=up,state=1,rotation=1": {
-      "model": "moregrid:block/mv_switch_dpdt_down_v",
+      "model": "moregrid:block/switch/mv_switch_dpdt_down_v",
       "x": 180
     },
     "facing=up,state=1,rotation=2": {
-      "model": "moregrid:block/mv_switch_dpdt_down_v",
+      "model": "moregrid:block/switch/mv_switch_dpdt_down_v",
       "x": 180,
       "y": 90
     },
     "facing=up,state=1,rotation=3": {
-      "model": "moregrid:block/mv_switch_dpdt_down_v",
+      "model": "moregrid:block/switch/mv_switch_dpdt_down_v",
       "x": 180,
       "y": 180
     },
     "facing=up,state=0,rotation=0": {
-      "model": "moregrid:block/mv_switch_dpdt_off_v",
+      "model": "moregrid:block/switch/mv_switch_dpdt_off_v",
       "x": 180,
       "y": -90
     },
     "facing=up,state=0,rotation=1": {
-      "model": "moregrid:block/mv_switch_dpdt_off_v",
+      "model": "moregrid:block/switch/mv_switch_dpdt_off_v",
       "x": 180
     },
     "facing=up,state=0,rotation=2": {
-      "model": "moregrid:block/mv_switch_dpdt_off_v",
+      "model": "moregrid:block/switch/mv_switch_dpdt_off_v",
       "x": 180,
       "y": 90
     },
     "facing=up,state=0,rotation=3": {
-      "model": "moregrid:block/mv_switch_dpdt_off_v",
+      "model": "moregrid:block/switch/mv_switch_dpdt_off_v",
       "x": 180,
       "y": 180
     },
     "facing=west,state=2,rotation=0": {
-      "model": "moregrid:block/mv_switch_dpdt_up_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_up_h",
       "x": -90,
       "y": 180
     },
     "facing=west,state=2,rotation=1": {
-      "model": "moregrid:block/mv_switch_dpdt_up_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_up_h",
       "x": 180,
       "y": 180
     },
     "facing=west,state=2,rotation=2": {
-      "model": "moregrid:block/mv_switch_dpdt_up_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_up_h",
       "x": 90,
       "y": 180
     },
     "facing=west,state=2,rotation=3": {
-      "model": "moregrid:block/mv_switch_dpdt_up_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_up_h",
       "y": 180
     },
     "facing=west,state=1,rotation=0": {
-      "model": "moregrid:block/mv_switch_dpdt_down_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_down_h",
       "x": -90,
       "y": 180
     },
     "facing=west,state=1,rotation=1": {
-      "model": "moregrid:block/mv_switch_dpdt_down_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_down_h",
       "x": 180,
       "y": 180
     },
     "facing=west,state=1,rotation=2": {
-      "model": "moregrid:block/mv_switch_dpdt_down_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_down_h",
       "x": 90,
       "y": 180
     },
     "facing=west,state=1,rotation=3": {
-      "model": "moregrid:block/mv_switch_dpdt_down_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_down_h",
       "y": 180
     },
     "facing=west,state=0,rotation=0": {
-      "model": "moregrid:block/mv_switch_dpdt_off_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_off_h",
       "x": -90,
       "y": 180
     },
     "facing=west,state=0,rotation=1": {
-      "model": "moregrid:block/mv_switch_dpdt_off_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_off_h",
       "x": 180,
       "y": 180
     },
     "facing=west,state=0,rotation=2": {
-      "model": "moregrid:block/mv_switch_dpdt_off_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_off_h",
       "x": 90,
       "y": 180
     },
     "facing=west,state=0,rotation=3": {
-      "model": "moregrid:block/mv_switch_dpdt_off_h",
+      "model": "moregrid:block/switch/mv_switch_dpdt_off_h",
       "y": 180
     }
   }

@@ -87,6 +87,13 @@ public class SwitchBlockEntity extends ElectricBlockEntity implements IHaveGoggl
             notifyUpdate();
     }
     private void updateWires() {
+        if (overvoltResistance != null) {
+            for(int i = 0; i < wires.length; i++) {
+                wires[i].setResistance(overvoltResistance);
+                wires[i].setState(true);
+            }
+            return;
+        }
         for(int i = 0; i < switchStates.connections.length; i++) {
             SwitchStates.Connection con = switchStates.connections[i];
             con.state = false;
@@ -98,8 +105,7 @@ public class SwitchBlockEntity extends ElectricBlockEntity implements IHaveGoggl
             }
         for(int i = 0; i < switchStates.connections.length; i++) {
             SwitchStates.Connection con = switchStates.connections[i];
-            if(overvoltResistance == null)
-                wires[i].setState(con.state != isNormallyClosed);
+            wires[i].setState(con.state != isNormallyClosed);
         }
     }
     @Override
@@ -114,10 +120,6 @@ public class SwitchBlockEntity extends ElectricBlockEntity implements IHaveGoggl
         for(int i = 0; i < switchStates.connections.length; i++) {
             SwitchStates.Connection con = switchStates.connections[i];
             wires[i] = builder.connectSwitch(resistance(), builder.terminalNode(con.a), builder.terminalNode(con.b), false);
-            if(overvoltResistance != null) {
-                wires[i].setResistance(overvoltResistance);
-                wires[i].setState(true);
-            }
         }
         updateWires();
     }
@@ -146,16 +148,12 @@ public class SwitchBlockEntity extends ElectricBlockEntity implements IHaveGoggl
             overvoltResistance = tag.getFloat("Overvolted");
             if(overvoltResistance <= 0)
                 overvoltResistance = 1f;
-            for(int i = 0; i < wires.length; i++) {
-                wires[i].setResistance(overvoltResistance);
-                wires[i].setState(true);
-            }
             if(tag.getBoolean("Effect"))
                 overvoltEffect();
         } else {
             switchState = tag.getInt("State");
-            updateWires();
         }
+        updateWires();
     }
 
     @Override
