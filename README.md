@@ -7,9 +7,14 @@ Also check out W00PKER's fork, they added some cool stuff too at https://github.
 A NeoForge 1.21.1 add-on for Create: Power Grid 0.5.5.1, adding four compact and rotatable circuit-board parts:
 
 - 4-terminal lumped-model transformer with an integer winding divider (up to 30 total turns)
-- One-shot I²t cartridge fuse
 - Latching SCR thyristor with gate trigger, holding current, forward drop and on resistance
 - Discharging, non-rechargeable zinc-carbon dry-cell pack
+- Poisonous/Potato Battery Array+Multiblock (Poisonous variants slowly self recharge)
+- DPDT/SPDT/TPST LV/MV Switches
+- Small Diode/Capacitor/Resistor/DIP Switch
+- Buzzer with current dependant frequency version
+- Tall connector component
+- High power, low resistance shunt resistor
 
 Items appear in both a dedicated MoreGrid tab and the vanilla Redstone Blocks tab.
 
