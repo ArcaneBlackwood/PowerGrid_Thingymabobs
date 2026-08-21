@@ -1,20 +1,25 @@
 package com.feb.moregrid.blocks;
 
+import com.feb.moregrid.client.CustomModelItemRenderer;
 import com.feb.moregrid.registry.ModBlockEntities;
+import com.feb.moregrid.registry.ModDataComponents;
+import com.mojang.datafixers.util.Unit;
+
+import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 import net.minecraft.ChatFormatting;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -24,6 +29,9 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.patryk3211.powergrid.electricity.GlobalElectricNetworks;
 import org.patryk3211.powergrid.electricity.battery.AbstractBatteryBlock;
 import org.patryk3211.powergrid.electricity.battery.BatterySpec;
@@ -36,12 +44,11 @@ import org.patryk3211.powergrid.electricity.info.Voltage;
 import org.patryk3211.powergrid.electricity.redstoneconverter.IRedstoneConverterBehaviour;
 import org.patryk3211.powergrid.electricity.sim.special.TransmissionLinePart;
 import org.patryk3211.powergrid.utility.Lang;
-import org.patryk3211.powergrid.utility.Unit;
 
 import java.util.List;
 
 @MethodsReturnNonnullByDefault
-public class PotatoBatteryBlock extends AbstractBatteryBlock<PotatoBatteryBlockEntity> implements IAcceptConnector, IHaveElectricProperties, IRedstoneConverterBehaviour {
+public class PotatoBatteryBlock extends AbstractBatteryBlock<PotatoBatteryBlockEntity> implements IAcceptConnector, IHaveElectricProperties, IRedstoneConverterBehaviour, CustomModelItemRenderer.Provider {
 
     public static final BooleanProperty BAKED = APotatoBatteryArray.BAKED;
     
@@ -55,6 +62,13 @@ public class PotatoBatteryBlock extends AbstractBatteryBlock<PotatoBatteryBlockE
     public PotatoBatteryBlock(Properties settings) {
         super(settings);
         registerDefaultState(defaultBlockState().setValue(BAKED, false));
+    }
+
+    protected static final PartialModel MODEL = CustomModelItemRenderer.generateModel("block/battery/poisonous_potato_battery_block");
+    protected static final PartialModel MODEL_BAKED = CustomModelItemRenderer.generateModel("block/battery/baked_poisonous_potato_battery_block");
+    @Override
+    public PartialModel getModel(ItemStack stack) {
+        return stack.has(ModDataComponents.BAKED.get()) ? MODEL_BAKED : MODEL;
     }
 
     @Override
@@ -99,15 +113,12 @@ public class PotatoBatteryBlock extends AbstractBatteryBlock<PotatoBatteryBlockE
 
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        return onBlockEntityUse(level, pos, be -> {
-            if(be instanceof PotatoBatteryBlockEntity block) {
-                block = (PotatoBatteryBlockEntity)block.getControllerBE();
-				if (player.isCreative() && player.isShiftKeyDown()) {
-                	block.setEnergy(block.getCapacity());
-                    level.setBlockAndUpdate(pos, state.setValue(BAKED, false));
-                    if (!level.isClientSide) be.resetThermals();
-					return InteractionResult.SUCCESS;
-				}
+        return onBlockEntityUse(level, pos, block -> {
+            if(!(block.getControllerBE() instanceof PotatoBatteryBlockEntity be))
+                return InteractionResult.FAIL;
+            if (player.isCreative() && player.isShiftKeyDown()) {
+                be.resetState();
+                return InteractionResult.SUCCESS;
             }
             return InteractionResult.FAIL;
         });
@@ -115,16 +126,14 @@ public class PotatoBatteryBlock extends AbstractBatteryBlock<PotatoBatteryBlockE
 	
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-        return onBlockEntityUseItemOn(level, pos, be -> {
-            if(!(be instanceof PotatoBatteryBlockEntity block1))
-                return ItemInteractionResult.FAIL;
-            if(!(block1.getControllerBE() instanceof PotatoBatteryBlockEntity block))
+        return onBlockEntityUseItemOn(level, pos, block -> {
+            if(!(block.getControllerBE() instanceof PotatoBatteryBlockEntity be))
                 return ItemInteractionResult.FAIL;
             
             boolean hasItems = stack.is(Items.POTATO) && stack.getCount() >= 8;
             if (hasItems || (player.isShiftKeyDown() && player.isCreative())) {
                 if(!player.isCreative() || !player.isShiftKeyDown()) {
-                    double usage = block.getEnergy() / block.getCapacity();
+                    double usage = be.getEnergy() / be.getCapacity();
                     boolean baked = state.getValue(BAKED).booleanValue();
                     int usedPotatos = baked ? 8 : (int)(8.9999 - 8*usage);
                     int processedPotatos = (int)(8.4999 - 8*usage);
@@ -137,9 +146,7 @@ public class PotatoBatteryBlock extends AbstractBatteryBlock<PotatoBatteryBlockE
                     if (potatos != null)
                         if (!player.addItem(potatos)) player.spawnAtLocation(potatos);
                 }
-                block.setEnergy(block.getCapacity());
-                level.setBlockAndUpdate(pos, state.setValue(BAKED, false));
-                if (!level.isClientSide) be.resetThermals();
+                be.resetState();
                 if(player.isCreative() && player.isShiftKeyDown())
                     return ItemInteractionResult.CONSUME;
                 else
@@ -148,7 +155,6 @@ public class PotatoBatteryBlock extends AbstractBatteryBlock<PotatoBatteryBlockE
             return ItemInteractionResult.FAIL;
         });
     }
-
     @Override
     public List<ItemStack> getDrops(BlockState state, LootParams.Builder builder) {
         var stacks = super.getDrops(state, builder);
@@ -156,15 +162,31 @@ public class PotatoBatteryBlock extends AbstractBatteryBlock<PotatoBatteryBlockE
         if(be instanceof PotatoBatteryBlockEntity battery) {
             for(var stack : stacks) {
                 if(stack.is(this.asItem())) {
-                    var tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
-                    tag.putDouble("Energy", Math.floor(battery.getIndividualEnergy()));
-                    stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
-                    break;
+                    stack.set(ModDataComponents.ENERGY, battery.getIndividualEnergy());
+                    if (state.getValue(BAKED).booleanValue())
+                        stack.set(ModDataComponents.BLOWN.get(), Unit.INSTANCE);
                 }
             }
         }
         return stacks;
     }
+    @Override
+    public void setPlacedBy(Level world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
+        super.setPlacedBy(world, pos, state, placer, itemStack);
+        if (itemStack.has(ModDataComponents.ENERGY)) {
+            double energy = itemStack.get(ModDataComponents.ENERGY);
+            this.withBlockEntityDo(world, pos, (be) -> {
+                be.setEnergy(energy);
+            });
+        }
+    }
+	@Override
+	public @Nullable BlockState getStateForPlacement(@NotNull BlockPlaceContext ctx) {
+		var state = super.getStateForPlacement(ctx);
+		if(state == null) return null;
+        state.setValue(BAKED, ctx.getItemInHand().has(ModDataComponents.BAKED.get()));
+		return state;
+	}
 
     @Override
     public Class<PotatoBatteryBlockEntity> getBlockEntityClass() {
@@ -222,10 +244,10 @@ public class PotatoBatteryBlock extends AbstractBatteryBlock<PotatoBatteryBlockE
         Power.max(stack, player, tooltip);
         float charge;
         float maxCharge = getSpec().getMaxCharge();
-        if(!stack.has(DataComponents.CUSTOM_DATA) || !stack.get(DataComponents.CUSTOM_DATA).contains("Energy")) {
-            charge = getSpec().getInitialCharge() / maxCharge;
+        if(!stack.has(ModDataComponents.ENERGY)) {
+            charge = (float) (stack.get(ModDataComponents.ENERGY) / maxCharge);
         } else {
-            charge = (float) (stack.get(DataComponents.CUSTOM_DATA).copyTag().getDouble("Energy") / maxCharge);
+            charge = getSpec().getInitialCharge() / maxCharge;
         }
         Lang.translate("tooltip.charge.current")
                 .style(ChatFormatting.GRAY).addTo(tooltip);
@@ -241,7 +263,7 @@ public class PotatoBatteryBlock extends AbstractBatteryBlock<PotatoBatteryBlockE
                 .add(Component.literal(" "))
                 .add(Lang.numberConstant(maxCharge / 3600))
                 .add(Component.literal(" "))
-                .add(Unit.ENERGY.get())
+                .add(org.patryk3211.powergrid.utility.Unit.ENERGY.get())
                 .style(ChatFormatting.GREEN)
                 .addTo(tooltip);
     }

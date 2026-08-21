@@ -1,8 +1,11 @@
 package com.feb.moregrid.blocks;
 
 import net.createmod.catnip.math.VoxelShaper;
+import net.minecraft.ChatFormatting;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Mirror;
@@ -16,7 +19,9 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.network.chat.Component;
 
+import java.util.List;
 import java.util.function.Function;
 
 import org.jetbrains.annotations.Nullable;
@@ -25,11 +30,16 @@ import org.patryk3211.powergrid.electricity.base.IDecoratedTerminal;
 import org.patryk3211.powergrid.electricity.base.TerminalBoundingBox;
 import org.patryk3211.powergrid.electricity.base.terminals.BlockStateTerminalCollection;
 import org.patryk3211.powergrid.electricity.battery.AbstractBatteryBlock;
+import org.patryk3211.powergrid.electricity.info.IHaveElectricProperties;
+import org.patryk3211.powergrid.electricity.info.Power;
+import org.patryk3211.powergrid.electricity.info.Voltage;
+import org.patryk3211.powergrid.utility.Lang;
 
 import com.feb.moregrid.registry.ModBlockEntities;
+import com.feb.moregrid.registry.ModDataComponents;
 
 @MethodsReturnNonnullByDefault
-public abstract class APotatoBatteryArray extends AbstractBatteryBlock<PotatoBatteryArrayEntity> {
+public abstract class APotatoBatteryArray extends AbstractBatteryBlock<PotatoBatteryArrayEntity> implements IHaveElectricProperties {
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
     public static final IntegerProperty ROTATION = CustomProperties.ROTATION_4;
     public static final BooleanProperty BAKED = BooleanProperty.create("baked");
@@ -162,4 +172,34 @@ public abstract class APotatoBatteryArray extends AbstractBatteryBlock<PotatoBat
 			return rotate(shape, from, to, DIRECTION_VALUES);
 		}
 	}
+    
+    @Override
+    public void appendProperties(ItemStack stack, Player player, List<Component> tooltip) {
+        Voltage.max(getSpec().calculateVoltage(1), player, tooltip);
+        Power.max(stack, player, tooltip);
+        float charge;
+        float maxCharge = getSpec().getMaxCharge();
+        if(!stack.has(ModDataComponents.ENERGY)) {
+            charge = (float) (stack.get(ModDataComponents.ENERGY) / maxCharge);
+        } else {
+            charge = getSpec().getInitialCharge() / maxCharge;
+        }
+        Lang.translate("tooltip.charge.current")
+                .style(ChatFormatting.GRAY).addTo(tooltip);
+        Lang.builder()
+                .add(Component.literal(" "))
+                .add(Lang.numberConstant(charge * 100))
+                .add(Component.literal("%"))
+                .style(ChatFormatting.AQUA).addTo(tooltip);
+        Lang.translate("tooltip.capacity")
+                .style(ChatFormatting.GRAY)
+                .addTo(tooltip);
+        Lang.builder()
+                .add(Component.literal(" "))
+                .add(Lang.numberConstant(maxCharge / 3600))
+                .add(Component.literal(" "))
+                .add(org.patryk3211.powergrid.utility.Unit.ENERGY.get())
+                .style(ChatFormatting.GREEN)
+                .addTo(tooltip);
+    }
 }

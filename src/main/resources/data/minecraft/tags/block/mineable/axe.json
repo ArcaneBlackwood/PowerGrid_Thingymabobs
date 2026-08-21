@@ -1,0 +1,12 @@
+{
+  "values": [
+    "moregrid:lv_switch_dpdt",
+    "moregrid:lv_switch_spdt",
+    "moregrid:lv_switch_tpst",
+    "moregrid:lv_switch_dpst",
+    "moregrid:mv_switch_dpdt",
+    "moregrid:mv_switch_spdt",
+    "moregrid:mv_switch_tpst",
+    "moregrid:mv_switch_dpst"
+  ]
+}

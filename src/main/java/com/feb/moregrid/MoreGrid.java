@@ -2,6 +2,7 @@ package com.feb.moregrid;
 
 import com.feb.moregrid.registry.ModBlockEntities;
 import com.feb.moregrid.registry.ModBlocks;
+import com.feb.moregrid.registry.ModDataComponents;
 import com.feb.moregrid.registry.ModItems;
 import com.feb.moregrid.registry.ModSounds;
 import com.feb.moregrid.registry.Resistances;
@@ -11,7 +12,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-
 import org.patryk3211.powergrid.config.ResistanceValues;
 import org.patryk3211.powergrid.config.ThermalValues;
 import org.slf4j.Logger;
@@ -23,6 +23,8 @@ public final class MoreGrid {
 
     public MoreGrid(IEventBus modBus) {
         modBus.addListener(MoreGrid::onCommon);
+        modBus.addListener(ModItems::registerClientExtensions);
+        ModDataComponents.DATA_COMPONENTS.register(modBus);
         ModItems.ITEMS.register(modBus);
         ModItems.CREATIVE_TABS.register(modBus);
         ModSounds.SOUND_EVENTS.register(modBus);

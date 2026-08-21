@@ -47,8 +47,14 @@ public class PotatoBatteryArrayEntity extends BatteryBlockEntity implements Elec
             b.behaviourFlags(ThermalBehaviour.OVERHEAT_PARTICLES);
         return b;
     }
-	public void resetThermals() {
+	public void resetState() {
+        setEnergy(getCapacity());
+		updateParameters();
+        level.setBlockAndUpdate(worldPosition, getBlockState().setValue(PotatoBatteryArray.BAKED, false));
+
+        if(level.isClientSide) return;
 		thermalBehaviour.resetTemperature();
+        notifyUpdate();
 	}
 
     @Override

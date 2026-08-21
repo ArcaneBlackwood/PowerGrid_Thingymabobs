@@ -53,8 +53,14 @@ public class PotatoBatteryBlockEntity extends MultiBlockBatteryEntity implements
         return controller.calculatePower();
     }
 
-	public void resetThermals() {
+	public void resetState() {
+		setEnergy(getCapacity());
+		updateParameters();
+        level.setBlockAndUpdate(worldPosition, getBlockState().setValue(PotatoBatteryBlock.BAKED, false));
+
+		if (level.isClientSide) return;
 		thermalBehaviour.resetTemperature();
+        notifyUpdate();
 	}
 
 	public float getVolume() {

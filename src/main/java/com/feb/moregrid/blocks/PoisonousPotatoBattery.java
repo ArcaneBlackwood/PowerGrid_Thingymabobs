@@ -20,16 +20,16 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
-import org.patryk3211.powergrid.collections.ModdedBlockEntities;
 import org.patryk3211.powergrid.electricity.base.HorizontalElectricBlock;
 import org.patryk3211.powergrid.electricity.base.IDecoratedTerminal;
 import org.patryk3211.powergrid.electricity.base.TerminalBoundingBox;
 import org.patryk3211.powergrid.electricity.battery.AbstractBatteryBlock;
 import org.patryk3211.powergrid.electricity.battery.BatterySpec;
 import org.patryk3211.powergrid.electricity.battery.SimpleBatterySpec;
-import org.patryk3211.powergrid.electricity.battery.PotatoBatteryBlockEntity;
 
-public class PoisonousPotatoBattery extends AbstractBatteryBlock<PotatoBatteryBlockEntity> {
+import com.feb.moregrid.registry.ModBlockEntities;
+
+public class PoisonousPotatoBattery extends AbstractBatteryBlock<PotatoBatteryEntity> {
     public static final BatterySpec BATTERY_SPEC = new SimpleBatterySpec(
 		2.88f,
 		2.88f,
@@ -90,12 +90,12 @@ public class PoisonousPotatoBattery extends AbstractBatteryBlock<PotatoBatteryBl
     }
 
     @Override
-    public Class<PotatoBatteryBlockEntity> getBlockEntityClass() {
-        return PotatoBatteryBlockEntity.class;
+    public Class<PotatoBatteryEntity> getBlockEntityClass() {
+        return PotatoBatteryEntity.class;
     }
 
     @Override
-    public BlockEntityType<? extends PotatoBatteryBlockEntity> getBlockEntityType() {
-        return ModdedBlockEntities.POTATO_BATTERY.get();
+    public BlockEntityType<? extends PotatoBatteryEntity> getBlockEntityType() {
+        return ModBlockEntities.POTATO_BATTERY.get();
     }
 }

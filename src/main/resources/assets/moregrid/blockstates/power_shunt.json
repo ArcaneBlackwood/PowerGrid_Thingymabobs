@@ -1,0 +1,112 @@
+{
+  "variants": {
+    "axis_along_first=false,facing=down,blown=false": {
+      "model": "moregrid:block/shunt_v",
+      "y": 90
+    },
+    "axis_along_first=false,facing=east,blown=false": {
+      "model": "moregrid:block/shunt_h",
+      "x": 90
+    },
+    "axis_along_first=false,facing=north,blown=false": {
+      "model": "moregrid:block/shunt_h",
+      "x": 90,
+      "y": -90
+    },
+    "axis_along_first=false,facing=south,blown=false": {
+      "model": "moregrid:block/shunt_h",
+      "x": 90,
+      "y": 90
+    },
+    "axis_along_first=false,facing=up,blown=false": {
+      "model": "moregrid:block/shunt_v",
+      "x": 180,
+      "y": 90
+    },
+    "axis_along_first=false,facing=west,blown=false": {
+      "model": "moregrid:block/shunt_h",
+      "x": 90,
+      "y": 180
+    },
+    "axis_along_first=true,facing=down,blown=false": {
+      "model": "moregrid:block/shunt_v"
+    },
+    "axis_along_first=true,facing=east,blown=false": {
+      "model": "moregrid:block/shunt_h",
+      "x": 180
+    },
+    "axis_along_first=true,facing=north,blown=false": {
+      "model": "moregrid:block/shunt_h",
+      "x": 180,
+      "y": -90
+    },
+    "axis_along_first=true,facing=south,blown=false": {
+      "model": "moregrid:block/shunt_h",
+      "x": 180,
+      "y": 90
+    },
+    "axis_along_first=true,facing=up,blown=false": {
+      "model": "moregrid:block/shunt_v",
+      "x": 180
+    },
+    "axis_along_first=true,facing=west,blown=false": {
+      "model": "moregrid:block/shunt_h",
+      "x": 180,
+      "y": 180
+    },
+    "axis_along_first=false,facing=down,blown=true": {
+      "model": "moregrid:block/shunt_blown_v",
+      "y": 90
+    },
+    "axis_along_first=false,facing=east,blown=true": {
+      "model": "moregrid:block/shunt_blown_h",
+      "x": 90
+    },
+    "axis_along_first=false,facing=north,blown=true": {
+      "model": "moregrid:block/shunt_blown_h",
+      "x": 90,
+      "y": -90
+    },
+    "axis_along_first=false,facing=south,blown=true": {
+      "model": "moregrid:block/shunt_blown_h",
+      "x": 90,
+      "y": 90
+    },
+    "axis_along_first=false,facing=up,blown=true": {
+      "model": "moregrid:block/shunt_blown_v",
+      "x": 180,
+      "y": 90
+    },
+    "axis_along_first=false,facing=west,blown=true": {
+      "model": "moregrid:block/shunt_blown_h",
+      "x": 90,
+      "y": 180
+    },
+    "axis_along_first=true,facing=down,blown=true": {
+      "model": "moregrid:block/shunt_blown_v"
+    },
+    "axis_along_first=true,facing=east,blown=true": {
+      "model": "moregrid:block/shunt_blown_h",
+      "x": 180
+    },
+    "axis_along_first=true,facing=north,blown=true": {
+      "model": "moregrid:block/shunt_blown_h",
+      "x": 180,
+      "y": -90
+    },
+    "axis_along_first=true,facing=south,blown=true": {
+      "model": "moregrid:block/shunt_blown_h",
+      "x": 180,
+      "y": 90
+    },
+    "axis_along_first=true,facing=up,blown=true": {
+      "model": "moregrid:block/shunt_blown_v",
+      "x": 180
+    },
+    "axis_along_first=true,facing=west,blown=true": {
+      "model": "moregrid:block/shunt_blown_h",
+      "x": 180,
+      "y": 180
+    }
+  }
+}
