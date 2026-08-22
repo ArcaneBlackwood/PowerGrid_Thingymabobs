@@ -27,7 +27,7 @@ import java.util.List;
 
 public class SwitchTPSTComponent extends OrientableComponent implements IInteractableComponent, IGoggleLabel {
     private static final ComponentFootprint FOOTPRINT = new ComponentFootprint.Builder(
-				5,3, "component." + MoreGrid.MOD_ID + ".switch_dpdt", null)
+				5,3, "component." + MoreGrid.MOD_ID + ".switch_tpst", null)
             .addPad(0, 0, 0, "Common", "C")
             .addPad(2, 0, 1, "Common", "C")
             .addPad(4, 0, 2, "Common", "C")

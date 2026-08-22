@@ -1,10 +1,10 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
-  "pattern": ["CIC", "CIC", " C "],
   "key": {
-    "C": {"item": "minecraft:copper_ingot"},
-    "I": {"item": "minecraft:iron_ingot"}
+		"C": {"tag": "c:copper_coils"},
+    "T": {"item": "powergrid:transformer_core"}
   },
+  "pattern": ["CTC"],
   "result": {"id": "moregrid:transformer", "count": 1}
 }

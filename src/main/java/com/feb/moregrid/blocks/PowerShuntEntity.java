@@ -23,11 +23,9 @@ import java.util.List;
 public class PowerShuntEntity extends ElectricBlockEntity {
     protected PowerShuntValueBehaviour value;
     protected SwitchedWire wire;
-	protected boolean blown;
 
     public PowerShuntEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.POWER_SHUNT.get(), pos, state);
-		this.blown = state.getValue(PowerShunt.BLOWN);
     }
 
     protected PowerShuntValueBehaviour makeScroll() {
@@ -52,14 +50,16 @@ public class PowerShuntEntity extends ElectricBlockEntity {
     @Override
     public void buildCircuit(CircuitBuilder builder) {
         builder.setTerminalCount(2);
-        wire = builder.connectSwitch(0.1f, builder.terminalNode(0), builder.terminalNode(1), !blown);
+        BlockState state = getBlockState();
+        wire = builder.connectSwitch(0.1f, builder.terminalNode(0), builder.terminalNode(1),
+            !state.getValue(PowerShunt.BLOWN));
     }
 
 
     @Override
     public ItemRequirement getRequiredItems(BlockState state) {
 		super.getRequiredItems(state);
-        if(blown)
+        if(state.getValue(PowerShunt.BLOWN))
             return new ItemRequirement(ItemRequirement.ItemUseType.CONSUME, AllItems.BRASS_SHEET.asStack());
         return ItemRequirement.NONE;
     }
@@ -76,11 +76,11 @@ public class PowerShuntEntity extends ElectricBlockEntity {
     }
 
 	public void resetState() {
-		if(blown && !level.isClientSide) {
+        BlockState state = getBlockState();
+		if(state.getValue(PowerShunt.BLOWN) && !level.isClientSide) {
 			ModdedSoundEvents.FUSE_INSTALL.playOnServer(level, worldPosition);
 		}
-        level.setBlockAndUpdate(worldPosition, getBlockState().setValue(PowerShunt.BLOWN, false));
-		blown = false;
+        level.setBlockAndUpdate(worldPosition, state.setValue(PowerShunt.BLOWN, false));
 		wire.setState(true);
 
 		if (level.isClientSide) return;
@@ -88,13 +88,12 @@ public class PowerShuntEntity extends ElectricBlockEntity {
         notifyUpdate();
 	}
 	public void blowState() {
-		blown = true;
 		wire.setState(false);
 		if (level.isClientSide) {
 			playBlowEffect();
 			return;
 		}
-		level.setBlockAndUpdate(worldPosition, getBlockState().setValue(PowerShunt.BLOWN, false));
+		level.setBlockAndUpdate(worldPosition, getBlockState().setValue(PowerShunt.BLOWN, true));
 		thermalBehaviour.setTemperature(250);
 		notifyUpdate();
 	}
@@ -102,7 +101,8 @@ public class PowerShuntEntity extends ElectricBlockEntity {
     @Override
     public void electricalTick() {
         applyPower(wire);
-        if(!blown && thermalBehaviour.isOverheated()) {
+        BlockState state = getBlockState();
+        if(!state.getValue(PowerShunt.BLOWN) && thermalBehaviour.isOverheated()) {
 			blowState();
         }
     }
@@ -119,20 +119,22 @@ public class PowerShuntEntity extends ElectricBlockEntity {
     protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.read(tag, registries, clientPacket);
         wire.setResistance(value.getResistance());
-        boolean prevBlown = blown;
-        blown = tag.getBoolean("State");
+        BlockState state = getBlockState();
+        boolean prevBlown = state.getValue(PowerShunt.BLOWN);
+        boolean blown = tag.getBoolean("Blown");
         if(clientPacket && blown && !prevBlown)
             playBlowEffect();
         wire.setState(!blown);
+		level.setBlockAndUpdate(worldPosition, state.setValue(PowerShunt.BLOWN, blown));
     }
     @Override
     protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.write(tag, registries, clientPacket);
-        tag.putBoolean("Blown", blown);
+        tag.putBoolean("Blown", getBlockState().getValue(PowerShunt.BLOWN));
     }
     @Override
     public void writeSafe(CompoundTag tag, HolderLookup.Provider registries) {
         super.writeSafe(tag, registries);
-        tag.putBoolean("Blown", blown);
+        tag.putBoolean("Blown", getBlockState().getValue(PowerShunt.BLOWN));
     }
 }

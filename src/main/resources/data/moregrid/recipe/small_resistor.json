@@ -1,0 +1,9 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"category": "redstone",
+	"ingredients": [
+		{"tag": "minecraft:coals"},
+		{"tag": "c:wires/iron"}
+	],
+	"result": {"count": 1, "id": "moregrid:small_resistor"}
+}

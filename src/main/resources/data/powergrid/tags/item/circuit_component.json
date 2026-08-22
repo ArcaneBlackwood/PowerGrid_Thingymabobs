@@ -13,6 +13,9 @@
     "moregrid:variable_buzzer",
     "moregrid:shunt",
     "moregrid:lv_switch_dpdt",
+    "moregrid:lv_switch_spdt",
+    "moregrid:lv_switch_tpst",
+    "moregrid:lv_switch_dpst",
     "powergrid:potato_battery",
     "moregrid:poisonous_potato_battery"
   ]

@@ -1,0 +1,11 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"category": "redstone",
+	"ingredients": [
+		{"item": "powergrid:conductive_casing"},
+		{"item": "minecraft:lever"},
+		{"item": "minecraft:lever"},
+		{"item": "powergrid:pins"}
+	],
+	"result": {"count": 1, "id": "moregrid:lv_switch_dpst"}
+}

@@ -27,7 +27,7 @@ import java.util.List;
 
 public class SwitchSPDTComponent extends OrientableComponent implements IInteractableComponent, IGoggleLabel {
     private static final ComponentFootprint FOOTPRINT = new ComponentFootprint.Builder(
-				5,3, "component." + MoreGrid.MOD_ID + ".switch_dpdt", null)
+				5,3, "component." + MoreGrid.MOD_ID + ".switch_spdt", null)
             .addPad(0, 1, 0, "Common", "C")
             .addPad(2, 1, 1, "Normally Open", "NO")
             .addPad(4, 1, 2, "Normally Closed", "NC")

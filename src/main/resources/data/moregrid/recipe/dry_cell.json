@@ -1,11 +1,16 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "category": "redstone",
-  "pattern": [" Z ", "PCP", " Z "],
-  "key": {
-    "Z": {"item": "powergrid:zinc_sheet"},
-    "P": {"item": "minecraft:paper"},
-    "C": {"item": "minecraft:charcoal"}
-  },
-  "result": {"id": "moregrid:dry_cell", "count": 1}
+	"type": "minecraft:crafting_shaped",
+	"category": "redstone",
+	"key": {
+		"I": {"tag": "c:plates/iron"},
+		"Z": {"tag": "c:plates/zinc"},
+		"R": {"item": "minecraft:redstone"},
+		"C": {"tag": "minecraft:coals"}
+	},
+	"pattern": [
+		" I ",
+		"RCR",
+		" Z "
+	],
+	"result": {"id": "moregrid:dry_cell", "count": 1}
 }

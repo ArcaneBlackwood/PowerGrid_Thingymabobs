@@ -127,11 +127,19 @@ public class PotatoBatteryBlockEntity extends MultiBlockBatteryEntity implements
 
     @Override
     public void writeToSync(FriendlyByteBuf buffer) {
+        buffer.writeInt(checksumBasic(this.getSize()));
         buffer.writeFloat(electrocuteVolume);
     }
 
     @Override
     public void readFromSync(FriendlyByteBuf buffer) {
+        if (buffer.readInt() != checksumBasic(this.getSize())) return;
         electrocuteVolume = buffer.readFloat();
     }
+	public static int checksumBasic(int value) {
+		int b = value & 0xFF;
+		int a = Integer.reverse(b) >>> 24;
+		int c = ~b & 0xFF;
+		return (b << 24) | (a << 16) | (c << 8) | (b ^ 0xA5);
+	}
 }

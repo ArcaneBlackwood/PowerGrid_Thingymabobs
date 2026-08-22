@@ -1,0 +1,12 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"category": "redstone",
+	"ingredients": [
+		{"item": "powergrid:conductive_casing"},
+		{"item": "minecraft:lever"},
+		{"item": "minecraft:lever"},
+		{"item": "minecraft:lever"},
+		{"tag": "c:plates/copper"}
+	],
+	"result": {"count": 1, "id": "moregrid:mv_switch_tpst"}
+}

@@ -1,0 +1,16 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "redstone",
+	"key": {
+		"S": {"tag": "c:plates/brass"},
+		"B": {"tag": "c:ingots/brass"},
+		"P": {"item": "powergrid:pins"},
+		"C": {"item": "powergrid:conductive_casing"}
+	},
+	"pattern": [
+		" P ",
+		"BSB",
+		" C "
+	],
+	"result": {"count": 1, "id": "moregrid:power_shunt"}
+}

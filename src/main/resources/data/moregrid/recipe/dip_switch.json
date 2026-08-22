@@ -1,0 +1,11 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"category": "redstone",
+	"ingredients": [
+		{"tag": "c:nuggets/copper"},
+		{"item": "create:andesite_alloy"},
+		{"tag": "c:nuggets/copper"},
+		{"tag": "c:plates/iron"}
+	],
+	"result": {"count": 1, "id": "moregrid:dip_switch"}
+}

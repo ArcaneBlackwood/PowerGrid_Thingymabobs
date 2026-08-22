@@ -267,7 +267,7 @@ public final class PoisonousPotatoBatteryComponent extends OrientableComponent i
             return InteractionResult.SUCCESS;
         }
         player.displayClientMessage(
-            net.minecraft.network.chat.Component.translatable("moregrid.message.potato_battery.replace_required"),
+            net.minecraft.network.chat.Component.translatable("moregrid.message.poisonous_potato_battery.replace_required"),
             true
         );
         return InteractionResult.PASS;

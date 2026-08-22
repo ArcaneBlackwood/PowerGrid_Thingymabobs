@@ -19,7 +19,7 @@ public class CeramicCapacitorComponent extends OrientableComponent {
 			.addPad(2, 0, 1)
 			.withItem().withOutline().build();
 
-    public static final FloatProperty CAPACITANCE = new FloatProperty(MoreGrid.MOD_ID, "capacitor_value", 0.1f, 1e-9f, 1.0f);
+    public static final FloatProperty CAPACITANCE = new FloatProperty(MoreGrid.MOD_ID, "capacitor_value", 0.1f, 1e-8f, 10.0f);
     private static final ChargeProperty CHARGE = new ChargeProperty(MoreGrid.MOD_ID, "charge");
 
     public CeramicCapacitorComponent() {

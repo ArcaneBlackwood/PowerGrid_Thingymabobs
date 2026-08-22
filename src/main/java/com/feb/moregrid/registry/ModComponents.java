@@ -12,6 +12,9 @@ import com.feb.moregrid.component.ShuntComponent;
 import com.feb.moregrid.component.SmallDiodeComponent;
 import com.feb.moregrid.component.SmallResistorComponent;
 import com.feb.moregrid.component.SwitchDPDTComponent;
+import com.feb.moregrid.component.SwitchDPSTComponent;
+import com.feb.moregrid.component.SwitchSPDTComponent;
+import com.feb.moregrid.component.SwitchTPSTComponent;
 import com.feb.moregrid.component.TallConnectorComponent;
 import com.feb.moregrid.component.TransformerComponent;
 import com.feb.moregrid.component.VariableBuzzerComponent;
@@ -95,6 +98,9 @@ public final class ModComponents {
         register(event, "variable_buzzer", new VariableBuzzerComponent());
         register(event, "shunt", new ShuntComponent());
         register(event, "switch_dpdt", new SwitchDPDTComponent());
+        register(event, "switch_spdt", new SwitchSPDTComponent());
+        register(event, "switch_tpst", new SwitchTPSTComponent());
+        register(event, "switch_dpst", new SwitchDPSTComponent());
         register(event, "potato_battery", new PotatoBatteryComponent());
         register(event, "poisonous_potato_battery", new PoisonousPotatoBatteryComponent());
     }

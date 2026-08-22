@@ -1,0 +1,9 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"category": "redstone",
+	"ingredients": [
+		{"item": "minecraft:redstone"},
+		{"tag": "c:plates/copper"}
+	],
+	"result": {"count": 1, "id": "moregrid:small_diode"}
+}

@@ -16,13 +16,13 @@ import org.patryk3211.powergrid.utility.Unit;
 public class SmallDiodeComponent extends VerticallyOrientableComponent {
     private static final ComponentFootprint FOOTPRINT = new ComponentFootprint.Builder(
 				3,1, "component." + MoreGrid.MOD_ID + ".small_diode", null)
-            .addPad(0, 0, 0, "Cathode", "C")
-            .addPad(2, 0, 1, "Anode", "A")
+            .addPad(0, 0, 0, "Cathode -", "C-")
+            .addPad(2, 0, 1, "Anode +", "A+")
             .withItem().withOutline().build();
     private static final ComponentFootprint VERTICAL_FOOTPRINT = new ComponentFootprint.Builder(
 				2,1, "component." + MoreGrid.MOD_ID + ".small_diode", null)
-            .addPad(0, 0, 0, "Cathode", "C")
-            .addPad(1, 0, 1, "Anode", "A")
+            .addPad(0, 0, 0, "+Cathode", "+C")
+            .addPad(1, 0, 1, "-Anode", "-A")
             .withItem().withOutline().build();
 
     public static final ConstantProperty BREAKDOWN_VOLTAGE = new ConstantProperty(MoreGrid.MOD_ID, "diode_vb", Unit.VOLTAGE.format(1000));

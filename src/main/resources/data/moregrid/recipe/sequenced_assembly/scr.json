@@ -1,0 +1,60 @@
+{
+	"type": "create:sequenced_assembly",
+	"ingredient": {
+		"tag": "c:plates/iron"
+	},
+	"results": [
+		{"chance": 100.0,"count": 2,"id": "moregrid:scr"},
+		{"chance": 5.0,"id": "powergrid:bjt_pnp"},
+		{"chance": 5.0,"id": "powergrid:bjt_npn"},
+		{"chance": 2.0,"id": "create:iron_sheet"}
+	],
+	"sequence": [{
+		"type": "create:deploying",
+		"ingredients": [
+			{"item": "moregrid:scr_incomplete"},
+			{"item": "create:polished_rose_quartz"}
+		],
+		"results": [
+			{"id": "moregrid:scr_incomplete"}
+		]
+	}, {
+		"type": "create:deploying",
+		"ingredients": [
+			{"item": "moregrid:scr_incomplete"},
+			{"tag": "c:wires/gold"}
+		],
+		"results": [
+			{"id": "moregrid:scr_incomplete"}
+		]
+	}, {
+		"type": "create:deploying",
+		"ingredients": [
+			{"item": "moregrid:scr_incomplete"},
+			{"item": "create:polished_rose_quartz"}
+		],
+		"results": [
+			{"id": "moregrid:scr_incomplete"}
+		]
+	}, {
+		"type": "create:deploying",
+		"ingredients": [
+			{"item": "moregrid:scr_incomplete"},
+			{"tag": "c:wires/gold"}
+		],
+		"results": [
+			{"id": "moregrid:scr_incomplete"}
+		]
+	}, {
+		"type": "create:pressing",
+		"ingredients": [
+			{"item": "moregrid:scr_incomplete"}
+		],
+		"results": [
+			{"id": "moregrid:scr_incomplete"}
+		]
+	}],
+	"transitional_item": {
+		"id": "moregrid:scr_incomplete"
+	}
+}

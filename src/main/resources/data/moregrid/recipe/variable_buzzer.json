@@ -1,0 +1,16 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "redstone",
+	"key": {
+		"I": {"tag": "c:plates/iron"},
+		"C": {"tag": "c:copper_coils"},
+		"D": {"tag": "c:dyes/black"},
+		"Q": {"tag": "c:gems/quartz"}
+	},
+	"pattern": [
+		"D ",
+		"CQ",
+		"II"
+	],
+  "result": {"count": 1, "id": "moregrid:variable_buzzer"}
+}
