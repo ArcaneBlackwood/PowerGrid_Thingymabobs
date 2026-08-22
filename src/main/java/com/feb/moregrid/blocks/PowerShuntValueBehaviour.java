@@ -14,12 +14,11 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.BlockHitResult;
 import org.patryk3211.powergrid.utility.Lang;
-import org.patryk3211.powergrid.utility.NumberFormats;
 
 public class PowerShuntValueBehaviour extends ScrollValueBehaviour {
    private static final NumberFormat precise = NumberFormat.getInstance();
    static {
-      precise.setMaximumFractionDigits(5);
+      precise.setMaximumFractionDigits(6);
       precise.setMinimumFractionDigits(0);
       precise.setGroupingUsed(true);
    }
@@ -29,7 +28,7 @@ public class PowerShuntValueBehaviour extends ScrollValueBehaviour {
       super(label, be, slot);
       this.minOffset = minOffset;
       this.between(0, max);
-      this.withFormatter((i) -> precise.format(i).replace(" ", " "));
+      this.withFormatter((i) -> precise.format(exponentialValue(minOffset, i)).replace(" ", " "));
    }
 
    public ValueSettingsBoard createBoard(Player player, BlockHitResult hitResult) {
@@ -58,7 +57,7 @@ public class PowerShuntValueBehaviour extends ScrollValueBehaviour {
    }
 
    public MutableComponent formatSettings(ValueSettingsBehaviour.ValueSettings settings) {
-      return Lang.text(NumberFormats.formatPrecise((double)exponentialValue(this.minOffset, settings.value()))).component();
+      return Lang.text(precise.format((double)exponentialValue(this.minOffset, settings.value()))).component();
    }
 
    public float getResistance() {

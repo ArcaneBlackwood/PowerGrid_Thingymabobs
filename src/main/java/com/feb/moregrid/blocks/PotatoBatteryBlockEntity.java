@@ -110,7 +110,7 @@ public class PotatoBatteryBlockEntity extends MultiBlockBatteryEntity implements
             super.electricalTick();
 			return;
 		}
-		electrocuteVolume = Math.clamp((Math.abs(super.calculatePower()) - thermalBehaviour.maxPower() * 0.5f) * 0.5f, 0, 1);
+		electrocuteVolume = Math.clamp((Math.abs(super.calculatePower()) / (thermalBehaviour.maxPower() * this.getSize()) - 0.5f) * 2f, 0, 1);
         if(getBlockState().getValue(APotatoBatteryArray.BAKED)) {
             sourceCoupling.setVoltage(0);
             sourceCoupling.setResistance(1e+6f);

@@ -109,7 +109,7 @@ public final class ModBlocks {
 		Resistances.register(POISONOUS_POTATO_BATTERY_BLOCK.getId(), 25);
 		Thermals.register(POISONOUS_POTATO_BATTERY_BLOCK.getId(), 200f, 0.15f);
 
-		Thermals.register(POWER_SHUNT.getId(), 5f, 1000f);
+		Thermals.register(POWER_SHUNT.getId(), 25f, 1000f);
 
         BlockMovementChecks.registerAttachedCheck((BlockState state, Level world, BlockPos pos, Direction direction) -> {
 			var block = state.getBlock();

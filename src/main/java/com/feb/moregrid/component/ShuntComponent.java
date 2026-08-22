@@ -35,7 +35,7 @@ public class ShuntComponent extends OrientableComponent {
         var wire = builder.connect(placed.get(RESISTANCE), builder.terminalNode(0), builder.terminalNode(1));
         thermals.builder()
                 .setThermalMass(5f)
-                .setMaxPower(50, 150f)
+                .setDissipationFactor(100)
                 .setOverheatTemperature(200f)
                 .addHeatSource(wire);
     }
