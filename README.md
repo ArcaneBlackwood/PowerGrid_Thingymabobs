@@ -35,3 +35,35 @@ Build with:
 ```
 
 See [README_KO.md](README_KO.md) for the complete model specifications and testing instructions.
+
+## Planned
+- [x] Potato batteries
+	- [x] Poisonous variants
+	- [x] Array (8 potatos)
+	- [x] Multiblock (24 potatos per block)
+- [x] Switch variants (DPDT, SPDT, TPST, DPST and LV, MV)
+	- [x] Components
+- [x] Small low power Resistor, Diode, Capacitor
+- [ ] Linked reciever/transmitters/directional reciever
+- [x] Tall connector component
+- [ ] Light bulb indicator
+- [x] Shunt resistor
+- [ ] Mechanical counter (Like a cars odometer).  Power applied for rotation, resetting.  Could have internal voltage dividers or encoders for number positions?  "Latch" option, if power removed move to next number if not settled
+- [ ] Mechanically timed button.  Like a cooking timer, twist to set.
+- [ ] Aeronautics stuff
+	- [ ] Tilt switch /w variants (Off placed axis, approaching axis)
+	- [ ] Gyroscope (Spun up flywheel off axis rotation detected by coil)
+	- [ ] Accelerometer (Spring bound magnetic mass detected by coil)
+	- [ ] Altitude (Acts like a potentiometer?)
+- [ ] Fancy dispalys
+	- [ ] Meter with configurable color, labels and unity
+		- [ ] Center zero meter variant
+		- [ ] Duel needle variant
+		- [ ] Duel perpindicular slider variant
+	- [ ] "Bar graph" display.  Voltage dependant orthogonal slider.
+	- [ ] Add backlights to displays
+- [ ] Fancy traffic lights
+- [ ] Lava lamp!
+- [ ] Pressure sensor multiblock.  Senses weight of entitie or aeronautic ships
+- [ ] Self extendable cable from holdable item.  Connects to portable battery.
+- [ ] Retractable cable block
