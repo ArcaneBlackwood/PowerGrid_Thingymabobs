@@ -1,0 +1,9 @@
+package com.feb.moregrid.mixin;
+
+import org.patryk3211.powergrid.circuits.thermal.ThermalBuilder;
+import org.patryk3211.powergrid.circuits.thermal.ThermalUnit;
+import java.util.function.Consumer;
+
+public interface ThermalBuilderExtension {
+  ThermalBuilder withBuildCallback(Consumer<ThermalUnit> buildCallback);
+}

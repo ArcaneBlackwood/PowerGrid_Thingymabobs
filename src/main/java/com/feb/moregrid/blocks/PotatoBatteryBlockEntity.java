@@ -62,6 +62,15 @@ public class PotatoBatteryBlockEntity extends MultiBlockBatteryEntity implements
 		thermalBehaviour.resetTemperature();
         notifyUpdate();
 	}
+	public void resetState(double energy) {
+		setEnergy(energy);
+		updateParameters();
+        level.setBlockAndUpdate(worldPosition, getBlockState().setValue(PotatoBatteryBlock.BAKED, false));
+
+		if (level.isClientSide) return;
+		thermalBehaviour.resetTemperature();
+        notifyUpdate();
+	}
 
 	public float getVolume() {
         hasAudioSource = true;
@@ -109,11 +118,10 @@ public class PotatoBatteryBlockEntity extends MultiBlockBatteryEntity implements
             return;
         } else {
             super.electricalTick();
-        }
-        if(thermalBehaviour != null && thermalBehaviour.isOverheated() && !level.isClientSide) {
-            thermalBehaviour.setTemperature(150);
-            level.setBlockAndUpdate(worldPosition, getBlockState().setValue(APotatoBatteryArray.BAKED, true));
-            notifyUpdate();
+			if(thermalBehaviour != null && thermalBehaviour.isOverheated() && !level.isClientSide) {
+				level.setBlockAndUpdate(worldPosition, getBlockState().setValue(APotatoBatteryArray.BAKED, true));
+				notifyUpdate();
+			}
         }
     }
 

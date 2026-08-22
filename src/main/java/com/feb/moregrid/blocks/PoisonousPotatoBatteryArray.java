@@ -1,6 +1,9 @@
 package com.feb.moregrid.blocks;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
@@ -57,8 +60,16 @@ public class PoisonousPotatoBatteryArray extends APotatoBatteryArray implements 
         return onBlockEntityUse(level, pos, be -> {
 			if (player.isCreative() && player.isShiftKeyDown()) {
 				be.resetState();
+                if (be.getLevel() != null) {
+                    be.getLevel().playSound(
+                        null, be.getBlockPos(), SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 0.30F, 1.0F);
+                }
 				return InteractionResult.SUCCESS;
 			}
+            player.displayClientMessage(
+                    Component.translatable("moregrid.message.poisonous_potato_battery.replace_required"),
+                    true
+            );
             return InteractionResult.FAIL;
         });
     }
@@ -81,11 +92,19 @@ public class PoisonousPotatoBatteryArray extends APotatoBatteryArray implements 
 						if (!player.addItem(potatos)) player.spawnAtLocation(potatos);
 				}
 				be.resetState();
+                if (be.getLevel() != null) {
+                    be.getLevel().playSound(
+                        null, be.getBlockPos(), SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 0.30F, 1.0F);
+                }
 				if(player.isCreative() && player.isShiftKeyDown())
 					return ItemInteractionResult.CONSUME;
 				else
 					return ItemInteractionResult.SUCCESS;
 			}
+            player.displayClientMessage(
+                    Component.translatable("moregrid.message.poisonous_potato_battery.replace_required"),
+                    true
+            );
             return ItemInteractionResult.FAIL;
         });
     }

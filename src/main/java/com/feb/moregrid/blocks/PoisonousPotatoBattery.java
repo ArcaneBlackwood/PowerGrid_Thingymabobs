@@ -38,7 +38,7 @@ public class PoisonousPotatoBattery extends AbstractBatteryBlock<PotatoBatteryEn
     );
 
     public static final DirectionProperty HORIZONTAL_FACING = BlockStateProperties.HORIZONTAL_FACING;
-    public static final BooleanProperty BAKED = BooleanProperty.create("baked");
+    public static final BooleanProperty BAKED = PotatoBatteryBlock.BAKED;
 
     private static final TerminalBoundingBox[] TERMINALS_NORTH = new TerminalBoundingBox[] {
             new TerminalBoundingBox(IDecoratedTerminal.POSITIVE, 7, 3, 4.5, 9, 5.5, 6)

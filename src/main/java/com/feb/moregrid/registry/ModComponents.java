@@ -5,6 +5,8 @@ import com.feb.moregrid.component.BuzzerComponent;
 import com.feb.moregrid.component.CeramicCapacitorComponent;
 import com.feb.moregrid.component.DIPSwitchComponent;
 import com.feb.moregrid.component.DryCellComponent;
+import com.feb.moregrid.component.PoisonousPotatoBatteryComponent;
+import com.feb.moregrid.component.PotatoBatteryComponent;
 import com.feb.moregrid.component.SCRComponent;
 import com.feb.moregrid.component.ShuntComponent;
 import com.feb.moregrid.component.SmallDiodeComponent;
@@ -93,6 +95,8 @@ public final class ModComponents {
         register(event, "variable_buzzer", new VariableBuzzerComponent());
         register(event, "shunt", new ShuntComponent());
         register(event, "switch_dpdt", new SwitchDPDTComponent());
+        register(event, "potato_battery", new PotatoBatteryComponent());
+        register(event, "poisonous_potato_battery", new PoisonousPotatoBatteryComponent());
     }
 
     private static void register(RegisterEvent event, String id, org.patryk3211.powergrid.circuits.components.Component component) {

@@ -25,20 +25,17 @@ import org.patryk3211.powergrid.circuits.components.SwitchComponent;
 import java.util.Collection;
 import java.util.List;
 
-public class SwitchDPDTComponent extends OrientableComponent implements IInteractableComponent, IGoggleLabel {
+public class SwitchSPDTComponent extends OrientableComponent implements IInteractableComponent, IGoggleLabel {
     private static final ComponentFootprint FOOTPRINT = new ComponentFootprint.Builder(
 				5,3, "component." + MoreGrid.MOD_ID + ".switch_dpdt", null)
-            .addPad(2, 0, 0, "Common", "C")
-            .addPad(2, 2, 1, "Common", "C")
-            .addPad(0, 0, 2, "Normally Open", "NO")
-            .addPad(0, 2, 3, "Normally Open", "NO")
-            .addPad(4, 0, 4, "Normally Closed", "NC")
-            .addPad(4, 2, 5, "Normally Closed", "NC")
+            .addPad(0, 1, 0, "Common", "C")
+            .addPad(2, 1, 1, "Normally Open", "NO")
+            .addPad(4, 1, 2, "Normally Closed", "NC")
             .withItem().withOutline().build();
 
     public static final BooleanProperty STATE = SwitchComponent.STATE;
 
-    public SwitchDPDTComponent() {
+    public SwitchSPDTComponent() {
         super(FOOTPRINT);
     }
 
@@ -50,18 +47,13 @@ public class SwitchDPDTComponent extends OrientableComponent implements IInterac
 
     @Override
     public void bake(@NotNull PlacedComponent placed, @NotNull ComponentCircuitBuilder builder, @NotNull ThermalBuilder.IEmitter thermals) {
-        var wireNO1 = builder.connectSwitch(0.1f, builder.terminalNode(0), builder.terminalNode(2), placed.get(STATE));
-        var wireNO2 = builder.connectSwitch(0.1f, builder.terminalNode(1), builder.terminalNode(3), placed.get(STATE));
-        var wireNC1 = builder.connectSwitch(0.1f, builder.terminalNode(0), builder.terminalNode(4), !placed.get(STATE));
-        var wireNC2 = builder.connectSwitch(0.1f, builder.terminalNode(1), builder.terminalNode(5), !placed.get(STATE));
-        placed.add(wireNO1);
-        placed.add(wireNO2);
-        placed.add(wireNC1);
-        placed.add(wireNC2);
+        var wireNO = builder.connectSwitch(0.1f, builder.terminalNode(0), builder.terminalNode(1), placed.get(STATE));
+        var wireNC = builder.connectSwitch(0.1f, builder.terminalNode(0), builder.terminalNode(2), !placed.get(STATE));
+        placed.add(wireNO);
+        placed.add(wireNC);
         thermals.builder()
                 .setMaxCurrent(1.0f, 0.1f, 150).setThermalMass(0.04f)
-                .addHeatSource(wireNO1).addHeatSource(wireNO2)
-                .addHeatSource(wireNC1).addHeatSource(wireNC2);
+                .addHeatSource(wireNO).addHeatSource(wireNC);
     }
 
     @Override
@@ -95,9 +87,7 @@ public class SwitchDPDTComponent extends OrientableComponent implements IInterac
         if(placed.wires.isEmpty())
             return;
         ((SwitchedWire) placed.wires.get(0)).setState(placed.get(STATE));
-        ((SwitchedWire) placed.wires.get(1)).setState(placed.get(STATE));
-        ((SwitchedWire) placed.wires.get(2)).setState(!placed.get(STATE));
-        ((SwitchedWire) placed.wires.get(3)).setState(!placed.get(STATE));
+        ((SwitchedWire) placed.wires.get(1)).setState(!placed.get(STATE));
         placed.onClientWorld(() -> world -> modelChanged(placed.getPos()));
     }
 

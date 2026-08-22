@@ -11,6 +11,8 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
@@ -114,8 +116,16 @@ public class PoisonousPotatoBatteryBlock extends AbstractBatteryBlock<PotatoBatt
         return onBlockEntityUse(level, pos, be -> {
             if (player.isCreative() && player.isShiftKeyDown()) {
                 be.resetState();
+                if (be.getLevel() != null) {
+                    be.getLevel().playSound(
+                        null, be.getBlockPos(), SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 0.30F, 1.0F);
+                }
                 return InteractionResult.SUCCESS;
             }
+            player.displayClientMessage(
+                    Component.translatable("moregrid.message.poisonous_potato_battery.replace_required"),
+                    true
+            );
             return InteractionResult.FAIL;
         });
     }
@@ -125,27 +135,47 @@ public class PoisonousPotatoBatteryBlock extends AbstractBatteryBlock<PotatoBatt
         return onBlockEntityUseItemOn(level, pos, block -> {
             if(!(block.getControllerBE() instanceof PotatoBatteryBlockEntity be))
                 return ItemInteractionResult.FAIL;
-            
-            boolean hasItems = stack.is(Items.POISONOUS_POTATO) && stack.getCount() >= 8;
-            if (hasItems || (player.isShiftKeyDown() && player.isCreative())) {
-                if(!player.isCreative() || !player.isShiftKeyDown()) {
-                    double usage = be.getEnergy() / be.getCapacity();
-                    boolean baked = state.getValue(BAKED).booleanValue();
-                    int usedPotatos = baked ? 8 : (int)(8.9999 - 8*usage);
-                    int processedPotatos = (int)(8.4999 - 8*usage);
-                    stack.shrink(usedPotatos);
-                    ItemStack potatos = null;
-                    if (!baked && processedPotatos > 0)
-                        potatos = new ItemStack(Items.BONE_MEAL, processedPotatos);
-                    if (potatos != null)
-                        if (!player.addItem(potatos)) player.spawnAtLocation(potatos);
+            int maxPotatos = be.getSize()*24;
+            double usage = be.getEnergy() / be.getCapacity();
+            boolean baked = state.getValue(BAKED).booleanValue();
+            int usedPotatos = baked ? maxPotatos : (int)(maxPotatos+0.9999 - maxPotatos*usage);
+            boolean isRequired = stack.is(Items.POISONOUS_POTATO);
+			boolean hasItems = isRequired && stack.getCount() >= usedPotatos;
+			if (hasItems || (player.isShiftKeyDown() && player.isCreative())) {
+				if(!player.isCreative() || !player.isShiftKeyDown()) {
+					int processedPotatos = (int)(maxPotatos+0.4999 - maxPotatos*usage);
+					stack.shrink(usedPotatos);
+					ItemStack potatos = null;
+                    if (!baked &&processedPotatos > 0)
+						potatos = new ItemStack(Items.BONE_MEAL, processedPotatos);
+					if (potatos != null)
+						if (!player.addItem(potatos)) player.spawnAtLocation(potatos);
+				}
+				be.resetState();
+                if (be.getLevel() != null) {
+                    be.getLevel().playSound(
+                        null, be.getBlockPos(), SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 0.30F, 1.0F);
                 }
-                be.resetState();
-                if(player.isCreative() && player.isShiftKeyDown())
-                    return ItemInteractionResult.CONSUME;
-                else
-                    return ItemInteractionResult.SUCCESS;
+				if(player.isCreative() && player.isShiftKeyDown())
+					return ItemInteractionResult.CONSUME;
+				else
+					return ItemInteractionResult.SUCCESS;
+			} else if (isRequired) {
+                usedPotatos = stack.getCount();
+                stack.shrink(usedPotatos);
+                double energyPerPotato = BATTERY_SPEC.getMaxCharge() / 24.0d;
+                if (baked) be.resetState(energyPerPotato * usedPotatos);
+                else be.setEnergy(be.getEnergy() + energyPerPotato * usedPotatos);
+                if (be.getLevel() != null) {
+                    be.getLevel().playSound(
+                        null, be.getBlockPos(), SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 0.30F, 1.0F);
+                }
+                return ItemInteractionResult.SUCCESS;
             }
+            player.displayClientMessage(
+                    Component.translatable("moregrid.message.potato_battery.replace_required"),
+                    true
+            );
             return ItemInteractionResult.FAIL;
         });
     }

@@ -1,6 +1,9 @@
 package com.feb.moregrid.blocks;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
@@ -58,8 +61,16 @@ public class PotatoBatteryArray extends APotatoBatteryArray implements CustomMod
         return onBlockEntityUse(level, pos, be -> {
 			if (player.isCreative() && player.isShiftKeyDown()) {
 				be.resetState();
+                if (be.getLevel() != null) {
+                    be.getLevel().playSound(
+                        null, be.getBlockPos(), SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 0.30F, 1.0F);
+                }
 				return InteractionResult.SUCCESS;
 			}
+            player.displayClientMessage(
+                    Component.translatable("moregrid.message.potato_battery.replace_required"),
+                    true
+            );
             return InteractionResult.FAIL;
         });
     }
@@ -67,12 +78,12 @@ public class PotatoBatteryArray extends APotatoBatteryArray implements CustomMod
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         return onBlockEntityUseItemOn(level, pos, be -> {
-			boolean hasItems = stack.is(Items.POTATO) && stack.getCount() >= 8;
+					double usage = be.getEnergy() / be.getCapacity();
+            boolean baked = state.getValue(BAKED).booleanValue();
+            int usedPotatos = baked ? 8 : (int)(8.9999 - 8*usage);
+			boolean hasItems = stack.is(Items.POTATO) && stack.getCount() >= usedPotatos;
 			if (hasItems || (player.isShiftKeyDown() && player.isCreative())) {
 				if(!player.isCreative() || !player.isShiftKeyDown()) {
-					double usage = be.getEnergy() / be.getCapacity();
-					boolean baked = state.getValue(BAKED).booleanValue();
-					int usedPotatos = baked ? 8 : (int)(8.9999 - 8*usage);
 					int processedPotatos = (int)(8.4999 - 8*usage);
 					stack.shrink(usedPotatos);
 					ItemStack potatos = null;
@@ -84,11 +95,19 @@ public class PotatoBatteryArray extends APotatoBatteryArray implements CustomMod
 						if (!player.addItem(potatos)) player.spawnAtLocation(potatos);
 				}
 				be.resetState();
+                if (be.getLevel() != null) {
+                    be.getLevel().playSound(
+                        null, be.getBlockPos(), SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 0.30F, 1.0F);
+                }
 				if(player.isCreative() && player.isShiftKeyDown())
 					return ItemInteractionResult.CONSUME;
 				else
 					return ItemInteractionResult.SUCCESS;
 			}
+            player.displayClientMessage(
+                    Component.translatable("moregrid.message.potato_battery.replace_required"),
+                    true
+            );
             return ItemInteractionResult.FAIL;
         });
     }

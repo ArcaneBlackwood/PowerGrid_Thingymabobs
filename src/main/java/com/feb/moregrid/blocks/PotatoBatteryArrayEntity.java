@@ -106,11 +106,10 @@ public class PotatoBatteryArrayEntity extends BatteryBlockEntity implements Elec
             return;
         } else {
             super.electricalTick();
-        }
-        if(thermalBehaviour != null && thermalBehaviour.isOverheated() && !level.isClientSide) {
-            thermalBehaviour.setTemperature(150);
-            level.setBlockAndUpdate(worldPosition, getBlockState().setValue(APotatoBatteryArray.BAKED, true));
-            notifyUpdate();
+            if(thermalBehaviour != null && thermalBehaviour.isOverheated() && !level.isClientSide) {
+                level.setBlockAndUpdate(worldPosition, getBlockState().setValue(APotatoBatteryArray.BAKED, true));
+                notifyUpdate();
+            }
         }
     }
 

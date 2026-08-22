@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "com.feb.moregrid.mixin.unit",
+  "compatibilityLevel": "JAVA_21",
+  "minVersion": "0.8.3",
+  "mixins": [
+    "ThermalBuilderMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
