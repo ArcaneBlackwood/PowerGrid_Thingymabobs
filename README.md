@@ -15,6 +15,7 @@ A NeoForge 1.21.1 add-on for Create: Power Grid 0.5.5.1, adding four compact and
 - Buzzer with current dependant frequency version
 - Tall connector component
 - High power, low resistance shunt resistor
+- Lava lamp(Allows to sleep with monsters, and prevents phantoms longer!)
 
 Items appear in both a dedicated MoreGrid tab and the vanilla Redstone Blocks tab.
 
