@@ -25,6 +25,7 @@
   "block.moregrid.poisonous_potato_battery_array": "Poisonous Potato Battery Array",
   "block.moregrid.potato_battery_block": "Potato Battery Block",
   "block.moregrid.poisonous_potato_battery_block": "Poisonous Potato Battery Block",
+  "block.moregrid.lava_lamp": "Lava Lamp",
   "itemGroup.moregrid": "MoreGrid Circuit Parts",
   "component.moregrid.transformer": "Circuit Transformer",
   "component.moregrid.fuse": "Cartridge Fuse",
@@ -140,5 +141,6 @@
   "moregrid.message.potato_battery.replace_required": "Hold a potato battery to replace this battery",
   "moregrid.message.poisonous_potato_battery.replace_required": "Hold a poisonous potato battery to replace this battery",
   "moregrid.tooltip.transformer.rating": "Apparent-power rating: %s W",
-  "moregrid.tooltip.transformer.load": "Current load: %s W"
+  "moregrid.tooltip.transformer.load": "Current load: %s W",
+  "moregrid.tooltip.temperature.ideal": "Ideal temperature:"
 }

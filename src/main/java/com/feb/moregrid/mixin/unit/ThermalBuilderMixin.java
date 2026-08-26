@@ -27,7 +27,7 @@ public abstract class ThermalBuilderMixin implements ThermalBuilderExtension {
 		method = "build",
 		at = @At("RETURN")
 	)
-	private void yourmod$onBuild(
+	private void moregrid$onBuild(
 		CallbackInfoReturnable<ThermalUnit> cir
 	) {
 		if (this.buildCallback == null) return;

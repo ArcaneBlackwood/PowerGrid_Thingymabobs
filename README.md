@@ -63,7 +63,8 @@ See [README_KO.md](README_KO.md) for the complete model specifications and testi
 	- [ ] "Bar graph" display.  Voltage dependant orthogonal slider.
 	- [ ] Add backlights to displays
 - [ ] Fancy traffic lights
-- [ ] Lava lamp!
+- [x] Lava lamp!
 - [ ] Pressure sensor multiblock.  Senses weight of entitie or aeronautic ships
 - [ ] Self extendable cable from holdable item.  Connects to portable battery.
 - [ ] Retractable cable block
+- [ ] Arc furnace/electric blast furnace?

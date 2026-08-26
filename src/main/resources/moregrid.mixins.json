@@ -4,7 +4,8 @@
   "compatibilityLevel": "JAVA_21",
   "minVersion": "0.8.3",
   "mixins": [
-    "ThermalBuilderMixin"
+    "ThermalBuilderMixin",
+    "PhantomSpawnerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

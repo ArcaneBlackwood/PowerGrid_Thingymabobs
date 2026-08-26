@@ -26,9 +26,14 @@ repositories {
 
 neoForge {
     version = neoforge_version
-
+    
     runs {
-        client { client() }
+        client {
+            client()
+            //systemProperty 'mixin.debug.verbose', 'true'
+            //systemProperty 'mixin.debug.export', 'true'
+            //systemProperty 'mixin.env.disableRefMap', 'true'
+        }
         server {
             server()
             programArgument '--nogui'
@@ -51,6 +56,7 @@ neoForge {
 sourceSets.main.resources.srcDir 'src/generated/resources'
 
 dependencies {
+    implementation "io.github.llamalad7:mixinextras-neoforge:0.4.1"
     implementation "dev.architectury:architectury-neoforge:${architectury_api_version}"
     implementation("com.simibubi.create:create-${minecraft_version}:${create_version}:slim") {
         transitive = false

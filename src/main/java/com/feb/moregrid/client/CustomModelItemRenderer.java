@@ -1,6 +1,5 @@
 package com.feb.moregrid.client;
 
-import com.feb.moregrid.MoreGrid;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.foundation.item.render.CustomRenderedItemModel;
 import com.simibubi.create.foundation.item.render.CustomRenderedItemModelRenderer;
@@ -25,9 +24,6 @@ public class CustomModelItemRenderer extends CustomRenderedItemModelRenderer {
 			replaceModel = model.getOriginalModel();
     	renderer.render(replaceModel, light);
     }
-	public static PartialModel generateModel(String path) {
-		return PartialModel.of(MoreGrid.asResource(path));
-	}
 	public static interface Provider {
 		public PartialModel getModel(ItemStack stack);
 	}

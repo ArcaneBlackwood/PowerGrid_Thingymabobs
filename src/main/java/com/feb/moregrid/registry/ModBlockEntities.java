@@ -2,13 +2,18 @@ package com.feb.moregrid.registry;
 
 import java.util.function.Supplier;
 import com.feb.moregrid.MoreGrid;
-import com.feb.moregrid.blocks.PotatoBatteryArrayEntity;
-import com.feb.moregrid.blocks.PotatoBatteryBlockEntity;
-import com.feb.moregrid.blocks.PotatoBatteryEntity;
+import com.feb.moregrid.blocks.LavaLampEntity;
+import com.feb.moregrid.blocks.LavaLampRenderer;
 import com.feb.moregrid.blocks.PowerShuntEntity;
-import com.feb.moregrid.blocks.SwitchBlockEntity;
+import com.feb.moregrid.blocks.battery.PotatoBatteryArrayEntity;
+import com.feb.moregrid.blocks.battery.PotatoBatteryBlockEntity;
+import com.feb.moregrid.blocks.battery.PotatoBatteryEntity;
+import com.feb.moregrid.blocks.switches.SwitchBlockEntity;
+
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.core.registries.Registries;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 public final class ModBlockEntities {
@@ -51,4 +56,14 @@ public final class ModBlockEntities {
         BlockEntityType.Builder.of(PowerShuntEntity::new,
 			ModBlocks.POWER_SHUNT.get())
 		.build(null));
+
+	public static final Supplier<BlockEntityType<LavaLampEntity>> LAVA_LAMP = 
+    BLOCK_ENTITY_TYPES.register("lava_lamp", () -> 
+        BlockEntityType.Builder.of(LavaLampEntity::new,
+			ModBlocks.LAVA_LAMP.get())
+		.build(null));
+
+	public static void registerClientExtensions(RegisterClientExtensionsEvent event) {
+		BlockEntityRenderers.register(LAVA_LAMP.get(), LavaLampRenderer::new);
+	}
 }

@@ -3,6 +3,7 @@ package com.feb.moregrid.blocks;
 import com.feb.moregrid.client.CustomModelItemRenderer;
 import com.feb.moregrid.registry.ModBlockEntities;
 import com.feb.moregrid.registry.ModDataComponents;
+import com.feb.moregrid.registry.ModModels;
 import com.mojang.datafixers.util.Unit;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.foundation.block.IBE;
@@ -35,7 +36,7 @@ import org.patryk3211.powergrid.electricity.info.Power;
 
 import java.util.List;
 
-public class PowerShunt extends SurfaceElectricBlock implements IBE<PowerShuntEntity>, IHaveElectricProperties, CustomModelItemRenderer.Provider {
+public class PowerShunt extends SurfaceElectricBlock implements IBE<PowerShuntEntity>, CustomModelItemRenderer.Provider, IHaveElectricProperties {
 	public static final BooleanProperty BLOWN = BooleanProperty.create("blown");
 	private static final TerminalBoundingBox[] TERMINALS = new TerminalBoundingBox[] {
 		new TerminalBoundingBox(IDecoratedTerminal.CONNECTOR, 6.5, 3, 0,  9.5, 6, 2),
@@ -51,11 +52,9 @@ public class PowerShunt extends SurfaceElectricBlock implements IBE<PowerShuntEn
 		setTerminalCollection(surfaceTerminals(this, TERMINALS, SHAPE1, SHAPE2));
 	}
 
-    protected static final PartialModel MODEL = CustomModelItemRenderer.generateModel("block/shunt_v");
-    protected static final PartialModel MODEL_BLOWN = CustomModelItemRenderer.generateModel("block/shunt_blown_v");
     @Override
     public PartialModel getModel(ItemStack stack) {
-        return stack.has(ModDataComponents.BLOWN.get()) ? MODEL_BLOWN : MODEL;
+        return stack.has(ModDataComponents.BLOWN.get()) ? ModModels.SHUNT_MODEL_BLOWN : ModModels.SHUNT_MODEL;
     }
 
     @Override
@@ -63,6 +62,11 @@ public class PowerShunt extends SurfaceElectricBlock implements IBE<PowerShuntEn
 		super.createBlockStateDefinition(builder);
 		builder.add(BLOWN);
 	}
+
+    @Override
+    public void appendProperties(ItemStack stack, Player player, List<Component> tooltip) {
+        Power.max(stack, player, tooltip);
+    }
 
 	@Override
 	public Class<PowerShuntEntity> getBlockEntityClass() {
@@ -73,12 +77,7 @@ public class PowerShunt extends SurfaceElectricBlock implements IBE<PowerShuntEn
 	public BlockEntityType<? extends PowerShuntEntity> getBlockEntityType() {
 		return ModBlockEntities.POWER_SHUNT.get();
 	}
-
-	@Override
-	public void appendProperties(ItemStack stack, Player player, List<Component> tooltip) {
-		Power.max(stack, player, tooltip);
-	}
-
+    
 	@Override
 	public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
 		return InteractionResult.PASS;

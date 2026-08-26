@@ -1,7 +1,7 @@
 package com.feb.moregrid.component;
 
 import com.feb.moregrid.MoreGrid;
-import com.feb.moregrid.blocks.PoisonousPotatoBattery;
+import com.feb.moregrid.blocks.battery.PoisonousPotatoBattery;
 import com.feb.moregrid.mixin.ThermalBuilderExtension;
 import com.google.common.collect.ImmutableCollection;
 

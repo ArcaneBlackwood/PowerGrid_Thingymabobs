@@ -1,22 +1,25 @@
 package com.feb.moregrid.registry;
 
+import org.patryk3211.powergrid.electricity.base.ThermalBehaviour;
+
 import com.feb.moregrid.MoreGrid;
-import com.feb.moregrid.blocks.LVSwitchDPDTBlock;
-import com.feb.moregrid.blocks.LVSwitchDPSTBlock;
-import com.feb.moregrid.blocks.LVSwitchSPDTBlock;
-import com.feb.moregrid.blocks.LVSwitchTPSTBlock;
-import com.feb.moregrid.blocks.MVSwitchDPDTBlock;
-import com.feb.moregrid.blocks.MVSwitchDPSTBlock;
-import com.feb.moregrid.blocks.MVSwitchSPDTBlock;
-import com.feb.moregrid.blocks.MVSwitchTPSTBlock;
-import com.feb.moregrid.blocks.PoisonousPotatoBattery;
-import com.feb.moregrid.blocks.PoisonousPotatoBatteryArray;
-import com.feb.moregrid.blocks.PoisonousPotatoBatteryBlock;
-import com.feb.moregrid.blocks.PoisonousPotatoBatteryBlockCT;
-import com.feb.moregrid.blocks.PotatoBatteryArray;
-import com.feb.moregrid.blocks.PotatoBatteryBlock;
-import com.feb.moregrid.blocks.PotatoBatteryBlockCT;
+import com.feb.moregrid.blocks.switches.LVSwitchDPDTBlock;
+import com.feb.moregrid.blocks.switches.LVSwitchDPSTBlock;
+import com.feb.moregrid.blocks.switches.LVSwitchSPDTBlock;
+import com.feb.moregrid.blocks.switches.LVSwitchTPSTBlock;
+import com.feb.moregrid.blocks.switches.MVSwitchDPDTBlock;
+import com.feb.moregrid.blocks.switches.MVSwitchDPSTBlock;
+import com.feb.moregrid.blocks.switches.MVSwitchSPDTBlock;
+import com.feb.moregrid.blocks.switches.MVSwitchTPSTBlock;
+import com.feb.moregrid.blocks.LavaLamp;
 import com.feb.moregrid.blocks.PowerShunt;
+import com.feb.moregrid.blocks.battery.PoisonousPotatoBattery;
+import com.feb.moregrid.blocks.battery.PoisonousPotatoBatteryArray;
+import com.feb.moregrid.blocks.battery.PoisonousPotatoBatteryBlock;
+import com.feb.moregrid.blocks.battery.PoisonousPotatoBatteryBlockCT;
+import com.feb.moregrid.blocks.battery.PotatoBatteryArray;
+import com.feb.moregrid.blocks.battery.PotatoBatteryBlock;
+import com.feb.moregrid.blocks.battery.PotatoBatteryBlockCT;
 import com.simibubi.create.api.connectivity.ConnectivityHandler;
 import com.simibubi.create.api.contraption.BlockMovementChecks;
 import com.simibubi.create.api.contraption.BlockMovementChecks.CheckResult;
@@ -82,6 +85,9 @@ public final class ModBlocks {
 	public static final DeferredBlock<Block> POWER_SHUNT = BLOCKS.registerBlock(
 		"power_shunt", PowerShunt::new,
 		BlockBehaviour.Properties.ofFullCopy(Blocks.ANDESITE).requiresCorrectToolForDrops());
+	public static final DeferredBlock<Block> LAVA_LAMP = BLOCKS.registerBlock(
+		"lava_lamp", LavaLamp::new,
+		BlockBehaviour.Properties.ofFullCopy(Blocks.ANDESITE).requiresCorrectToolForDrops());
 	
 
 	public static void register(IEventBus modBus) {
@@ -104,12 +110,17 @@ public final class ModBlocks {
 		Resistances.register(MV_SWITCH_DPST.getId(), 0.05);
 		Thermals.register(MV_SWITCH_DPST.getId(), 2, 51.2*2);
 
-		Resistances.register(POTATO_BATTERY_BLOCK.getId(), 35);
-		Thermals.register(POTATO_BATTERY_BLOCK.getId(), 200f, 0.15f);
-		Resistances.register(POISONOUS_POTATO_BATTERY_BLOCK.getId(), 25);
-		Thermals.register(POISONOUS_POTATO_BATTERY_BLOCK.getId(), 200f, 0.15f);
+		//Resistances.register(POTATO_BATTERY_ARRAY.getId(), 35);
+		Thermals.register(POTATO_BATTERY_ARRAY.getId(), 100f, 0.04f);
+		//Resistances.register(POISONOUS_POTATO_BATTERY_ARRAY.getId(), 25);
+		Thermals.register(POISONOUS_POTATO_BATTERY_ARRAY.getId(), 100f, 0.04f);
+		//Resistances.register(POTATO_BATTERY_BLOCK.getId(), 35);
+		Thermals.register(POTATO_BATTERY_BLOCK.getId(), 100f, 0.08f);
+		//Resistances.register(POISONOUS_POTATO_BATTERY_BLOCK.getId(), 25);
+		Thermals.register(POISONOUS_POTATO_BATTERY_BLOCK.getId(), 100f, 0.08f);
 
 		Thermals.register(POWER_SHUNT.getId(), 25f, 1000f);
+		Thermals.register(LAVA_LAMP.getId(), 30f, ThermalBehaviour.dissipationFactor(150f, 1450f));
 
         BlockMovementChecks.registerAttachedCheck((BlockState state, Level world, BlockPos pos, Direction direction) -> {
 			var block = state.getBlock();
