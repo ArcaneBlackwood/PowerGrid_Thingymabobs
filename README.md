@@ -16,6 +16,7 @@ A NeoForge 1.21.1 add-on for Create: Power Grid 0.5.5.1, adding four compact and
 - Tall connector component
 - High power, low resistance shunt resistor
 - Lava lamp(Allows to sleep with monsters, and prevents phantoms longer!)
+- Electric furnace. Decently fast, but requires some careful temperature management
 
 Items appear in both a dedicated MoreGrid tab and the vanilla Redstone Blocks tab.
 
@@ -56,7 +57,7 @@ See [README_KO.md](README_KO.md) for the complete model specifications and testi
 	- [ ] Gyroscope (Spun up flywheel off axis rotation detected by coil)
 	- [ ] Accelerometer (Spring bound magnetic mass detected by coil)
 	- [ ] Altitude (Acts like a potentiometer?)
-- [ ] Fancy dispalys
+- [ ] Fancy dispalys (Compatable with modular display block)
 	- [ ] Meter with configurable color, labels and unity
 		- [ ] Center zero meter variant
 		- [ ] Duel needle variant
@@ -68,6 +69,10 @@ See [README_KO.md](README_KO.md) for the complete model specifications and testi
 - [ ] Pressure sensor multiblock.  Senses weight of entitie or aeronautic ships
 - [ ] Self extendable cable from holdable item.  Connects to portable battery.
 - [ ] Retractable cable block
-- [ ] Arc furnace/electric blast furnace?
+- [x] Electric furnace
 - [ ] Midi keyboard/precussion switch?
 - [ ] Add sequenced recipes for most components, gives double output
+- [ ] Some block to route power and signal conduit cables through walls
+	- [ ] Addable endpoints, sockets, switches, and all "modular display" items
+	Maybe done with a "cable facade" like style.  Possibly work with copycat blocks and microblocks too?
+	- [ ] Cable tray variant (Endpoints only on underside, but can interface easily with conduits)
