@@ -1,6 +1,5 @@
 package com.feb.moregrid.blocks.electricfurnace;
 
-import com.feb.moregrid.MoreGrid;
 import com.feb.moregrid.registry.ModBlockEntities;
 import com.feb.moregrid.registry.ModLang;
 import com.feb.moregrid.registry.ModSounds;
@@ -230,8 +229,8 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
         if (thermalBehaviour == null) return;
         if (cachedAmbientTemperature < -500) 
             cachedAmbientTemperature = AThermalBehaviour.getAmbientTemperature(level, getBlockPos());
-        //if (isDoorOpen())
-        //    thermalBehaviour.applyTickPower(-DISSIPATOIN_DOOR_OPEN * (thermalBehaviour.getTemperature() - cachedAmbientTemperature));
+        if (isDoorOpen())
+            thermalBehaviour.applyTickPower(-DISSIPATOIN_DOOR_OPEN * (thermalBehaviour.getTemperature() - cachedAmbientTemperature));
         if (contentsChanged) {
             contentsChanged = false;
             if (recipe == null)
@@ -253,7 +252,6 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
             progress -= 1f;
             if (progress < 0) progress = 0;
         }
-        MoreGrid.LOGGER.info("Tick recipe: progress: "+progress);
 
         for (int i = 0; i < SLOTS_OUTPUT; i++) {
             ItemStack slot = outputInventory.getItem(i);
@@ -345,12 +343,10 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
                 if (!slot.isEmpty()) continue;
                 continue mainLoop;
             }
-            MoreGrid.LOGGER.info("recipeFits = false");
             recipeFits = false;
             return;
         }
         recipeFits = true;
-        MoreGrid.LOGGER.info("recipeFits = true");
     }
     public ItemEntity spawnAtLocation(ItemStack stack, float offset) {
         if (stack.isEmpty()) {
@@ -371,7 +367,6 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
 
     protected boolean doorOpen = false;
     protected void onClose() {
-        MoreGrid.LOGGER.info("ElectricFurnaceEntity.onClose");
         if (!level.isClientSide) notifyUpdate();
         if (!doorOpen) return;
         doorOpen = false;
@@ -379,7 +374,6 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
             level.playSound(null, getBlockPos(), ModSounds.ELECTRIC_FURNACE_CLOSE.get(), SoundSource.BLOCKS, .5f, 1f);
     }
     protected void onOpen() {
-        MoreGrid.LOGGER.info("ElectricFurnaceEntity.onOpen");
         if (!level.isClientSide) notifyUpdate();
         if (doorOpen) return;
         doorOpen = true;
@@ -549,7 +543,6 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
             if (menuCount == 0) onOpen();
             menuCount += 1;
         }
-        MoreGrid.LOGGER.info("ElectricFurnaceEntity.onMenuAdded "+menuCount);
 
     }
     public void onMenuRemoved() {
@@ -560,7 +553,6 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
             if (menuCount == 1) onClose();
             menuCount -= 1;
         }
-        MoreGrid.LOGGER.info("ElectricFurnaceEntity.onMenuRemoved "+menuCount);
     }
     public void checkMenuCount() {//server only
         AABB aabb = (new AABB(getBlockPos())).inflate(Player.DEFAULT_BLOCK_INTERACTION_RANGE + 4.0F);
