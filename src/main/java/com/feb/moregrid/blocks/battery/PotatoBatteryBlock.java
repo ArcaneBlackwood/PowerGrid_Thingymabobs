@@ -5,21 +5,16 @@ import com.feb.moregrid.registry.ModBlockEntities;
 import com.feb.moregrid.registry.ModDataComponents;
 import com.feb.moregrid.registry.ModModels;
 import com.mojang.datafixers.util.Unit;
-
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 import net.minecraft.ChatFormatting;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -31,8 +26,6 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.minecraft.world.phys.BlockHitResult;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.patryk3211.powergrid.electricity.GlobalElectricNetworks;
@@ -47,11 +40,10 @@ import org.patryk3211.powergrid.electricity.info.Voltage;
 import org.patryk3211.powergrid.electricity.redstoneconverter.IRedstoneConverterBehaviour;
 import org.patryk3211.powergrid.electricity.sim.special.TransmissionLinePart;
 import org.patryk3211.powergrid.utility.Lang;
-
 import java.util.List;
 
 @MethodsReturnNonnullByDefault
-public class PotatoBatteryBlock extends AbstractBatteryBlock<PotatoBatteryBlockEntity> implements IAcceptConnector, IHaveElectricProperties, IRedstoneConverterBehaviour, CustomModelItemRenderer.Provider {
+public class PotatoBatteryBlock extends AbstractBatteryBlock<PotatoBatteryBlockEntity> implements IAcceptConnector, IHaveElectricProperties, IRedstoneConverterBehaviour, CustomModelItemRenderer.Provider, IPotatoBattery {
 
     public static final BooleanProperty BAKED = APotatoBatteryArray.BAKED;
     
@@ -61,27 +53,36 @@ public class PotatoBatteryBlock extends AbstractBatteryBlock<PotatoBatteryBlockE
 		e -> 0.8f * e + 1f,
 		e -> (float) Math.exp(8.5f - 8.5f * e) + 35
     );
-
     public PotatoBatteryBlock(Properties settings) {
         super(settings);
         registerDefaultState(defaultBlockState().setValue(BAKED, false));
     }
-
     @Override
     public PartialModel getModel(ItemStack stack) {
         return stack.has(ModDataComponents.BAKED.get()) ? ModModels.PBB_MODEL_BAKED : ModModels.PBB_MODEL;
     }
-
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(BAKED);
     }
-
     @Override
     public BatterySpec getSpec() {
         return BATTERY_SPEC;
     }
+    @Override
+    public Item getUsedItem() {
+        return Items.BONE_MEAL;
+    }
+    @Override
+    public Item getReplaceItem() {
+        return Items.POTATO;
+    }
+    @Override
+    public Item getBakedItem() {
+        return Items.BAKED_POTATO;
+    }
+    
 
     @Override
     public void onPlace(BlockState state, Level world, BlockPos pos, BlockState oldState, boolean moved) {
@@ -95,7 +96,6 @@ public class PotatoBatteryBlock extends AbstractBatteryBlock<PotatoBatteryBlockE
 //                : FluidTankBlockEntity::updateConnectivity;
         withBlockEntityDo(world, pos, PotatoBatteryBlockEntity::queueConnectivityUpdate);
     }
-
     @Override
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moved) {
         if (state.hasBlockEntity() && (state.getBlock() != newState.getBlock() || !newState.hasBlockEntity())) {
@@ -109,79 +109,6 @@ public class PotatoBatteryBlock extends AbstractBatteryBlock<PotatoBatteryBlockE
             // Rewire all wires that still target the stale behaviour
             wires.forEach(TransmissionLinePart::refreshEndpointNodes);
         }
-    }
-
-
-    @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        return onBlockEntityUse(level, pos, block -> {
-            if(!(block.getControllerBE() instanceof PotatoBatteryBlockEntity be))
-                return InteractionResult.FAIL;
-            if (player.isCreative() && player.isShiftKeyDown()) {
-                be.resetState();
-                if (be.getLevel() != null) {
-                    be.getLevel().playSound(
-                        null, be.getBlockPos(), SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 0.30F, 1.0F);
-                }
-                return InteractionResult.SUCCESS;
-            }
-            player.displayClientMessage(
-                    Component.translatable("moregrid.message.potato_battery.replace_required"),
-                    true
-            );
-            return InteractionResult.FAIL;
-        });
-    }
-	
-    @Override
-    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-        return onBlockEntityUseItemOn(level, pos, block -> {
-            if(!(block.getControllerBE() instanceof PotatoBatteryBlockEntity be))
-                return ItemInteractionResult.FAIL;
-            int maxPotatos = be.getSize()*24;
-            double usage = be.getEnergy() / be.getCapacity();
-            boolean baked = state.getValue(BAKED).booleanValue();
-            int usedPotatos = baked ? maxPotatos : (int)(maxPotatos+0.9999 - maxPotatos*usage);
-            boolean isRequired = stack.is(Items.POTATO);
-			boolean hasItems = isRequired && stack.getCount() >= usedPotatos;
-			if (hasItems || (player.isShiftKeyDown() && player.isCreative())) {
-				if(!player.isCreative() || !player.isShiftKeyDown()) {
-					int processedPotatos = (int)(maxPotatos+0.4999 - maxPotatos*usage);
-					stack.shrink(usedPotatos);
-					ItemStack potatos = null;
-					if (baked)
-						potatos = new ItemStack(Items.BAKED_POTATO, maxPotatos);
-					else if (processedPotatos > 0)
-						potatos = new ItemStack(Items.BONE_MEAL, processedPotatos);
-					if (potatos != null)
-						if (!player.addItem(potatos)) player.spawnAtLocation(potatos);
-				}
-				be.resetState();
-                if (be.getLevel() != null) {
-                    be.getLevel().playSound(
-                        null, be.getBlockPos(), SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 0.30F, 1.0F);
-                }
-				if(player.isCreative() && player.isShiftKeyDown())
-					return ItemInteractionResult.CONSUME;
-				else
-					return ItemInteractionResult.SUCCESS;
-			} else if (isRequired) {
-                double energyPerPotato = BATTERY_SPEC.getMaxCharge() / 24.0d;
-                stack.shrink(usedPotatos);
-                if (baked) be.resetState(energyPerPotato * stack.getCount());
-                else be.setEnergy(be.getEnergy() + energyPerPotato * stack.getCount());
-                if (be.getLevel() != null) {
-                    be.getLevel().playSound(
-                        null, be.getBlockPos(), SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 0.30F, 1.0F);
-                }
-                return ItemInteractionResult.SUCCESS;
-            }
-            player.displayClientMessage(
-                    Component.translatable("moregrid.message.potato_battery.replace_required"),
-                    true
-            );
-            return ItemInteractionResult.FAIL;
-        });
     }
     @Override
     public List<ItemStack> getDrops(BlockState state, LootParams.Builder builder) {

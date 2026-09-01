@@ -2,12 +2,15 @@ package com.feb.moregrid.client;
 
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.sounds.SoundSource;
 import org.patryk3211.powergrid.circuits.schematic.PlacedComponent;
 import com.feb.moregrid.component.ABuzzerComponent;
 import com.feb.moregrid.registry.ModSounds;
 
+@OnlyIn(Dist.CLIENT)
 public class BuzzerSoundInstance extends AbstractTickableSoundInstance {
 	private final PlacedComponent placed;
 	private int lastVolumeTicks = 1;

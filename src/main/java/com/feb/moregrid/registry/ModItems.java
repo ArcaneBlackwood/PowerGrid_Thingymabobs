@@ -1,14 +1,11 @@
 package com.feb.moregrid.registry;
 
-import java.util.IdentityHashMap;
-import java.util.Map;
-import org.jetbrains.annotations.Nullable;
 import org.patryk3211.powergrid.forge.ElectricProperties;
 import com.feb.moregrid.MoreGrid;
 import com.feb.moregrid.blocks.battery.PoisonousPotatoBatteryBlockItem;
 import com.feb.moregrid.blocks.battery.PotatoBatteryBlockItem;
 import com.feb.moregrid.client.CustomModelItemRenderer;
-import com.simibubi.create.api.registry.SimpleRegistry;
+import com.feb.moregrid.client.TooltipProvider;
 import com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem;
 import com.simibubi.create.foundation.item.TooltipModifier;
 import com.simibubi.create.foundation.item.render.CustomRenderedItemModelRenderer;
@@ -21,7 +18,10 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -53,6 +53,8 @@ public final class ModItems {
 		ITEMS.registerSimpleItem("small_diode", new Item.Properties());
 	public static final DeferredItem<Item> SMALL_RESISTOR =
 		ITEMS.registerSimpleItem("small_resistor", new Item.Properties());
+	public static final DeferredItem<Item> SMALL_LIGHT_BULB =
+		ITEMS.registerSimpleItem("small_bulb", new Item.Properties());
 	public static final DeferredItem<Item> TALL_CONNECTOR =
 		ITEMS.registerSimpleItem("tall_connector", new Item.Properties());
 	public static final DeferredItem<Item> BUZZER =
@@ -61,6 +63,12 @@ public final class ModItems {
 		ITEMS.registerSimpleItem("variable_buzzer", new Item.Properties());
 	public static final DeferredItem<Item> SHUNT =
 		ITEMS.registerSimpleItem("shunt", new Item.Properties());
+	public static final DeferredItem<Item> TRANSMITTER =
+		ITEMS.registerSimpleItem("transmitter", new Item.Properties());
+	public static final DeferredItem<Item> RECIEVER =
+		ITEMS.registerSimpleItem("reciever", new Item.Properties());
+	public static final DeferredItem<Item> DIRECTIONAL_RECIEVER =
+		ITEMS.registerSimpleItem("directional_reciever", new Item.Properties());
 
 	public static final DeferredItem<BlockItem> LV_SWITCH_DPDT =
 		ITEMS.registerSimpleBlockItem("lv_switch_dpdt", ModBlocks.LV_SWITCH_DPDT,
@@ -110,22 +118,24 @@ public final class ModItems {
 	public static final DeferredItem<BlockItem> LAVA_LAMP =
 		ITEMS.registerSimpleBlockItem("lava_lamp", ModBlocks.LAVA_LAMP,
 			new Item.Properties());
+	public static final DeferredItem<BlockItem> ELECTRIC_FURNACE =
+		ITEMS.registerSimpleBlockItem("electric_furnace", ModBlocks.ELECTRIC_FURNACE,
+			new Item.Properties());
 	
 	public static final DeferredItem<?>[] ALL_ITEMS = {
-		TRANSFORMER, SCR, DRY_CELL, DIP_SWITCH, BUZZER, VARIABLE_BUZZER, SHUNT,
-		CERAMIC_CAPACITOR, SMALL_DIODE, SMALL_RESISTOR, TALL_CONNECTOR,
+		TRANSFORMER, SCR, DRY_CELL, DIP_SWITCH, BUZZER, VARIABLE_BUZZER, SHUNT, TRANSMITTER, RECIEVER, DIRECTIONAL_RECIEVER,
+		CERAMIC_CAPACITOR, SMALL_DIODE, SMALL_RESISTOR, SMALL_LIGHT_BULB, TALL_CONNECTOR,
 		LV_SWITCH_DPDT, LV_SWITCH_SPDT, LV_SWITCH_TPST, LV_SWITCH_DPST,
 		MV_SWITCH_DPDT, MV_SWITCH_SPDT, MV_SWITCH_TPST, MV_SWITCH_DPST,
 		POISONOUS_POTATO_BATTERY, POTATO_BATTERY_ARRAY, POISONOUS_POTATO_BATTERY_ARRAY, POTATO_BATTERY_BLOCK, POISONOUS_POTATO_BATTERY_BLOCK,
-		POWER_SHUNT, LAVA_LAMP
+		POWER_SHUNT, LAVA_LAMP, ELECTRIC_FURNACE
 	};
 
-	protected static final TooltipProvider tooltipProvider = new TooltipProvider();
 	public static final DeferredItem<?>[] PROPERTY_ITEMS = {
 		LV_SWITCH_DPDT, LV_SWITCH_SPDT, LV_SWITCH_TPST, LV_SWITCH_DPST,
 		MV_SWITCH_DPDT, MV_SWITCH_SPDT, MV_SWITCH_TPST, MV_SWITCH_DPST,
 		POISONOUS_POTATO_BATTERY, POTATO_BATTERY_ARRAY, POISONOUS_POTATO_BATTERY_ARRAY, POTATO_BATTERY_BLOCK, POISONOUS_POTATO_BATTERY_BLOCK,
-		POWER_SHUNT, LAVA_LAMP
+		POWER_SHUNT, LAVA_LAMP, ELECTRIC_FURNACE
 	};
 	public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MAIN_TAB =
 		CREATIVE_TABS.register("main", () -> CreativeModeTab.builder()
@@ -140,12 +150,23 @@ public final class ModItems {
 
 	private ModItems() { }
 	public static void register(IEventBus modBus) {
-        modBus.addListener(ModItems::registerClientExtensions);
         ITEMS.register(modBus);
         CREATIVE_TABS.register(modBus);
-		TooltipModifier.REGISTRY.registerProvider(tooltipProvider);
 	}
-	public static void registerClientExtensions(RegisterClientExtensionsEvent event) {
+
+	@OnlyIn(Dist.CLIENT)
+	protected static TooltipProvider tooltipProvider;
+
+	@OnlyIn(Dist.CLIENT)
+	public static void registerClient(IEventBus modBus) {
+		TooltipModifier.REGISTRY.registerProvider(tooltipProvider = new TooltipProvider());
+        modBus.addListener(ModItems::registerClientExtensions);
+	}
+	@OnlyIn(Dist.CLIENT)
+	private static void registerClientExtensions(RegisterClientExtensionsEvent event) {
+		if (FMLLoader.getDist() == Dist.DEDICATED_SERVER) {
+			throw new IllegalAccessError("Cannot access models on server!");
+		}
 		registerItemRenderer(event, new CustomModelItemRenderer(),
 			POTATO_BATTERY_ARRAY.get(),
 			POISONOUS_POTATO_BATTERY_ARRAY.get(),
@@ -155,9 +176,8 @@ public final class ModItems {
 		for (var item : PROPERTY_ITEMS)
 			tooltipProvider.items.put(item.get(), ElectricProperties.create(item.get()));
 	}
-
-
-	public static void registerItemRenderer(
+	@OnlyIn(Dist.CLIENT)
+	private static void registerItemRenderer(
 		RegisterClientExtensionsEvent event, CustomRenderedItemModelRenderer renderer, Item... items
 	) {
 		for (int i = 1; i < items.length; i++)
@@ -166,12 +186,5 @@ public final class ModItems {
 			SimpleCustomRenderer.create(items[0], renderer),
 			items
 		);
-	}
-	public static class TooltipProvider implements SimpleRegistry.Provider<Item, TooltipModifier> {
-		public Map<Item, TooltipModifier> items = new IdentityHashMap<>();
-		@Override
-		public @Nullable TooltipModifier get(Item item) {
-			return items.get(item);
-		}
 	}
 }

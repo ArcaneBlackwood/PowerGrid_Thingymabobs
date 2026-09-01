@@ -1,14 +1,8 @@
 package com.feb.moregrid.blocks.battery;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -16,8 +10,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.minecraft.world.phys.BlockHitResult;
-
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
@@ -43,73 +35,27 @@ public class PotatoBatteryArray extends APotatoBatteryArray implements CustomMod
     public PotatoBatteryArray(Properties settings) {
         super(settings);
     }
-
     @Override
     public BatterySpec getSpec() {
         return BATTERY_SPEC;
     }
-
     @Override
     public PartialModel getModel(ItemStack stack) {
         return stack.has(ModDataComponents.BAKED.get()) ? ModModels.PBA_MODEL_BAKED : ModModels.PBA_MODEL;
     }
-
-
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        return onBlockEntityUse(level, pos, be -> {
-			if (player.isCreative() && player.isShiftKeyDown()) {
-				be.resetState();
-                if (be.getLevel() != null) {
-                    be.getLevel().playSound(
-                        null, be.getBlockPos(), SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 0.30F, 1.0F);
-                }
-				return InteractionResult.SUCCESS;
-			}
-            player.displayClientMessage(
-                    Component.translatable("moregrid.message.potato_battery.replace_required"),
-                    true
-            );
-            return InteractionResult.FAIL;
-        });
+    public Item getUsedItem() {
+        return Items.BONE_MEAL;
     }
-	
     @Override
-    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-        return onBlockEntityUseItemOn(level, pos, be -> {
-					double usage = be.getEnergy() / be.getCapacity();
-            boolean baked = state.getValue(BAKED).booleanValue();
-            int usedPotatos = baked ? 8 : (int)(8.9999 - 8*usage);
-			boolean hasItems = stack.is(Items.POTATO) && stack.getCount() >= usedPotatos;
-			if (hasItems || (player.isShiftKeyDown() && player.isCreative())) {
-				if(!player.isCreative() || !player.isShiftKeyDown()) {
-					int processedPotatos = (int)(8.4999 - 8*usage);
-					stack.shrink(usedPotatos);
-					ItemStack potatos = null;
-					if (baked)
-						potatos = new ItemStack(Items.BAKED_POTATO, 8);
-					else if (processedPotatos > 0)
-						potatos = new ItemStack(Items.BONE_MEAL, processedPotatos);
-					if (potatos != null)
-						if (!player.addItem(potatos)) player.spawnAtLocation(potatos);
-				}
-				be.resetState();
-                if (be.getLevel() != null) {
-                    be.getLevel().playSound(
-                        null, be.getBlockPos(), SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 0.30F, 1.0F);
-                }
-				if(player.isCreative() && player.isShiftKeyDown())
-					return ItemInteractionResult.CONSUME;
-				else
-					return ItemInteractionResult.SUCCESS;
-			}
-            player.displayClientMessage(
-                    Component.translatable("moregrid.message.potato_battery.replace_required"),
-                    true
-            );
-            return ItemInteractionResult.FAIL;
-        });
+    public Item getReplaceItem() {
+        return Items.POTATO;
     }
+    @Override
+    public Item getBakedItem() {
+        return Items.BAKED_POTATO;
+    }
+
 
     @Override
     public List<ItemStack> getDrops(BlockState state, LootParams.Builder builder) {
@@ -142,4 +88,5 @@ public class PotatoBatteryArray extends APotatoBatteryArray implements CustomMod
         state.setValue(BAKED, ctx.getItemInHand().has(ModDataComponents.BAKED.get()));
 		return state;
 	}
+
 }

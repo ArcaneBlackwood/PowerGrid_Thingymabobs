@@ -20,6 +20,7 @@ import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -50,7 +51,7 @@ import org.patryk3211.powergrid.utility.Lang;
 import java.util.List;
 
 @MethodsReturnNonnullByDefault
-public class PoisonousPotatoBatteryBlock extends AbstractBatteryBlock<PotatoBatteryBlockEntity> implements IAcceptConnector, IHaveElectricProperties, IRedstoneConverterBehaviour, CustomModelItemRenderer.Provider {
+public class PoisonousPotatoBatteryBlock extends AbstractBatteryBlock<PotatoBatteryBlockEntity> implements IAcceptConnector, IHaveElectricProperties, IRedstoneConverterBehaviour, CustomModelItemRenderer.Provider, IPotatoBattery {
     public static final BooleanProperty BAKED = APotatoBatteryArray.BAKED;
     
     public static final BatterySpec BATTERY_SPEC = new SimpleBatterySpec(
@@ -59,26 +60,34 @@ public class PoisonousPotatoBatteryBlock extends AbstractBatteryBlock<PotatoBatt
 		e -> 1.3f * e + 1.7f,
 		e -> (float) Math.exp(6.5f - 11f * e) + 25
     );
-
     public PoisonousPotatoBatteryBlock(Properties settings) {
         super(settings);
         registerDefaultState(defaultBlockState().setValue(BAKED, false));
     }
-
     @Override
     public PartialModel getModel(ItemStack stack) {
         return stack.has(ModDataComponents.BAKED.get()) ? ModModels.PPBB_MODEL_BAKED : ModModels.PPBB_MODEL;
     }
-
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(BAKED);
     }
-
     @Override
     public BatterySpec getSpec() {
         return BATTERY_SPEC;
+    }
+    @Override
+    public Item getUsedItem() {
+        return Items.BONE_MEAL;
+    }
+    @Override
+    public Item getReplaceItem() {
+        return Items.POISONOUS_POTATO;
+    }
+    @Override
+    public Item getBakedItem() {
+        return null;
     }
 
     @Override

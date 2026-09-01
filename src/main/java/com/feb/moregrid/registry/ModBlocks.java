@@ -1,7 +1,6 @@
 package com.feb.moregrid.registry;
 
 import org.patryk3211.powergrid.electricity.base.ThermalBehaviour;
-
 import com.feb.moregrid.MoreGrid;
 import com.feb.moregrid.blocks.switches.LVSwitchDPDTBlock;
 import com.feb.moregrid.blocks.switches.LVSwitchDPSTBlock;
@@ -20,11 +19,12 @@ import com.feb.moregrid.blocks.battery.PoisonousPotatoBatteryBlockCT;
 import com.feb.moregrid.blocks.battery.PotatoBatteryArray;
 import com.feb.moregrid.blocks.battery.PotatoBatteryBlock;
 import com.feb.moregrid.blocks.battery.PotatoBatteryBlockCT;
+import com.feb.moregrid.blocks.electricfurnace.ElectricFurnace;
+import com.feb.moregrid.blocks.electricfurnace.ElectricFurnaceEntity;
 import com.simibubi.create.api.connectivity.ConnectivityHandler;
 import com.simibubi.create.api.contraption.BlockMovementChecks;
 import com.simibubi.create.api.contraption.BlockMovementChecks.CheckResult;
 import com.simibubi.create.foundation.data.CreateRegistrate;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
@@ -88,6 +88,9 @@ public final class ModBlocks {
 	public static final DeferredBlock<Block> LAVA_LAMP = BLOCKS.registerBlock(
 		"lava_lamp", LavaLamp::new,
 		BlockBehaviour.Properties.ofFullCopy(Blocks.ANDESITE).requiresCorrectToolForDrops());
+	public static final DeferredBlock<Block> ELECTRIC_FURNACE = BLOCKS.registerBlock(
+		"electric_furnace", ElectricFurnace::new,
+		BlockBehaviour.Properties.ofFullCopy(Blocks.ANDESITE).requiresCorrectToolForDrops());
 	
 
 	public static void register(IEventBus modBus) {
@@ -121,6 +124,10 @@ public final class ModBlocks {
 
 		Thermals.register(POWER_SHUNT.getId(), 25f, 1000f);
 		Thermals.register(LAVA_LAMP.getId(), 30f, ThermalBehaviour.dissipationFactor(150f, 1450f));
+		Resistances.register(ELECTRIC_FURNACE.getId(), 240*240 / ElectricFurnaceEntity.MAX_POWER);
+		Thermals.register(ELECTRIC_FURNACE.getId(), 600f,
+			ElectricFurnaceEntity.MAX_POWER / (ElectricFurnaceEntity.MAX_TEMPERATURE - 22f)
+			* (ElectricFurnaceEntity.OVERHEAT_TEMPERATURE - 47f));
 
         BlockMovementChecks.registerAttachedCheck((BlockState state, Level world, BlockPos pos, Direction direction) -> {
 			var block = state.getBlock();
@@ -129,6 +136,7 @@ public final class ModBlocks {
             return ConnectivityHandler.isConnected(world, pos, pos.relative(direction)) ? CheckResult.SUCCESS : CheckResult.PASS;
         });
 	}
+
 	public static void postRegister() {
 		CreateRegistrate.connectedTextures(PotatoBatteryBlockCT::new).accept(POTATO_BATTERY_BLOCK.get());
 		CreateRegistrate.connectedTextures(PoisonousPotatoBatteryBlockCT::new).accept(POISONOUS_POTATO_BATTERY_BLOCK.get());

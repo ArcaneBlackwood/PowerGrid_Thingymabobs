@@ -33,6 +33,13 @@ neoForge {
             //systemProperty 'mixin.debug.verbose', 'true'
             //systemProperty 'mixin.debug.export', 'true'
             //systemProperty 'mixin.env.disableRefMap', 'true'
+            programArgument '--username'
+            programArgument 'Dev'
+        }
+        client2 {
+            client()
+            programArgument '--username'
+            programArgument 'DevTwo'
         }
         server {
             server()

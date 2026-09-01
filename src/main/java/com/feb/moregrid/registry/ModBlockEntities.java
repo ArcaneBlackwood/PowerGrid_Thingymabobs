@@ -8,11 +8,16 @@ import com.feb.moregrid.blocks.PowerShuntEntity;
 import com.feb.moregrid.blocks.battery.PotatoBatteryArrayEntity;
 import com.feb.moregrid.blocks.battery.PotatoBatteryBlockEntity;
 import com.feb.moregrid.blocks.battery.PotatoBatteryEntity;
+import com.feb.moregrid.blocks.electricfurnace.ElectricFurnaceEntity;
+import com.feb.moregrid.blocks.electricfurnace.ElectricFurnaceRenderer;
 import com.feb.moregrid.blocks.switches.SwitchBlockEntity;
-
+import com.feb.moregrid.registry.capabilities.ICapability;
+import com.feb.moregrid.registry.capabilities.ItemCapability;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.core.registries.Registries;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -63,7 +68,30 @@ public final class ModBlockEntities {
 			ModBlocks.LAVA_LAMP.get())
 		.build(null));
 
-	public static void registerClientExtensions(RegisterClientExtensionsEvent event) {
-		BlockEntityRenderers.register(LAVA_LAMP.get(), LavaLampRenderer::new);
+	public static final Supplier<BlockEntityType<ElectricFurnaceEntity>> ELECTRIC_FURNACE = 
+    BLOCK_ENTITY_TYPES.register("electric_furnace", () -> 
+        BlockEntityType.Builder.of(ElectricFurnaceEntity::new,
+			ModBlocks.ELECTRIC_FURNACE.get())
+		.build(null));
+
+
+	public static final ICapability[] HAS_CAPABILITIES = new ICapability[] {
+		new ItemCapability<ElectricFurnaceEntity>(ELECTRIC_FURNACE)};
+
+
+	public static void register(IEventBus modBus) {
+        BLOCK_ENTITY_TYPES.register(modBus);
+		modBus.addListener(ModBlockEntities::registerCapabilities);
 	}
+	public static void registerClient(IEventBus modBus) {
+        modBus.addListener(ModBlockEntities::registerClientExtensions);
+	}
+	private static void registerCapabilities(RegisterCapabilitiesEvent event)  {
+		for (ICapability capability : HAS_CAPABILITIES) capability.apply(event);
+	}
+	private static void registerClientExtensions(RegisterClientExtensionsEvent event) {
+		BlockEntityRenderers.register(LAVA_LAMP.get(), LavaLampRenderer::new);
+		BlockEntityRenderers.register(ELECTRIC_FURNACE.get(), ElectricFurnaceRenderer::new);
+	}
+
 }

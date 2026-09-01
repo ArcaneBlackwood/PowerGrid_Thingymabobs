@@ -7,10 +7,8 @@ import org.patryk3211.powergrid.PowerGrid;
 import org.patryk3211.powergrid.network.CustomPayloadWrapper;
 import org.patryk3211.powergrid.network.PacketSet;
 import org.patryk3211.powergrid.network.S2CPacket;
-
 import com.feb.moregrid.MoreGrid;
 import com.feb.moregrid.packets.LavaLampGlobS2CPacket;
-
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;

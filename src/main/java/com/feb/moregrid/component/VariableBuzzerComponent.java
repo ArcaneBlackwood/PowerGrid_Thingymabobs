@@ -5,6 +5,8 @@ import com.feb.moregrid.client.BuzzerSoundInstance;
 import com.google.common.collect.ImmutableCollection;
 
 import net.minecraft.client.Minecraft;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import org.jetbrains.annotations.NotNull;
 import org.patryk3211.powergrid.PowerGrid;
@@ -66,9 +68,14 @@ public class VariableBuzzerComponent extends ABuzzerComponent {
     public boolean tick(@NotNull PlacedComponent placed) {
         currnetToPitch = placed.get(PITCH);
 		if (hasAudioSource) return true;
-		if (placed.getWorld().isClientSide && getVolume(placed) > 0.01)
-            Minecraft.getInstance().getSoundManager().play(new BuzzerSoundInstance(placed));
+		if (placed.getWorld().isClientSide) tickClient(placed);
         return true;
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    protected void tickClient(@NotNull PlacedComponent placed) {
+		if (getVolume(placed) > 0.01)
+            Minecraft.getInstance().getSoundManager().play(new BuzzerSoundInstance(placed));
     }
 	
     @Override

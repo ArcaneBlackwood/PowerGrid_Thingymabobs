@@ -1,22 +1,31 @@
 package com.feb.moregrid.blocks.battery;
 
 import javax.annotation.Nullable;
-
 import org.patryk3211.powergrid.electricity.base.ElectricBehaviour;
 import org.patryk3211.powergrid.electricity.base.ThermalBehaviour;
 import org.patryk3211.powergrid.electricity.battery.MultiBlockBatteryEntity;
-import com.feb.moregrid.MoreGrid;
 import com.feb.moregrid.client.ISoundSource;
 import com.feb.moregrid.client.PotatoElectrocuteSoundInstance;
 import com.feb.moregrid.registry.ModBlockEntities;
+import com.feb.moregrid.registry.ModLang;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
-public class PotatoBatteryBlockEntity extends MultiBlockBatteryEntity implements ElectricBehaviour.SyncAppender, ISoundSource  {
+public class PotatoBatteryBlockEntity extends MultiBlockBatteryEntity implements ElectricBehaviour.SyncAppender, ISoundSource {
 	protected float rechargePower;
 	protected float electrocuteVolume = 0f;
 	public boolean hasAudioSource = false;
@@ -31,13 +40,11 @@ public class PotatoBatteryBlockEntity extends MultiBlockBatteryEntity implements
 			rechargePower = 0f;
 		}
 	}
-
     @Override
     public void initialize() {
         super.initialize();
 		electricBehaviour.setSyncAppender(this);
     }
-	
     @Override
     public @Nullable ThermalBehaviour specifyThermalBehaviour() {
         var b = ThermalBehaviour.fromConfig(this, 100f);
@@ -45,7 +52,8 @@ public class PotatoBatteryBlockEntity extends MultiBlockBatteryEntity implements
             b.behaviourFlags(ThermalBehaviour.OVERHEAT_PARTICLES);
         return b;
     }
-	
+
+
     @Override
     public float calculatePower() {
         // No recharging, but has passive recharge
@@ -55,7 +63,6 @@ public class PotatoBatteryBlockEntity extends MultiBlockBatteryEntity implements
 		if (controller == null) return 0;
         return controller.calculatePower();
     }
-
 	public void resetState() {
 		setEnergy(getCapacity());
 		updateParameters();
@@ -95,17 +102,73 @@ public class PotatoBatteryBlockEntity extends MultiBlockBatteryEntity implements
 	public RandomSource getRandom() {
 		return level.random;
 	}
+    public boolean use(Player player, InteractionHand hand, ItemStack stack, BlockHitResult hit) {
+		if(!(getControllerBE() instanceof PotatoBatteryBlockEntity be)) return false;
+        BlockState state = getBlockState();
+        IPotatoBattery block = (IPotatoBattery)state.getBlock();
+		int maxPotatos = be.getSize()*24;
+		double usage = be.getEnergy() / be.getCapacity();
+		boolean baked = state.getValue(APotatoBatteryArray.BAKED).booleanValue();
+		int usedPotatos = baked ? maxPotatos : (int)(maxPotatos+0.9999 - maxPotatos*usage);
+		boolean isRequired = stack.is(block.getReplaceItem());
+		boolean hasItems = isRequired && stack.getCount() >= usedPotatos;
+		if (hasItems || (player.isShiftKeyDown() && player.isCreative())) {
+			if(!player.isCreative() || !player.isShiftKeyDown()) {
+				int processedPotatos = (int)(maxPotatos+0.4999 - maxPotatos*usage);
+				stack.shrink(usedPotatos);
+				ItemStack potatos = null;
+				if (baked) {
+					Item bakedItem = block.getBakedItem();
+					if (bakedItem != null) potatos = new ItemStack(Items.BAKED_POTATO, 8);
+				}
+				if (!baked &&processedPotatos > 0)
+					potatos = new ItemStack(block.getUsedItem(), processedPotatos);
+				if (potatos != null)
+					if (!player.addItem(potatos)) player.spawnAtLocation(potatos);
+			}
+			be.resetState();
+			if (be.getLevel() != null) {
+				be.getLevel().playSound(
+					null, be.getBlockPos(), SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 0.30F, 1.0F);
+			}
+			return true;
+		} else if (isRequired) {
+			usedPotatos = stack.getCount();
+			stack.shrink(usedPotatos);
+			double energyPerPotato = spec.getMaxCharge() / 24.0d;
+			if (baked) be.resetState(energyPerPotato * usedPotatos);
+			else be.setEnergy(be.getEnergy() + energyPerPotato * usedPotatos);
+			if (be.getLevel() != null) {
+				be.getLevel().playSound(
+					null, be.getBlockPos(), SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 0.30F, 1.0F);
+			}
+			return true;
+		}
+		player.displayClientMessage(
+				ModLang.translateDirect("moregrid.message.potato_battery_block.replace_required",
+					block.getReplaceItem().getDescription()),
+				true
+		);
+		return false;
+    }
+    @OnlyIn(Dist.CLIENT)
+    private void playRemoveEffect() {
+        if (level == null) return;
+        level.playSound(null, getBlockPos(), SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 0.30F, 1.0F);
+    }
 
+	
 	@Override
 	public void tick() {
 		super.tick();
-		if (!this.level.isClientSide || !isController()) return;
+		if (level.isClientSide && isController()) tickClient();
+	}
+    @OnlyIn(Dist.CLIENT)
+    private void tickClient() {
 		if (!hasAudioSource && electrocuteVolume > 0.01) {
             Minecraft.getInstance().getSoundManager().play(new PotatoElectrocuteSoundInstance(this));
-			MoreGrid.LOGGER.info("Summon sound at "+this.getBlockPos());
 		}
-	}
-
+    }
     @Override
     public void electricalTick() {
 		if (!isController() || sourceCoupling == null) {
@@ -133,7 +196,6 @@ public class PotatoBatteryBlockEntity extends MultiBlockBatteryEntity implements
         buffer.writeInt(checksumBasic(this.getSize()));
         buffer.writeFloat(electrocuteVolume);
     }
-
     @Override
     public void readFromSync(FriendlyByteBuf buffer) {
         if (buffer.readInt() != checksumBasic(this.getSize())) return;

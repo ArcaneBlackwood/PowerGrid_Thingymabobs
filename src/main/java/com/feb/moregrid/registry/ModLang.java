@@ -2,27 +2,30 @@ package com.feb.moregrid.registry;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.patryk3211.powergrid.utility.NumberFormats;
 import org.patryk3211.powergrid.utility.Unit;
 
 import com.feb.moregrid.MoreGrid;
 
-import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.lang.LangBuilder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
-public class ModLang extends Lang {
+public class ModLang {
    public ModLang() {
    }
 
+	public static String asId(String name) {
+		return name.toLowerCase(Locale.ROOT);
+	}
    public static MutableComponent translateDirect(String key, Object... args) {
       return builder().translate(key, args).component();
    }
 
    public static LangBuilder builder() {
-      return builder(MoreGrid.MOD_ID);
+		return new LangBuilder(MoreGrid.MOD_ID);
    }
 
    public static LangBuilder translate(String langKey, Object... args) {
@@ -52,9 +55,9 @@ public class ModLang extends Lang {
    public static LangBuilder numberConstant(double n) {
       return builder().text(NumberFormats.formatConstant(n));
    }
-
+   
    public static List<Component> translatedOptions(String prefix, String... keys) {
-      List<Component> result = new ArrayList(keys.length);
+      List<Component> result = new ArrayList<>(keys.length);
 
       for(String key : keys) {
          result.add(translate((prefix != null ? prefix + "." : "") + key).component());

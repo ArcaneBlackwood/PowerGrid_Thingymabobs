@@ -5,7 +5,11 @@
   "minVersion": "0.8.3",
   "mixins": [
     "ThermalBuilderMixin",
-    "PhantomSpawnerMixin"
+    "PhantomSpawnerMixin",
+    "CircuitBoardBlockEntityMixin",
+    "RedstoneLinkNetworkHandlerMixin",
+    "LinkBehaviourMixin",
+    "SocketEndpointMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -11,7 +11,7 @@ A NeoForge 1.21.1 add-on for Create: Power Grid 0.5.5.1, adding four compact and
 - Discharging, non-rechargeable zinc-carbon dry-cell pack
 - Poisonous/Potato Battery Array+Multiblock (Poisonous variants slowly self recharge)
 - DPDT/SPDT/TPST LV/MV Switches
-- Small Diode/Capacitor/Resistor/DIP Switch
+- Small Bulb/Diode/Capacitor/Resistor/DIP Switch
 - Buzzer with current dependant frequency version
 - Tall connector component
 - High power, low resistance shunt resistor
@@ -45,9 +45,9 @@ See [README_KO.md](README_KO.md) for the complete model specifications and testi
 - [x] Switch variants (DPDT, SPDT, TPST, DPST and LV, MV)
 	- [x] Components
 - [x] Small low power Resistor, Diode, Capacitor
-- [ ] Linked reciever/transmitters/directional reciever
+- [x] Linked reciever/transmitters/directional reciever
 - [x] Tall connector component
-- [ ] Light bulb indicator
+- [x] Small Bulb
 - [x] Shunt resistor
 - [ ] Mechanical counter (Like a cars odometer).  Power applied for rotation, resetting.  Could have internal voltage dividers or encoders for number positions?  "Latch" option, if power removed move to next number if not settled
 - [ ] Mechanically timed button.  Like a cooking timer, twist to set.
@@ -69,3 +69,5 @@ See [README_KO.md](README_KO.md) for the complete model specifications and testi
 - [ ] Self extendable cable from holdable item.  Connects to portable battery.
 - [ ] Retractable cable block
 - [ ] Arc furnace/electric blast furnace?
+- [ ] Midi keyboard/precussion switch?
+- [ ] Add sequenced recipes for most components, gives double output

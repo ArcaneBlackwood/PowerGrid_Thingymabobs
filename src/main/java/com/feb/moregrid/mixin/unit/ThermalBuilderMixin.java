@@ -8,20 +8,20 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.feb.moregrid.mixin.ThermalBuilderExtension;
+import com.feb.moregrid.mixin.ThermalBuilderExt;
 
 import java.util.function.Consumer;
 
 @Mixin(ThermalBuilder.class)
-public abstract class ThermalBuilderMixin implements ThermalBuilderExtension {
-  @Unique
-  private Consumer<ThermalUnit> buildCallback;
+public abstract class ThermalBuilderMixin implements ThermalBuilderExt {
+	@Unique
+	private Consumer<ThermalUnit> buildCallback;
 
-  @Override
-  public ThermalBuilder withBuildCallback(Consumer<ThermalUnit> buildCallback) {
-    this.buildCallback = buildCallback;
-    return (ThermalBuilder) (Object) this;
-  }
+	@Override
+	public ThermalBuilder withBuildCallback(Consumer<ThermalUnit> buildCallback) {
+		this.buildCallback = buildCallback;
+		return (ThermalBuilder) (Object) this;
+	}
   
 	@Inject(
 		method = "build",

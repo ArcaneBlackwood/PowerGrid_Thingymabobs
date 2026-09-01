@@ -11,6 +11,8 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 public class PotatoThermalBehaviour extends ThermalBehaviour {
 	protected float overheatTemperature;
@@ -45,6 +47,7 @@ public class PotatoThermalBehaviour extends ThermalBehaviour {
         }
     }
 	
+	@OnlyIn(Dist.CLIENT)
     public static void explodeParticles(Level world, double x, double y, double z, Direction dir, int count) {
         var r = world.random;
 		float distance = 8f / 16f;

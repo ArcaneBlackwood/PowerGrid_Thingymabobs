@@ -2,8 +2,11 @@ package com.feb.moregrid.client;
 
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.sounds.SoundSource;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
 import com.feb.moregrid.registry.ModSounds;
 
+@OnlyIn(Dist.CLIENT)
 public class PotatoElectrocuteSoundInstance extends AbstractTickableSoundInstance {
 	private final ISoundSource block;
 	private int lastVolumeTicks = 1;

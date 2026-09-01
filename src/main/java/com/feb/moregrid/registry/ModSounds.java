@@ -23,4 +23,14 @@ public class ModSounds {
           SoundEvent.createVariableRangeEvent(
               ResourceLocation.fromNamespaceAndPath(MoreGrid.MOD_ID, "potato_electrocute"))
       );
+  public static final DeferredHolder<SoundEvent, SoundEvent> ELECTRIC_FURNACE_OPEN =
+      SOUND_EVENTS.register("electric_furnace.open", () ->
+          SoundEvent.createVariableRangeEvent(
+              ResourceLocation.fromNamespaceAndPath(MoreGrid.MOD_ID, "electric_furnace.open"))
+      );
+  public static final DeferredHolder<SoundEvent, SoundEvent> ELECTRIC_FURNACE_CLOSE =
+      SOUND_EVENTS.register("electric_furnace.close", () ->
+          SoundEvent.createVariableRangeEvent(
+              ResourceLocation.fromNamespaceAndPath(MoreGrid.MOD_ID, "electric_furnace.close"))
+      );
 }

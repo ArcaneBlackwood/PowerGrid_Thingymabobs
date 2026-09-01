@@ -53,10 +53,10 @@ public class LavaLamp extends HorizontalElectricBlock implements IBE<LavaLampEnt
         return state == STATE_ON || state == STATE_ON_HIGH;
     }
 
-    private final TerminalBoundingBox SOCKET_SOUTH = new TerminalBoundingBox(IDecoratedTerminal.SOCKET, 6.5, 0, 5.5, 9.5, 3, 7.5).withOrigin(8f, 1.5f, 6f);
-    private final TerminalBoundingBox SOCKET_WEST = SOCKET_SOUTH.rotateAroundY(90);
-    private final TerminalBoundingBox SOCKET_EAST = SOCKET_SOUTH.rotateAroundY(-90);
-    private final TerminalBoundingBox SOCKET_NORTH = SOCKET_SOUTH.rotateAroundY(180);
+    private static final TerminalBoundingBox SOCKET_SOUTH = new TerminalBoundingBox(IDecoratedTerminal.SOCKET, 6.5, 0, 5.5, 9.5, 3, 7.5).withOrigin(8f, 1.5f, 6f);
+    private static final TerminalBoundingBox SOCKET_WEST = SOCKET_SOUTH.rotateAroundY(90);
+    private static final TerminalBoundingBox SOCKET_EAST = SOCKET_SOUTH.rotateAroundY(-90);
+    private static final TerminalBoundingBox SOCKET_NORTH = SOCKET_SOUTH.rotateAroundY(180);
 
 	private static final VoxelShape SHAPE = box(6, 0, 6, 10, 16, 10);
 

@@ -1,14 +1,11 @@
 package com.feb.moregrid.blocks.battery;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -17,19 +14,15 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
-
 import java.util.List;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.patryk3211.powergrid.electricity.battery.BatterySpec;
 import org.patryk3211.powergrid.electricity.battery.SimpleBatterySpec;
-
 import com.feb.moregrid.client.CustomModelItemRenderer;
 import com.feb.moregrid.registry.ModDataComponents;
 import com.feb.moregrid.registry.ModModels;
 import com.mojang.datafixers.util.Unit;
-
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 
 public class PoisonousPotatoBatteryArray extends APotatoBatteryArray implements CustomModelItemRenderer.Provider {
@@ -43,68 +36,36 @@ public class PoisonousPotatoBatteryArray extends APotatoBatteryArray implements 
     public PoisonousPotatoBatteryArray(Properties settings) {
         super(settings);
     }
-
     @Override
     public PartialModel getModel(ItemStack stack) {
         return stack.has(ModDataComponents.BAKED.get()) ? ModModels.PPBA_MODEL_BAKED : ModModels.PPBA_MODEL;
     }
-
     @Override
     public BatterySpec getSpec() {
         return BATTERY_SPEC;
     }
-
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        return onBlockEntityUse(level, pos, be -> {
-			if (player.isCreative() && player.isShiftKeyDown()) {
-				be.resetState();
-                if (be.getLevel() != null) {
-                    be.getLevel().playSound(
-                        null, be.getBlockPos(), SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 0.30F, 1.0F);
-                }
-				return InteractionResult.SUCCESS;
-			}
-            player.displayClientMessage(
-                    Component.translatable("moregrid.message.poisonous_potato_battery.replace_required"),
-                    true
-            );
-            return InteractionResult.FAIL;
-        });
+    public Item getUsedItem() {
+        return Items.BONE_MEAL;
+    }
+    @Override
+    public Item getReplaceItem() {
+        return Items.POISONOUS_POTATO;
+    }
+    @Override
+    public Item getBakedItem() {
+        return null;
     }
 	
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         return onBlockEntityUseItemOn(level, pos, be -> {
-			boolean hasItems = stack.is(Items.POISONOUS_POTATO) && stack.getCount() >= 8;
-			if (hasItems || (player.isShiftKeyDown() && player.isCreative())) {
-				if(!player.isCreative() || !player.isShiftKeyDown()) {
-					double usage = be.getEnergy() / be.getCapacity();
-					boolean baked = state.getValue(BAKED).booleanValue();
-					int usedPotatos = baked ? 8 : (int)(8.9999 - 8*usage);
-					int processedPotatos = (int)(8.4999 - 8*usage);
-					stack.shrink(usedPotatos);
-					ItemStack potatos = null;
-					if (!baked && processedPotatos > 0)
-						potatos = new ItemStack(Items.BONE_MEAL, processedPotatos);
-					if (potatos != null)
-						if (!player.addItem(potatos)) player.spawnAtLocation(potatos);
-				}
-				be.resetState();
-                if (be.getLevel() != null) {
-                    be.getLevel().playSound(
-                        null, be.getBlockPos(), SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 0.30F, 1.0F);
-                }
-				if(player.isCreative() && player.isShiftKeyDown())
-					return ItemInteractionResult.CONSUME;
-				else
-					return ItemInteractionResult.SUCCESS;
-			}
-            player.displayClientMessage(
-                    Component.translatable("moregrid.message.poisonous_potato_battery.replace_required"),
-                    true
-            );
-            return ItemInteractionResult.FAIL;
+            if (!be.use(player, hand, stack, hitResult)) return ItemInteractionResult.FAIL;
+
+            if(player.isCreative() && player.isShiftKeyDown())
+                return ItemInteractionResult.CONSUME;
+            else
+                return ItemInteractionResult.SUCCESS;
         });
     }
 	

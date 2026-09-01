@@ -8,6 +8,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+
 import org.jetbrains.annotations.Nullable;
 import org.patryk3211.powergrid.collections.ModdedSoundEvents;
 import org.patryk3211.powergrid.electricity.base.ElectricBlockEntity;
@@ -65,7 +68,7 @@ public class PowerShuntEntity extends ElectricBlockEntity {
     }
 
 
-
+    @OnlyIn(Dist.CLIENT)
     public void playBlowEffect() {
         if(level == null)
             return;
@@ -74,12 +77,15 @@ public class PowerShuntEntity extends ElectricBlockEntity {
         SparkParticleData.explodeParticles(level, (float) pos.x, (float) pos.y, (float) pos.z, facing.getOpposite(), 5);
         ModdedSoundEvents.FUSE_POPS.playAt(level, pos, 1.0f, 1.0f, false);
     }
+    @OnlyIn(Dist.CLIENT)
+    public void playResetEffect() {
+        ModdedSoundEvents.FUSE_INSTALL.playOnServer(level, worldPosition);
+    }
+
 
 	public void resetState() {
         BlockState state = getBlockState();
-		if(state.getValue(PowerShunt.BLOWN) && !level.isClientSide) {
-			ModdedSoundEvents.FUSE_INSTALL.playOnServer(level, worldPosition);
-		}
+		if(state.getValue(PowerShunt.BLOWN) && !level.isClientSide) playResetEffect();
         level.setBlockAndUpdate(worldPosition, state.setValue(PowerShunt.BLOWN, false));
 		wire.setState(true);
 
@@ -116,25 +122,22 @@ public class PowerShuntEntity extends ElectricBlockEntity {
     }
 
     @Override
+    protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+        super.write(tag, registries, clientPacket);
+        tag.putBoolean("Blown", getBlockState().getValue(PowerShunt.BLOWN));
+    }
+    @Override
     protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.read(tag, registries, clientPacket);
         wire.setResistance(value.getResistance());
         BlockState state = getBlockState();
         boolean prevBlown = state.getValue(PowerShunt.BLOWN);
         boolean blown = tag.getBoolean("Blown");
-        if(clientPacket && blown && !prevBlown)
+        if (clientPacket && blown && !prevBlown)
             playBlowEffect();
+        if (clientPacket && !blown && prevBlown)
+            playResetEffect();
         wire.setState(!blown);
 		level.setBlockAndUpdate(worldPosition, state.setValue(PowerShunt.BLOWN, blown));
-    }
-    @Override
-    protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
-        super.write(tag, registries, clientPacket);
-        tag.putBoolean("Blown", getBlockState().getValue(PowerShunt.BLOWN));
-    }
-    @Override
-    public void writeSafe(CompoundTag tag, HolderLookup.Provider registries) {
-        super.writeSafe(tag, registries);
-        tag.putBoolean("Blown", getBlockState().getValue(PowerShunt.BLOWN));
     }
 }

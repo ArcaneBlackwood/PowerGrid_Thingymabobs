@@ -1,0 +1,18 @@
+{
+  "type": "moregrid:electric_furnace",
+  "input": [
+    {
+      "item": "moregrid:small_diode"
+    }
+  ],
+  "result": [
+    {
+      "amount": 250,
+      "id": "moregrid:small_resistor"
+    }
+  ],
+  "temps": {
+    "minTemp": 100.0,
+    "maxTemp": 500.0
+  }
+}

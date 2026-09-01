@@ -1,7 +1,7 @@
 package com.feb.moregrid.component;
 
 import com.feb.moregrid.MoreGrid;
-import com.feb.moregrid.mixin.ThermalBuilderExtension;
+import com.feb.moregrid.mixin.ThermalBuilderExt;
 import com.google.common.collect.ImmutableCollection;
 
 import net.minecraft.core.Direction;
@@ -128,7 +128,7 @@ public final class PotatoBatteryComponent extends OrientableComponent implements
 			.addHeatSource(new CouplingWireProxy(source))
             .setOverheatTemperature(200)
             .withTemperatureCallback((temp) -> thermalCallback(placed, temp));
-        ((ThermalBuilderExtension)thermal).withBuildCallback(
+        ((ThermalBuilderExt)thermal).withBuildCallback(
             (thermalUnit) -> {
                 if (placed.customData instanceof CustomData data) data.thermal = thermalUnit;
             });
