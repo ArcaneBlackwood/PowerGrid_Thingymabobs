@@ -20,23 +20,35 @@
     ]
   },
   "electric_furnace.fan_start": {
-    "sounds": [
-      "moregrid:electric_furnace/fan_start"
-    ]
+    "sounds": [{
+      "name": "moregrid:electric_furnace/fan_start",
+      "preload": true
+    }]
   },
-  "electric_furnace.fan": {
+  "electric_furnace.fan_loop": {
     "sounds": [
-      "moregrid:electric_furnace/fan"
+      "moregrid:electric_furnace/fan_loop"
     ]
   },
   "electric_furnace.fan_stop": {
-    "sounds": [
-      "moregrid:electric_furnace/fan_stop"
-    ]
+    "sounds": [{
+      "name": "moregrid:electric_furnace/fan_stop",
+      "preload": true
+    }]
   },
   "electric_furnace.buzz": {
     "sounds": [
       "moregrid:electric_furnace/buzz"
+    ]
+  },
+  "electric_furnace.on": {
+    "sounds": [
+      "moregrid:electric_furnace/on"
+    ]
+  },
+  "electric_furnace.off": {
+    "sounds": [
+      "moregrid:electric_furnace/off"
     ]
   }
 }

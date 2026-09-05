@@ -48,4 +48,7 @@ ordering = "AFTER"
 side = "BOTH"
 
 [[mixins]]
-config="moregrid.mixins.json"
+config="META-INF/moregrid.mixins.json"
+
+[[accessTransformers]]
+file="META-INF/accesstransformer.cfg"

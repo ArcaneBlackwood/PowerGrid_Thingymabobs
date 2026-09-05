@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import com.feb.moregrid.MoreGrid;
 import com.feb.moregrid.registry.ModRecipies;
 import com.feb.moregrid.registry.ModRecipies.ARecipe;
@@ -56,14 +57,22 @@ public class ElectricFurnaceRecipe extends ARecipe<ElectricFurnaceRecipe.Paramet
 	}
 	public static void onServerStarted(ServerStartedEvent event) {
 		ServerLevel world = event.getServer().overworld();
+		ITEM_BURN_TEMPS.clear();
 
 		List<RecipeHolder<? extends AbstractCookingRecipe>> listVanilla = getAllVanilla(world);
 		if (listVanilla == null) return;
 		for (RecipeHolder<? extends AbstractCookingRecipe> recipeHold : listVanilla) {
 			AbstractCookingRecipe recipe = recipeHold.value();
-			float burnTemp = getIsSmoking(recipe) ? TEMP_SMOKE_BURN : ElectricFurnaceEntity.OVERHEAT_TEMPERATURE;
+			if (getIsSmoking(recipe)) continue;
 			ITEM_BURN_TEMPS.put(recipe.getResultItem(world.registryAccess()).getItem(), 
-				new Burnt(burnTemp, Parameters.BURNT_OUTPUT_DEFAULT));
+				new Burnt(ElectricFurnaceEntity.OVERHEAT_TEMPERATURE, Parameters.BURNT_OUTPUT_DEFAULT));
+		}
+
+		for (RecipeHolder<? extends AbstractCookingRecipe> recipeHold : listVanilla) {
+			AbstractCookingRecipe recipe = recipeHold.value();
+			if (!getIsSmoking(recipe)) continue;
+			ITEM_BURN_TEMPS.put(recipe.getResultItem(world.registryAccess()).getItem(), 
+				new Burnt(TEMP_SMOKE_BURN, Parameters.BURNT_OUTPUT_DEFAULT));
 		}
 
 		List<RecipeHolder<ElectricFurnaceRecipe>> list = getAll(world);
@@ -107,62 +116,68 @@ public class ElectricFurnaceRecipe extends ARecipe<ElectricFurnaceRecipe.Paramet
 
 	
 
-		public int testRecipe(Level world, List<ItemStack> inputs, boolean[] isProcessing) {
+		public int testRecipe(Level world, List<ItemStack> inputs, int maxMultiply, boolean[] isProcessing) {
 			List<Integer> useCache = getUseCache(inputs);
 			int multiplier = 0;
 			if (isElectric)
-				while (electric.testRecipe(inputs, useCache, isProcessing)) multiplier += 1;
+				while (multiplier < maxMultiply && electric.testRecipe(inputs, useCache, isProcessing))
+					multiplier += 1;
 			else
-				while (ElectricFurnaceRecipe.testRecipe(world, vanilla, inputs, useCache, isProcessing)) multiplier += 1;
+				while (multiplier < maxMultiply && ElectricFurnaceRecipe.testRecipe(world, vanilla, inputs, useCache, isProcessing))
+					multiplier += 1;
 			return multiplier;
 		}
 		private List<ItemStack> results = null;
 		private int multiplier = 0;
-		public List<ItemStack> realizeRecipe(Level world, List<ItemStack> inputs, boolean[] isProcessing) {
+		public List<ItemStack> realizeRecipe(Level world, List<ItemStack> inputs, int maxMultiply, boolean[] isProcessing) {
 			if (isProcessing != null) for (int i = 0; i < ElectricFurnaceEntity.SLOTS_INPUT; i++)
 				isProcessing[i] = false;
-			multiplier = testRecipe(world, inputs, isProcessing);
+			multiplier = testRecipe(world, inputs, maxMultiply, isProcessing);
 			results = new ArrayList<>();
-			if (isElectric)
-				for (ProcessingOutput output : electric.params.output) {
-					ItemStack item = output.rollOutput(world.random);
-					if (item.isEmpty()) continue;
-					if (multiplier > 0) item.setCount(item.getCount() * multiplier);
-					results.add(item);
+			List<ProcessingOutput> outputs = isElectric ? electric.params.output
+				: List.of(new ProcessingOutput(vanilla.getResultItem(world.registryAccess()), 1));
+			for (ProcessingOutput output : outputs) {
+				if (multiplier > 1) {
+					ItemStack item = output.getStack();
+					output = new ProcessingOutput(item.getItem(), item.getCount() * multiplier, item.getComponentsPatch(), output.getChance());
 				}
-			else results.add(vanilla.getResultItem(world.registryAccess()));
+				ItemStack item = output.rollOutput(world.random);
+				if (item.isEmpty()) continue;
+				results.add(item);
+			}
 			return results;
 		}
 		//Inputs must be the same!  Else rerun realizeRecipe
-		public List<ItemStack> applyRecipe(Level world, List<ItemStack> inputs, float temp) {
+		public List<ItemStack> applyRecipe(Level world, List<ItemStack> inputs, int maxMultiply,float temp) {
 			List<Integer> useCache = getUseCache(inputs);
 			int expectedMul = 0;
-			if (isElectric) while (electric.testRecipe(inputs, useCache, null)) {
+			if (isElectric) while (expectedMul < maxMultiply && electric.testRecipe(inputs, useCache, null)) {
 				expectedMul += 1;
 				for (int i = 0, im = inputs.size(); i < im; i++)
 					inputs.get(i).setCount(useCache.get(i));
 			}
-			else while (ElectricFurnaceRecipe.testRecipe(world, vanilla, inputs, useCache, null)) {
+			else while (expectedMul < maxMultiply && ElectricFurnaceRecipe.testRecipe(world, vanilla, inputs, useCache, null)) {
 				expectedMul += 1;
 				for (int i = 0, im = inputs.size(); i < im; i++)
 					inputs.get(i).setCount(useCache.get(i));
 			}
 			if (expectedMul != multiplier)
-				throw new IllegalStateException("Expected recipe count does not match precomputed.  Re-run realizeRecipe");
+				throw new IllegalStateException("Expected recipe count does not match precomputed("+expectedMul+"!="+multiplier+").  Re-run realizeRecipe");
 			if (temp > getMaxTemp()) {
 				results.clear();
-				if (isElectric)
-					for (ProcessingOutput output : electric.params.burntOutput) {
-						ItemStack item = output.rollOutput(world.random);
-						if (item.isEmpty()) continue;
-						if (multiplier > 0) item.setCount(item.getCount() * multiplier);
-						results.add(item);
+				List<ProcessingOutput> outputs = isElectric ? electric.params.burntOutput : Parameters.BURNT_OUTPUT_DEFAULT;
+				for (ProcessingOutput output : outputs) {
+					if (multiplier > 1) {
+						ItemStack item = output.getStack();
+						output = new ProcessingOutput(item.getItem(), item.getCount() * multiplier, item.getComponentsPatch(), output.getChance());
 					}
-				else {
-					ItemStack burnt = Parameters.CHARCOAL_OUTPUT.rollOutput(world.random);
-					if (!burnt.isEmpty()) results.add(burnt);
-				};
-			}
+					ItemStack item = output.rollOutput(world.random);
+					if (item.isEmpty()) continue;
+					results.add(item);
+				}
+                MoreGrid.LOGGER.info("Burn recipe: into #"+results.size());
+			} else 
+                MoreGrid.LOGGER.info("Apply recipe: into #"+results.size());
 			return results;
 		}
 		public int getMultiplier() {
@@ -192,10 +207,17 @@ public class ElectricFurnaceRecipe extends ARecipe<ElectricFurnaceRecipe.Paramet
 		public static boolean shouldBurnOutput(float temp, ItemStack item) {
 			return temp >= getBurnTemp(item);
 		}
-		public static List<ItemStack> getBurntOutputItem(RandomSource random, ItemStack item) {
+		public static List<ItemStack> getBurntOutputItem(RandomSource random, int maxMultiply, ItemStack item) {
+			if (item.isEmpty()) return List.of();
 			List<ItemStack> results = new ArrayList<>();
 			NonNullList<ProcessingOutput> burnts = ITEM_BURN_TEMPS.getOrDefault(item.getItem(), Burnt.DEFAULT).item;
+			int count = Math.min(maxMultiply, item.getCount());
+			item.shrink(count);
 			for (ProcessingOutput output : burnts) {
+				if (count > 1) {
+					ItemStack item2 = output.getStack();
+					output = new ProcessingOutput(item2.getItem(), item2.getCount() * count, item2.getComponentsPatch(), output.getChance());
+				}
 				ItemStack burnt = output.rollOutput(random);
 				if (burnt.isEmpty()) continue;
 				results.add(burnt);
@@ -206,7 +228,6 @@ public class ElectricFurnaceRecipe extends ARecipe<ElectricFurnaceRecipe.Paramet
 	protected static boolean getIsSmoking(AbstractCookingRecipe recipe) {
 		return recipe instanceof SmokingRecipe || recipe instanceof CampfireCookingRecipe;
 	} 
-
 
 	@Override
 	public ItemStack getResultItem(HolderLookup.Provider arg0) {
@@ -296,6 +317,7 @@ public class ElectricFurnaceRecipe extends ARecipe<ElectricFurnaceRecipe.Paramet
 	private static boolean testRecipe(Level world, AbstractCookingRecipe recipe, List<ItemStack> inputs, List<Integer> useCache, boolean[] isProcessing) {
 		for (int i = 0, im = inputs.size(); i < im; i++) {
 			SingleRecipeInput item = new SingleRecipeInput(inputs.get(i));
+			if (useCache.get(i)==0) continue;
 			if (!recipe.matches(item, world)) continue;
 			useCache.set(i, useCache.get(i)-1);
 			if (isProcessing != null) isProcessing[i] = true;

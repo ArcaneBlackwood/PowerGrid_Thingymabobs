@@ -50,8 +50,6 @@ See [README_KO.md](README_KO.md) for the complete model specifications and testi
 - [x] Tall connector component
 - [x] Small Bulb
 - [x] Shunt resistor
-- [ ] Mechanical counter (Like a cars odometer).  Power applied for rotation, resetting.  Could have internal voltage dividers or encoders for number positions?  "Latch" option, if power removed move to next number if not settled
-- [ ] Mechanically timed button.  Like a cooking timer, twist to set.
 - [ ] Aeronautics stuff
 	- [ ] Tilt switch /w variants (Off placed axis, approaching axis)
 	- [ ] Gyroscope (Spun up flywheel off axis rotation detected by coil)
@@ -64,7 +62,16 @@ See [README_KO.md](README_KO.md) for the complete model specifications and testi
 		- [ ] Duel perpindicular slider variant
 	- [ ] "Bar graph" display.  Voltage dependant orthogonal slider.
 	- [ ] Add backlights to displays
+	- [ ] Nixie tubes
+- [ ] Punch card reader component(seekable)
+	- Maybe string multiple cards together?
+- [ ] Some block to route power and signal conduit cables through walls
+	- [ ] Addable endpoints, sockets, switches, and all "modular display" items
+	Maybe done with a "cable facade" like style.  Possibly work with copycat blocks and microblocks too?
+	- [ ] Cable tray variant (Endpoints only on underside, but can interface easily with conduits)
 - [ ] Fancy traffic lights
+- [ ] Mechanical counter (Like a cars odometer).  Power applied for rotation, resetting.  Could have internal voltage dividers or encoders for number positions?  "Latch" option, if power removed move to next number if not settled
+- [ ] Mechanically timed button.  Like a cooking timer, twist to set.
 - [x] Lava lamp!
 - [ ] Pressure sensor multiblock.  Senses weight of entitie or aeronautic ships
 - [ ] Self extendable cable from holdable item.  Connects to portable battery.
@@ -72,7 +79,3 @@ See [README_KO.md](README_KO.md) for the complete model specifications and testi
 - [x] Electric furnace
 - [ ] Midi keyboard/precussion switch?
 - [ ] Add sequenced recipes for most components, gives double output
-- [ ] Some block to route power and signal conduit cables through walls
-	- [ ] Addable endpoints, sockets, switches, and all "modular display" items
-	Maybe done with a "cable facade" like style.  Possibly work with copycat blocks and microblocks too?
-	- [ ] Cable tray variant (Endpoints only on underside, but can interface easily with conduits)

@@ -69,6 +69,10 @@ public final class ModItems {
 		ITEMS.registerSimpleItem("reciever", new Item.Properties());
 	public static final DeferredItem<Item> DIRECTIONAL_RECIEVER =
 		ITEMS.registerSimpleItem("directional_reciever", new Item.Properties());
+	public static final DeferredItem<Item> DISTANCE_RECIEVER =
+		ITEMS.registerSimpleItem("distance_reciever", new Item.Properties());
+	public static final DeferredItem<Item> ACCELEROMETER =
+		ITEMS.registerSimpleItem("accelerometer", new Item.Properties());
 
 	public static final DeferredItem<BlockItem> LV_SWITCH_DPDT =
 		ITEMS.registerSimpleBlockItem("lv_switch_dpdt", ModBlocks.LV_SWITCH_DPDT,
@@ -123,7 +127,7 @@ public final class ModItems {
 			new Item.Properties());
 	
 	public static final DeferredItem<?>[] ALL_ITEMS = {
-		TRANSFORMER, SCR, DRY_CELL, DIP_SWITCH, BUZZER, VARIABLE_BUZZER, SHUNT, TRANSMITTER, RECIEVER, DIRECTIONAL_RECIEVER,
+		TRANSFORMER, SCR, DRY_CELL, DIP_SWITCH, BUZZER, VARIABLE_BUZZER, SHUNT, TRANSMITTER, RECIEVER, DIRECTIONAL_RECIEVER, DISTANCE_RECIEVER, ACCELEROMETER,
 		CERAMIC_CAPACITOR, SMALL_DIODE, SMALL_RESISTOR, SMALL_LIGHT_BULB, TALL_CONNECTOR,
 		LV_SWITCH_DPDT, LV_SWITCH_SPDT, LV_SWITCH_TPST, LV_SWITCH_DPST,
 		MV_SWITCH_DPDT, MV_SWITCH_SPDT, MV_SWITCH_TPST, MV_SWITCH_DPST,

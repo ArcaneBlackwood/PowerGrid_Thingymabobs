@@ -162,11 +162,15 @@
   "moregrid.tooltip.transformer.rating": "Apparent-power rating: %s W",
   "moregrid.tooltip.transformer.load": "Current load: %s W",
   "moregrid.tooltip.temperature.ideal": "Ideal temperature:",
+  "moregrid.tooltip.temperature.max": "Max temperature:",
+  "moregrid.tooltip.power.input_max": "Absolute max input:",
+  "moregrid.tooltip.voltage.rated_for": "Rated voltage for %s:",
   "moregrid.gui.tranciever.signal_value": "Signal %d/15",
   "moregrid.gui.tranciever.info_transmitter": "Transmitter",
   "moregrid.gui.tranciever.info_reciever": "Reciever",
   "moregrid.gui.tranciever.no_power": "No power",
   "moregrid.gui.electric_furnace.title": "Electric furnace",
   "moregrid.gui.electric_furnace.goggles.title": "Electric furnace information",
-  "moregrid.gui.electric_furnace.goggles.temp": "Temperature "
+  "moregrid.gui.electric_furnace.goggles.temp": "Temperature ",
+  "moregrid.gui.electric_furnace.goggles.blown": "Coil blown"
 }

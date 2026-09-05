@@ -25,12 +25,8 @@ import org.patryk3211.powergrid.circuits.schematic.ComponentFootprint;
 import org.patryk3211.powergrid.circuits.schematic.PlacedComponent;
 import org.patryk3211.powergrid.circuits.thermal.ThermalBuilder;
 import org.patryk3211.powergrid.electricity.sim.node.VoltageSourceCoupling;
-
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.WeakHashMap;
 
 /** A non-rechargeable zinc-carbon dry-cell battery pack. */
 public final class DryCellComponent extends OrientableComponent
@@ -38,13 +34,6 @@ public final class DryCellComponent extends OrientableComponent
     private static final double TICK_SECONDS = 1.0D / 20.0D;
     private static final double BATTERY_TIME_SCALE = 60.0D;
     private static final double REVERSE_DAMAGE_MULTIPLIER = 5.0D;
-
-    /**
-     * Runtime handles are rebuilt whenever the circuit board is baked. Weak
-     * keys prevent removed/rebuilt boards from being retained by the component.
-     */
-    private static final Map<PlacedComponent, VoltageSourceCoupling> SOURCES =
-            Collections.synchronizedMap(new WeakHashMap<>());
 
     public static final IntProperty CELL_COUNT = new IntProperty(
             MoreGrid.MOD_ID,
@@ -132,7 +121,7 @@ public final class DryCellComponent extends OrientableComponent
         );
         source.setVoltage((float) MoreGridMath.dryCellOpenVoltage(cells, soc));
         source.setResistance(resistance);
-        SOURCES.put(placed, source);
+        placed.customData = source;
 
         // Battery internal loss is deliberately not registered with the board's
         // destructive thermal system. A short circuit may drain the cell, but an
@@ -141,7 +130,7 @@ public final class DryCellComponent extends OrientableComponent
 
     @Override
     public boolean tick(@NotNull PlacedComponent placed) {
-        VoltageSourceCoupling source = SOURCES.get(placed);
+        if (!(placed.customData instanceof VoltageSourceCoupling source)) return true;
         if (source == null || !source.isConverged()) {
             return true;
         }
@@ -224,10 +213,7 @@ public final class DryCellComponent extends OrientableComponent
     }
 
     private static void updateSource(PlacedComponent placed, double soc) {
-        VoltageSourceCoupling source = SOURCES.get(placed);
-        if (source == null) {
-            return;
-        }
+        if (!(placed.customData instanceof VoltageSourceCoupling source)) return;
         int cells = placed.get(CELL_COUNT);
         source.setVoltage((float) MoreGridMath.dryCellOpenVoltage(cells, soc));
         source.setResistance((float) MoreGridMath.dryCellInternalResistance(cells, soc));

@@ -22,6 +22,15 @@ repositories {
     maven { url = 'https://maven.ithundxr.dev/snapshots' }
     maven { url = 'https://mvn.devos.one/snapshots' }
     maven { url = 'https://cursemaven.com' }
+
+
+    maven { url = "https://maven.shedaniel.me" } // Cloth Config, REI
+    maven { url = "https://maven.blamejared.com" } // JEI
+    maven { url = "https://maven.terraformersmc.com/releases" } // Mod Menu, EMI
+    maven { // Sable Companion
+        name = "RyanHCode Maven"
+        url = "https://maven.ryanhcode.dev/releases"
+    }
 }
 
 neoForge {
@@ -30,6 +39,8 @@ neoForge {
     runs {
         client {
             client()
+            //logLevel = org.slf4j.event.Level.DEBUG
+            
             //systemProperty 'mixin.debug.verbose', 'true'
             //systemProperty 'mixin.debug.export', 'true'
             //systemProperty 'mixin.env.disableRefMap', 'true'
@@ -80,6 +91,18 @@ dependencies {
     } else {
         implementation "curse.maven:power-grid-1321420:8648636"
     }
+
+
+    compileOnly "mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}"
+    runtimeOnly("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")
+//    implementation "me.shedaniel:RoughlyEnoughItems-api-forge:$rei_version"
+    implementation("dev.ryanhcode.sable-companion:sable-companion-common-${minecraft_version}:${sable_companion_version}") {
+        version {
+            prefer project.sable_companion_version
+        }
+    }
+    runtimeOnly("dev.ryanhcode.sable:sable-neoforge-${minecraft_version}:${sable_version}")
+    runtimeOnly "curse.maven:aeronautics-676721:8763471"
 }
 
 tasks.withType(JavaCompile).configureEach {

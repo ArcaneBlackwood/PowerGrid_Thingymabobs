@@ -21,6 +21,8 @@
     "moregrid:lv_switch_tpst",
     "moregrid:lv_switch_dpst",
     "powergrid:potato_battery",
-    "moregrid:poisonous_potato_battery"
+    "moregrid:poisonous_potato_battery",
+    "moregrid:accelerometer",
+    "distance_reciever"
   ]
 }

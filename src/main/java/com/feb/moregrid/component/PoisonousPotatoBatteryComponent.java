@@ -87,7 +87,6 @@ public final class PoisonousPotatoBatteryComponent extends OrientableComponent i
 	public PoisonousPotatoBatteryComponent() {
 		super(FOOTPRINT);
 	}
-
 	@Override
 	protected void addProperties(ImmutableCollection.Builder<ComponentProperty<?>> properties) {
 		super.addProperties(properties);
@@ -98,12 +97,10 @@ public final class PoisonousPotatoBatteryComponent extends OrientableComponent i
 		properties.add(STATE);
 		properties.add(power(calculateMaxPower()));
 	}
-
 	public static float calculateMaxPower() {
 		float v = BATTERY_SPEC.calculateVoltage(1);
 		return v*v/BATTERY_SPEC.calculateResistance(1);
 	}
-
 	@Override
 	public void bake(
         @NotNull PlacedComponent placed,

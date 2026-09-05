@@ -9,7 +9,10 @@
     "CircuitBoardBlockEntityMixin",
     "RedstoneLinkNetworkHandlerMixin",
     "LinkBehaviourMixin",
-    "SocketEndpointMixin"
+    "SocketEndpointMixin",
+    "SoundBufferMixin",
+    "SoundEngineMixin",
+    "LevelMixin"
   ],
   "injectors": {
     "defaultRequire": 1

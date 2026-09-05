@@ -31,7 +31,6 @@ public final class SCRComponent extends MirrorableComponent implements IComponen
             0.001F,
             0.500F
     );
-
     public static final FloatProperty HOLDING_CURRENT = new FloatProperty(
             MoreGrid.MOD_ID,
             "scr_holding_current",
@@ -39,7 +38,6 @@ public final class SCRComponent extends MirrorableComponent implements IComponen
             0.001F,
             2.000F
     );
-
     public static final FloatProperty ON_RESISTANCE = new FloatProperty(
             MoreGrid.MOD_ID,
             "scr_on_resistance",
@@ -47,7 +45,6 @@ public final class SCRComponent extends MirrorableComponent implements IComponen
             0.010F,
             2.000F
     );
-
     public static final FloatProperty FORWARD_DROP = new FloatProperty(
             MoreGrid.MOD_ID,
             "scr_forward_drop",
@@ -55,23 +52,21 @@ public final class SCRComponent extends MirrorableComponent implements IComponen
             0.50F,
             2.00F
     );
-
     public static final CalculatedProperty<Float> GATE_RESISTANCE = new CalculatedProperty<>(
             MoreGrid.MOD_ID,
             "scr_gate_resistance",
             placed -> gateResistance(placed.get(TRIGGER_CURRENT)),
             value -> String.format(Locale.ROOT, "%.2f Ω", value)
     );
-
     public static final BooleanProperty STATE = (BooleanProperty) new BooleanProperty(
             MoreGrid.MOD_ID,
             "scr_state"
     ).hidden().cast();
 
+
     public SCRComponent(ComponentFootprint footprint) {
         super(footprint);
     }
-
     @Override
     protected void addProperties(ImmutableCollection.Builder<ComponentProperty<?>> properties) {
         super.addProperties(properties);
@@ -83,7 +78,6 @@ public final class SCRComponent extends MirrorableComponent implements IComponen
         properties.add(STATE);
         properties.add(power(20.0F));
     }
-
     @Override
     public void bake(
             @NotNull PlacedComponent placed,
@@ -124,6 +118,7 @@ public final class SCRComponent extends MirrorableComponent implements IComponen
                 .addHeatSource(gateWire);
     }
 
+    
     @Override
     public boolean tick(@NotNull PlacedComponent placed) {
         if (placed.wires.isEmpty()) {

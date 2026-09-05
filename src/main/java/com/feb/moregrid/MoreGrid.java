@@ -12,25 +12,28 @@ import com.feb.moregrid.registry.ModMenus;
 import com.feb.moregrid.registry.ModModels;
 import com.feb.moregrid.registry.ModPackets;
 import com.feb.moregrid.registry.ModRecipies;
+import com.feb.moregrid.registry.ModSoundScapes;
 import com.feb.moregrid.registry.ModSounds;
 import com.feb.moregrid.registry.Resistances;
 import com.feb.moregrid.registry.Thermals;
 import com.feb.moregrid.util.IDirectionSocketElectric;
+import com.feb.moregrid.util.SableUtils;
 import com.llamalad7.mixinextras.MixinExtrasBootstrap;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.logging.LogUtils;
 import com.simibubi.create.Create;
+import dev.architectury.event.events.common.LifecycleEvent;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
-
 import org.joml.Vector3f;
 import org.patryk3211.powergrid.config.ResistanceValues;
 import org.patryk3211.powergrid.config.ThermalValues;
@@ -52,7 +55,7 @@ public final class MoreGrid {
         NeoForge.EVENT_BUS.addListener(MoreGrid::tickGlobal);
         ModDataComponents.DATA_COMPONENTS.register(modBus);
         ModItems.register(modBus);
-        ModSounds.SOUND_EVENTS.register(modBus);
+        ModSounds.register(modBus);
         ModBlocks.register(modBus);
         ModBlockEntities.register(modBus);
         ResistanceValues.register(Resistances.INSTANCE);
@@ -63,6 +66,7 @@ public final class MoreGrid {
         ModMenus.register(modBus);
         CordItem.PLACEMENT_HANDLERS.add(new IDirectionSocketElectric.Handler());
         if (FMLLoader.getDist() == Dist.CLIENT) registerClient(modBus);
+        LifecycleEvent.SETUP.register(MoreGrid::setup);
     }
     @OnlyIn(Dist.CLIENT)
     public void registerClient(IEventBus modBus) {
@@ -70,6 +74,10 @@ public final class MoreGrid {
         ModItems.registerClient(modBus);
         ModBlockEntities.registerClient(modBus);
         ModMenus.registerClient(modBus);
+        ModSoundScapes.registerClient(modBus);
+    }
+    public static void setup() {
+        SableUtils.isLoaded = ModList.get().isLoaded("sable");
     }
 
     public static void tickGlobal(ServerTickEvent.Post tick) {

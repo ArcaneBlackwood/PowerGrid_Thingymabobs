@@ -1,7 +1,10 @@
 package com.feb.moregrid.blocks.electricfurnace;
 
+import com.feb.moregrid.MoreGrid;
+import com.feb.moregrid.client.SoundScapeSource;
 import com.feb.moregrid.registry.ModBlockEntities;
 import com.feb.moregrid.registry.ModLang;
+import com.feb.moregrid.registry.ModSoundScapes;
 import com.feb.moregrid.registry.ModSounds;
 import com.feb.moregrid.registry.capabilities.ItemCapability;
 import com.simibubi.create.AllItems;
@@ -55,8 +58,9 @@ import org.patryk3211.powergrid.utility.Unit;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCapability.Provider, IHaveGoggleInformation, MenuProvider {
+public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCapability.Provider, IHaveGoggleInformation, MenuProvider, SoundScapeSource {
     public static final float MAX_POWER = 5000f;
+    public static final float BLOW_POWER = MAX_POWER * 18 / 13 * 1.5f;
     public static final float MAX_TEMPERATURE = 2000f;
     public static final float OVERHEAT_TEMPERATURE = MAX_TEMPERATURE * 18 / 13;
     public static final int SLOTS_INPUT = 4, SLOTS_OUTPUT = 4;
@@ -64,7 +68,7 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
     public static final float SPEED_MAX_TEMP = 2f;
     public static final float SPEED_BURN_PER_DEGREE = 2 / 400f;
     public static final float BURN_DURATION = 10 * 20;
-    public static final float DISSIPATOIN_DOOR_OPEN = ThermalBehaviour.dissipationFactor(MAX_POWER, 300f) 
+    public static final float DISSIPATOIN_DOOR_OPEN = ThermalBehaviour.dissipationFactor(MAX_POWER, 500f) 
         - ThermalBehaviour.dissipationFactor(MAX_POWER, MAX_TEMPERATURE);
 
 
@@ -103,6 +107,11 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
             .behaviourFlags(ThermalBehaviour.OVERHEAT_PARTICLES);
     }
     @Override
+    public void initialize() {
+        super.initialize();
+        if (level.isClientSide) addSoundScape();
+    }
+    @Override
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
         super.addBehaviours(behaviours);
 		filtering = new FilteringBehaviour(this, new FilterValueBox())
@@ -119,8 +128,8 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
     public void buildCircuit(CircuitBuilder builder) {
         builder.setTerminalCount(2);
         BlockState state = getBlockState();
-        wire = builder.connectSwitch(0.1f, builder.terminalNode(0), builder.terminalNode(1),
-            !state.getValue(ElectricFurnace.BLOWN));
+        wire = builder.connectSwitch(1000, builder.terminalNode(0), builder.terminalNode(1),
+            !state.getValue(ElectricFurnace.BLOWN) && state.getValue(ElectricFurnace.BUTTON));
     }
 
 
@@ -134,6 +143,13 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
         return ItemRequirement.NONE;
     }
     public boolean useItemOn(Player player, BlockHitResult hit, InteractionHand hand, ItemStack stack) {
+        BlockState state = getBlockState();
+        AABB button = ElectricFurnace.getButtonShape(state).inflate(0.03125);
+        if (button.contains(hit.getLocation().subtract(Vec3.atLowerCornerOf(hit.getBlockPos())))) {
+            setPowered(!state.getValue(ElectricFurnace.BUTTON));
+            return true;
+        }
+
         if (tryItemIteract(player, hit, hand, stack)) return true;
         
         if (player.isShiftKeyDown() || AllItems.WRENCH.isIn(player.getItemInHand(hand))) return false;
@@ -160,6 +176,11 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
 		ModLang.translate("gui.electric_furnace.goggles.title")
 			.forGoggles(tooltip);
         
+        BlockState state = getBlockState();
+        if (state.getValue(ElectricFurnace.BLOWN))
+            ModLang.translate("gui.electric_furnace.goggles.blown")
+                .style(ChatFormatting.RED)
+                .forGoggles(tooltip);
         if (thermalBehaviour != null)
             ModLang.translate("gui.electric_furnace.goggles.temp")
                 .style(ChatFormatting.GOLD)
@@ -191,18 +212,18 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
 
 
 
-    private ThreadLocal<List<ItemStack>> inputsShadow = new ThreadLocal<>();
+    private ThreadLocal<List<ItemStack>> inventoryShadow = new ThreadLocal<>();
     private List<ItemStack> getShadow() {
-        List<ItemStack> shadow = inputsShadow.get();
-        if (shadow == null) inputsShadow.set(shadow = new ArrayList<>(SLOTS_INPUT));
+        List<ItemStack> shadow = inventoryShadow.get();
+        if (shadow == null) inventoryShadow.set(shadow = new ArrayList<>(SLOTS_INPUT));
         shadow.clear();
         for (int i = 0; i < SLOTS_INPUT; i++)
             shadow.add(inputInventory.getItem(i));
         return shadow;
     }
     private List<ItemStack> getShadowCopy() {
-        List<ItemStack> shadow = inputsShadow.get();
-        if (shadow == null) inputsShadow.set(shadow = new ArrayList<>(SLOTS_INPUT));
+        List<ItemStack> shadow = inventoryShadow.get();
+        if (shadow == null) inventoryShadow.set(shadow = new ArrayList<>(SLOTS_INPUT));
         shadow.clear();
         for (int i = 0; i < SLOTS_INPUT; i++)
             shadow.add(inputInventory.getItem(i).copy());
@@ -214,7 +235,7 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
     public void electricalTick() {
         applyPower(wire);
         BlockState state = getBlockState();
-        if(!state.getValue(ElectricFurnace.BLOWN) && thermalBehaviour.isOverheated()) {
+        if(!state.getValue(ElectricFurnace.BLOWN) && (thermalBehaviour.isOverheated() || wire.power() > BLOW_POWER)) {
 			setBlown(true);
         }
     }
@@ -235,24 +256,12 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
             contentsChanged = false;
             if (recipe == null)
                 findRecipe();
-            else if (recipe.testRecipe(level, getShadow(), null) != recipe.getMultiplier() || recipe.getMultiplier() == 0)
+            else if (recipe.testRecipe(level, getShadow(), ITEMS_PER_PROCESS, null) != recipe.getMultiplier() || recipe.getMultiplier() == 0)
                 findRecipe();
+            notifyUpdate();
         }
-        if (recipe == null) return;
 
-        float minTemp = recipe.getMinTemp();
-        float maxTemp = recipe.getMaxTemp();
         float temp = thermalBehaviour.getTemperature();
-        goingToBurn = recipe.shouldBurnInput(temp);
-        float progressSpeed = Math.max(0, (temp - minTemp) * SPEED_MAX_TEMP / (maxTemp - minTemp));
-        if (minTemp <= temp && recipeFits) {
-            progress += progressSpeed;
-            if (progress >= recipe.getProcessingTime()) applyRecipe();
-        } else {
-            progress -= 1f;
-            if (progress < 0) progress = 0;
-        }
-
         for (int i = 0; i < SLOTS_OUTPUT; i++) {
             ItemStack slot = outputInventory.getItem(i);
             if (slot.isEmpty()) {
@@ -269,34 +278,56 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
             burnTimeOutputs[i] += burnSpeed;
             if (burnTimeOutputs[i] >= BURN_DURATION) {
                 burnTimeOutputs[i] = 0;
-                outputInventory.removeItemNoUpdate(i);
-                addToOutput(ElectricFurnaceRecipe.Either.getBurntOutputItem(level.random, slot),
-                    slot, i);
+                List<ItemStack> outputs = ElectricFurnaceRecipe.Either.getBurntOutputItem(level.random, ITEMS_PER_PROCESS, slot);
+                MoreGrid.LOGGER.info("Burnt output: "+i+" "+slot+" into #"+outputs.size());
+                for (ItemStack output : outputs) {
+                    MoreGrid.LOGGER.info("   item: "+output);
+                    addToOutput(output, i);
+                }
             }
         }
-        contentsChanged = false;
+        if (recipe == null) return;
+
+        float minTemp = recipe.getMinTemp();
+        float maxTemp = recipe.getMaxTemp();
+        goingToBurn = recipe.shouldBurnInput(temp);
+        float progressSpeed = Math.max(0, (temp - minTemp) * SPEED_MAX_TEMP / (maxTemp - minTemp));
+        if (minTemp <= temp && recipeFits) {
+            progress += progressSpeed;
+            if (progress >= recipe.getProcessingTime()) applyRecipe();
+        } else {
+            progress -= 1f;
+            if (progress < 0) progress = 0;
+        }
     }
     @Override
     public void lazyTick() {
         super.lazyTick();
         if (level.isClientSide) return;
         checkMenuCount();
-        if (recipe != null) notifyUpdate();
+        if (recipe != null) {
+            notifyUpdate();
+            return;
+        }
+        for (int i = 0; i < SLOTS_OUTPUT; i++) {
+            if (burnTimeOutputs[i] < 0.5f) continue;
+            notifyUpdate();
+            return;
+        }
     }
     private void applyRecipe() {
-        List<ItemStack> outputs = recipe.applyRecipe(level, getShadow(), thermalBehaviour.getTemperature());
-        List<ItemStack> slots = getShadow();
+        List<ItemStack> outputs = recipe.applyRecipe(level, getShadow(), ITEMS_PER_PROCESS, thermalBehaviour.getTemperature());
         progress = 0;
         recipe = null;
         contentsChanged = true;
         for (ItemStack output : outputs)
-            addToOutput(slots, output, -1);
+            addToOutput(output, -1);
     }
-    private void addToOutput(List<ItemStack> slots, ItemStack item, int preferSlot) {
+    private void addToOutput(ItemStack item, int preferSlot) {
         if (item.isEmpty()) return;
         int count = item.getCount();
         if (preferSlot >= 0) {
-            ItemStack slot = slots.get(preferSlot);
+            ItemStack slot = outputInventory.getItem(preferSlot);
             if (slot.isEmpty() || ItemStack.isSameItem(item, slot)) {
                 int transfer = Math.min(count, slot.getMaxStackSize() - slot.getCount());
                 count -= transfer;
@@ -304,16 +335,17 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
             }
         }
         if (count == 0) return;
-        for (ItemStack slot : slots) {
+        for (int i = 0; i < SLOTS_OUTPUT; i++) {
+            ItemStack slot = outputInventory.getItem(i);
             if (slot.isEmpty() || !ItemStack.isSameItem(item, slot)) continue;
             int transfer = Math.min(count, slot.getMaxStackSize() - slot.getCount());
             count -= transfer;
+            slot.grow(transfer);
             if (count == 0) return;
         }
-        if (count == 0) return;
         item.setCount(count);
         for (int i = 0; i < SLOTS_OUTPUT; i++) {
-            ItemStack slot = slots.get(i);
+            ItemStack slot = outputInventory.getItem(i);
             if (!slot.isEmpty()) continue;
             outputInventory.setItem(i, item);
             return;
@@ -324,8 +356,11 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
         progress = 0;
         List<ItemStack> shadow = getShadow();
         recipe = ElectricFurnaceRecipe.tryMatch(level, shadow);
-        if (recipe == null) return;
-        recipe.realizeRecipe(level, shadow, isProcessing);
+        if (recipe == null) {
+            for (int i = 0; i < SLOTS_INPUT; i++) isProcessing[i] = false;
+            return;
+        }
+        recipe.realizeRecipe(level, shadow, ITEMS_PER_PROCESS, isProcessing);
         List<ItemStack> outputs = recipe.getResults();
         List<ItemStack> slots = getShadowCopy();
         mainLoop: for (ItemStack output : outputs) {
@@ -365,6 +400,32 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
 
 
 
+    @Override
+    public Vec3 getSoundScapePos() {
+        return this.getBlockPos().getCenter();
+    }
+    @Override
+    public boolean isSoundScapeValid() {
+        return !this.isRemoved();
+    }
+    @Override
+    public float getSoundScapeVolume() {
+        return 0.6f;
+    }
+    @Override
+    public boolean getSoundScapeState() {
+        float powerNorm = Mth.abs((float)(wire.power()/ MAX_POWER));
+        return powerNorm >= 0.05f;
+    }
+    @OnlyIn(Dist.CLIENT)
+    protected void addSoundScape() {
+        ModSoundScapes.ELECTRIC_FURNACE_FAN.get().addSource(this);
+    }
+    @OnlyIn(Dist.CLIENT)
+    protected void removeSoundScape() {
+        ModSoundScapes.ELECTRIC_FURNACE_FAN.get().removeSource(this);
+    }
+
     protected boolean doorOpen = false;
     protected void onClose() {
         if (!level.isClientSide) notifyUpdate();
@@ -394,14 +455,31 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
         level.playSound(null, getBlockPos(), SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.PLAYERS, .2f,
             1f + level.getRandom().nextFloat());
     }
+    @OnlyIn(Dist.CLIENT)
+    public void playButtonEffect(boolean press) {
+        level.playSound(null, getBlockPos(), press ? ModSounds.ELECTRIC_FURNACE_ON.get() : ModSounds.ELECTRIC_FURNACE_OFF.get(), SoundSource.BLOCKS, 0.5f, 1.0f);
+    }
     public void setBlown(boolean blown) {
         BlockState state = getBlockState();
         if (state.getValue(ElectricFurnace.BLOWN) == blown) return;
         level.setBlockAndUpdate(worldPosition, state.setValue(ElectricFurnace.BLOWN, blown));
+        wire.setState(!blown && state.getValue(ElectricFurnace.BUTTON));
 
 		if (level.isClientSide) {
             if (blown) playBlowEffect();
             else playRepairEffect();
+            return;
+        }
+        notifyUpdate();
+    }
+    public void setPowered(boolean power) {
+        BlockState state = getBlockState();
+        if (state.getValue(ElectricFurnace.BUTTON) == power) return;
+        level.setBlockAndUpdate(worldPosition, state.setValue(ElectricFurnace.BUTTON, power));
+        wire.setState(power && !state.getValue(ElectricFurnace.BLOWN));
+
+		if (level.isClientSide) {
+            playButtonEffect(power);
             return;
         }
         notifyUpdate();
@@ -436,7 +514,7 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
         return thermalBehaviour.getTemperature() / OVERHEAT_TEMPERATURE;
     }
 	public float getProgress(int slot) {
-		return goingToBurn ? 0 : recipe == null ? progress : progress / recipe.getProcessingTime();
+		return goingToBurn || !isProcessing[slot] ? 0 : recipe == null ? progress : progress / recipe.getProcessingTime();
 	}
 	public float getBurnProgress(boolean input, int slot) {
 		if (input) return goingToBurn ? getProgress(slot) : 0f;
@@ -452,6 +530,7 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
 		tag.put("InputItems", inputInventory.serializeNBT(registries));
 		tag.put("OutputItems", outputInventory.serializeNBT(registries));
         tag.putBoolean("Blown", getBlockState().getValue(ElectricFurnace.BLOWN));
+        tag.putBoolean("Power", getBlockState().getValue(ElectricFurnace.BUTTON));
         if (recipe != null && progress > 0.5f) {
             tag.putByte("Prog", (byte)Math.round(progress / recipe.getProcessingTime() * 255));
         }
@@ -484,8 +563,9 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
 		inputInventory.deserializeNBT(registries, tag.getCompound("InputItems"));
 		outputInventory.deserializeNBT(registries, tag.getCompound("OutputItems"));
         setBlown(tag.getBoolean("Blown"));
+        setPowered(tag.getBoolean("Power"));
         if (tag.contains("Prog")) {
-            progress = tag.getShort("Prog") / 255f;
+            progress = (tag.getByte("Prog") & 0xFF) / 255f;
         } else {
             progress = 0;
         }
@@ -500,7 +580,7 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
         if (tag.contains("BurnO")) {
             byte[] burnings = tag.getByteArray("BurnO");
             float burnScale = BURN_DURATION / 255;
-            for (int i = 0; i < SLOTS_OUTPUT; i++) burnTimeOutputs[i] = burnings[i] * burnScale;
+            for (int i = 0; i < SLOTS_OUTPUT; i++) burnTimeOutputs[i] = (burnings[i] & 0xFF) * burnScale;
         } else {
             for (int i = 0; i < SLOTS_OUTPUT; i++) burnTimeOutputs[i] = 0;
         }
@@ -510,6 +590,11 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
             else if (newMenuCount == 0) onClose();
             menuCount = newMenuCount;
         }
+    }
+    @Override
+    public void invalidate() {
+        super.invalidate();
+        if (hasLevel() && level.isClientSide) removeSoundScape();
     }
 
 
@@ -576,5 +661,4 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
     public void sendToMenu(RegistryFriendlyByteBuf buffer) {
         super.sendToMenu(buffer);
     }*/
-
 }

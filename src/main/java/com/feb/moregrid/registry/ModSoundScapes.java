@@ -1,0 +1,38 @@
+package com.feb.moregrid.registry;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.feb.moregrid.client.SoundScape;
+
+import net.minecraft.client.Minecraft;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.jarjar.nio.util.Lazy;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.common.NeoForge;
+
+@OnlyIn(Dist.CLIENT)
+public final class ModSoundScapes {
+    public static final Lazy<SoundScape> ELECTRIC_FURNACE_FAN = Lazy.of(() -> 
+		new SoundScape(ModSounds.ELECTRIC_FURNACE_FAN_START.get(), ModSounds.ELECTRIC_FURNACE_FAN_LOOP.get(), 
+			ModSounds.ELECTRIC_FURNACE_FAN_STOP.get(), 16f));
+	
+	public static final List<Lazy<SoundScape>> SOUND_SCAPES = List.of(
+		ELECTRIC_FURNACE_FAN);
+
+	public static void registerClient(IEventBus modBus) {
+		NeoForge.EVENT_BUS.addListener(SoundScape.TrackedSound::onPlaySound);
+		NeoForge.EVENT_BUS.addListener(ModSoundScapes::onRenderLevel);
+	}
+
+	public static void onRenderLevel(RenderLevelStageEvent event) {
+		if (Minecraft.getInstance().isPaused()) return;
+		for (Lazy<SoundScape> lazyScape : SOUND_SCAPES) {
+			SoundScape scape = lazyScape.orElse(null);
+			if (scape == null) continue;
+			scape.tickRender(event);
+		}
+	}
+}

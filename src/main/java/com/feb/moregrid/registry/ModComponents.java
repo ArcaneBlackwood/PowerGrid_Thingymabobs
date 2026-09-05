@@ -1,6 +1,7 @@
 package com.feb.moregrid.registry;
 
 import com.feb.moregrid.MoreGrid;
+import com.feb.moregrid.component.AccelerometerComponent;
 import com.feb.moregrid.component.BuzzerComponent;
 import com.feb.moregrid.component.CeramicCapacitorComponent;
 import com.feb.moregrid.component.DIPSwitchComponent;
@@ -20,6 +21,7 @@ import com.feb.moregrid.component.TallConnectorComponent;
 import com.feb.moregrid.component.TransformerComponent;
 import com.feb.moregrid.component.VariableBuzzerComponent;
 import com.feb.moregrid.component.trancievers.DirectionalRecieverComponent;
+import com.feb.moregrid.component.trancievers.DistanceRecieverComponent;
 import com.feb.moregrid.component.trancievers.RecieverComponent;
 import com.feb.moregrid.component.trancievers.TransmitterComponent;
 
@@ -105,6 +107,8 @@ public final class ModComponents {
         register(event, "transmitter", new TransmitterComponent());
         register(event, "reciever", new RecieverComponent());
         register(event, "directional_reciever", new DirectionalRecieverComponent());
+        register(event, "distance_reciever", new DistanceRecieverComponent());
+        register(event, "accelerometer", new AccelerometerComponent());
     }
 
     private static void register(RegisterEvent event, String id, org.patryk3211.powergrid.circuits.components.Component component) {

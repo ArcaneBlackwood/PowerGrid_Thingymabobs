@@ -51,10 +51,10 @@ public class ElectricFurnaceRenderer extends SafeBlockEntityRenderer<ElectricFur
 			}
 
 			boolean buttonPress = blockState.getValue(ElectricFurnace.BUTTON);
-			boolean powered = blockState.getValue(ElectricFurnace.POWERED);
+				int coilLevel = be.getCoilLevel();
 			CachedBuffers.partial(
-					buttonPress ? ModModels.FURN_BUTTON_PRESS : 
-					(powered ? ModModels.FURN_BUTTON_ON : ModModels.FURN_BUTTON), blockState)
+					buttonPress ? (coilLevel == 0 ? ModModels.FURN_BUTTON_PRESS : ModModels.FURN_BUTTON_ON) : 
+					ModModels.FURN_BUTTON, blockState)
 				.light(light)
 				.renderInto(matrices, consumer.getBuffer(RenderType.solid()));
 			
@@ -65,7 +65,6 @@ public class ElectricFurnaceRenderer extends SafeBlockEntityRenderer<ElectricFur
 			boolean doorOpen = be.isDoorOpen();
 			if (be.doorState > 0.005f) {
 				float doorState = approach(be.doorState, doorOpen ? 1 : 0, DOOR_SPEED * partialTicks / 20f);
-				int coilLevel = be.getCoilLevel();
 				int tempLevel = be.getTempLevel();
 				CachedBuffers.partial(ModModels.FURN_INTERNAL[coilLevel + Mth.floor(tempLevel) * 4], blockState)
 					.light(light).renderInto(matrices, consumer.getBuffer(RenderType.solid()));
