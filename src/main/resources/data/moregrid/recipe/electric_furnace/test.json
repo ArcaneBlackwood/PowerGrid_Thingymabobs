@@ -1,14 +1,14 @@
 {
-  "type": "moregrid:electric_furnace",
+  "type": "thingymabobs:electric_furnace",
   "input": [
     {
-      "item": "moregrid:small_diode"
+      "item": "thingymabobs:small_diode"
     }
   ],
   "result": [
     {
       "amount": 250,
-      "id": "moregrid:small_resistor"
+      "id": "thingymabobs:small_resistor"
     }
   ],
   "temps": {

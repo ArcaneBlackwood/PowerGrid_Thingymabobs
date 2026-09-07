@@ -1,17 +1,17 @@
 {
   "values": [
-    "moregrid:lv_switch_dpdt",
-    "moregrid:lv_switch_spdt",
-    "moregrid:lv_switch_tpst",
-    "moregrid:lv_switch_dpst",
-    "moregrid:mv_switch_dpdt",
-    "moregrid:mv_switch_spdt",
-    "moregrid:mv_switch_tpst",
-    "moregrid:mv_switch_dpst",
-    "moregrid:potato_battery_array",
-    "moregrid:poisonous_potato_battery_array",
-    "moregrid:potato_battery_block",
-    "moregrid:poisonous_potato_battery_block",
-    "moregrid:power_shunt"
+    "thingymabobs:lv_switch_dpdt",
+    "thingymabobs:lv_switch_spdt",
+    "thingymabobs:lv_switch_tpst",
+    "thingymabobs:lv_switch_dpst",
+    "thingymabobs:mv_switch_dpdt",
+    "thingymabobs:mv_switch_spdt",
+    "thingymabobs:mv_switch_tpst",
+    "thingymabobs:mv_switch_dpst",
+    "thingymabobs:potato_battery_array",
+    "thingymabobs:poisonous_potato_battery_array",
+    "thingymabobs:potato_battery_block",
+    "thingymabobs:poisonous_potato_battery_block",
+    "thingymabobs:power_shunt"
   ]
 }

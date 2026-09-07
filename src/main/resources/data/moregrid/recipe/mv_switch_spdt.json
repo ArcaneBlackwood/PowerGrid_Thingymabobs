@@ -7,5 +7,5 @@
 		{"tag": "c:plates/copper"},
 		{"tag": "c:plates/copper"}
 	],
-	"result": {"count": 1, "id": "moregrid:mv_switch_spdt"}
+	"result": {"count": 1, "id": "thingymabobs:mv_switch_spdt"}
 }

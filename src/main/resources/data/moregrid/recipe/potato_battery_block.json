@@ -2,7 +2,7 @@
 	"type": "minecraft:crafting_shaped",
 	"category": "redstone",
 	"key": {
-		"A": {"item": "moregrid:potato_battery_array"},
+		"A": {"item": "thingymabobs:potato_battery_array"},
 		"W": {"item": "powergrid:wire"},
 		"I": {"tag": "c:plates/iron"}
 	},
@@ -11,5 +11,5 @@
 		"IAI",
 		" A "
 	],
-	"result": {"count": 1, "id": "moregrid:potato_battery_block"}
+	"result": {"count": 1, "id": "thingymabobs:potato_battery_block"}
 }

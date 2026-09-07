@@ -5,5 +5,5 @@
 		{"tag": "minecraft:coals"},
 		{"tag": "c:wires/iron"}
 	],
-	"result": {"count": 1, "id": "moregrid:small_resistor"}
+	"result": {"count": 1, "id": "thingymabobs:small_resistor"}
 }

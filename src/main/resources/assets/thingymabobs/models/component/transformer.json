@@ -1,0 +1,58 @@
+{
+	"format_version": "1.21.11",
+	"credit": "Made with Blockbench",
+	"render_type": "minecraft:cutout",
+	"textures": {
+		"0": "thingymabobs:block/component/transformer",
+		"particle": "thingymabobs:block/component/transformer"
+	},
+	"elements": [
+		{
+			"from": [0.5, 0, 1],
+			"to": [4.5, 2, 3],
+			"rotation": {"angle": 0, "axis": "y", "origin": [-0.5, 0, 0]},
+			"faces": {
+				"north": {"uv": [11, 0, 15, 2], "rotation": 180, "texture": "#0"},
+				"east": {"uv": [14, 1, 16, 3], "rotation": 90, "texture": "#0"},
+				"south": {"uv": [11, 2, 15, 4], "texture": "#0"},
+				"west": {"uv": [10, 1, 12, 3], "rotation": 270, "texture": "#0"},
+				"up": {"uv": [11, 1, 15, 3], "texture": "#0"}
+			}
+		},
+		{
+			"from": [1.5, 0, 0],
+			"to": [3.5, 3, 4],
+			"rotation": {"angle": 0, "axis": "y", "origin": [0.5, 0, 1]},
+			"faces": {
+				"north": {"uv": [0, 2, 3, 4], "rotation": 270, "texture": "#0"},
+				"east": {"uv": [2, 0, 6, 3], "rotation": 180, "texture": "#0"},
+				"south": {"uv": [5, 2, 8, 4], "rotation": 90, "texture": "#0"},
+				"west": {"uv": [2, 3, 6, 6], "texture": "#0"},
+				"up": {"uv": [2, 2, 6, 4], "rotation": 90, "texture": "#0"}
+			}
+		},
+		{
+			"from": [0, 0, 0],
+			"to": [1, 1, 4],
+			"faces": {
+				"north": {"uv": [6, 1, 7, 2], "texture": "#0"},
+				"east": {"uv": [6, 1, 10, 2], "rotation": 180, "texture": "#0"},
+				"south": {"uv": [9, 1, 10, 2], "texture": "#0"},
+				"west": {"uv": [6, 1, 10, 2], "texture": "#0"},
+				"up": {"uv": [6, 1, 10, 2], "rotation": 90, "texture": "#0"}
+			}
+		},
+		{
+			"from": [4, 0, 0],
+			"to": [5, 1, 4],
+			"rotation": {"angle": 0, "axis": "y", "origin": [4, 0, 0]},
+			"faces": {
+				"north": {"uv": [6, 0, 7, 1], "texture": "#0"},
+				"east": {"uv": [6, 0, 10, 1], "rotation": 180, "texture": "#0"},
+				"south": {"uv": [9, 0, 10, 1], "texture": "#0"},
+				"west": {"uv": [6, 0, 10, 1], "texture": "#0"},
+				"up": {"uv": [6, 0, 10, 1], "rotation": 90, "texture": "#0"}
+			}
+		}
+	]
+}

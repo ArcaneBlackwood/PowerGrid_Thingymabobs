@@ -7,5 +7,5 @@
 		{"tag": "c:nuggets/copper"},
 		{"tag": "c:plates/iron"}
 	],
-	"result": {"count": 1, "id": "moregrid:dip_switch"}
+	"result": {"count": 1, "id": "thingymabobs:dip_switch"}
 }

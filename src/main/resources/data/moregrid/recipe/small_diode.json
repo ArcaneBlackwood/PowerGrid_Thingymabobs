@@ -5,5 +5,5 @@
 		{"item": "minecraft:redstone"},
 		{"tag": "c:plates/copper"}
 	],
-	"result": {"count": 1, "id": "moregrid:small_diode"}
+	"result": {"count": 1, "id": "thingymabobs:small_diode"}
 }

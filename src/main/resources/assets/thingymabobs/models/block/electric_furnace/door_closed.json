@@ -1,0 +1,21 @@
+{
+	"format_version": "1.21.11",
+	"credit": "Made with Blockbench",
+	"textures": {
+		"0": "thingymabobs:block/electric_furnace",
+		"particle": "thingymabobs:block/electric_furnace"
+	},
+	"elements": [
+		{
+			"from": [2, 4, 0],
+			"to": [14, 16, 2],
+			"rotation": {"angle": 0, "axis": "y", "origin": [2, 10, 2]},
+			"faces": {
+				"north": {"uv": [13, 1, 16, 4], "texture": "#0"},
+				"east": {"uv": [6.5, 10, 9.5, 10.5], "rotation": 90, "texture": "#0"},
+				"west": {"uv": [9.5, 10, 12.5, 10.5], "rotation": 90, "texture": "#0"},
+				"up": {"uv": [16, 0.5, 13, 0], "texture": "#0"}
+			}
+		}
+	]
+}

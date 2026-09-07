@@ -8,5 +8,5 @@
 		{"item": "minecraft:lever"},
 		{"item": "powergrid:pins"}
 	],
-	"result": {"count": 1, "id": "moregrid:lv_switch_tpst"}
+	"result": {"count": 1, "id": "thingymabobs:lv_switch_tpst"}
 }

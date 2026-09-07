@@ -11,11 +11,11 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "moregrid:power_shunt"
+          "name": "thingymabobs:power_shunt"
         }
       ],
       "rolls": 1.0
     }
   ],
-  "random_sequence": "moregrid:blocks/power_shunt"
+  "random_sequence": "thingymabobs:blocks/power_shunt"
 }

@@ -2,9 +2,9 @@ This is a fork of the original  CPG MoreGrid mod.  Please give the original crea
 For the original creator, please feel free to copy/pull anything from my fork without permission or credit.
 Also check out W00PKER's fork, they added some cool stuff too at https://github.com/W00PKER/CPG_MoreGrid !
 
-# MoreGrid
+# PowerGrid: Thingymabobs
 
-A NeoForge 1.21.1 add-on for Create: Power Grid 0.5.5.1, adding four compact and rotatable circuit-board parts:
+A NeoForge 1.21.1 add-on for Create: Power Grid, adding a bunch of little things that dont quite fit into the basemod!
 
 - 4-terminal lumped-model transformer with an integer winding divider (up to 30 total turns)
 - Latching SCR thyristor with gate trigger, holding current, forward drop and on resistance
@@ -18,7 +18,7 @@ A NeoForge 1.21.1 add-on for Create: Power Grid 0.5.5.1, adding four compact and
 - Lava lamp(Allows to sleep with monsters, and prevents phantoms longer!)
 - Electric furnace. Decently fast, but requires some careful temperature management
 
-Items appear in both a dedicated MoreGrid tab and the vanilla Redstone Blocks tab.
+Items appear in both a dedicated Thingymabobs tab and the vanilla Redstone Blocks tab.
 
 ## Setup
 
@@ -46,6 +46,8 @@ See [README_KO.md](README_KO.md) for the complete model specifications and testi
 - [x] Switch variants (DPDT, SPDT, TPST, DPST and LV, MV)
 	- [x] Components
 - [x] Small low power Resistor, Diode, Capacitor
+- [ ] Small logic level thyratron, electron tube, triode
+- [ ] Bistable relay(two seperate coils for each side)
 - [x] Linked reciever/transmitters/directional reciever
 - [x] Tall connector component
 - [x] Small Bulb
@@ -79,3 +81,4 @@ See [README_KO.md](README_KO.md) for the complete model specifications and testi
 - [x] Electric furnace
 - [ ] Midi keyboard/precussion switch?
 - [ ] Add sequenced recipes for most components, gives double output
+- [ ] Large block railgun?

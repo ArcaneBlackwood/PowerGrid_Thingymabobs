@@ -11,11 +11,11 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "moregrid:lv_switch_dpdt"
+          "name": "thingymabobs:lv_switch_dpdt"
         }
       ],
       "rolls": 1.0
     }
   ],
-  "random_sequence": "moregrid:blocks/lv_switch_dpdt"
+  "random_sequence": "thingymabobs:blocks/lv_switch_dpdt"
 }

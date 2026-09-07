@@ -3,44 +3,44 @@ loaderVersion = "[1,)"
 license = "MIT"
 
 [[mods]]
-modId = "moregrid"
+modId = "thingymabobs"
 version = "${mod_version}"
-displayName = "MoreGrid"
+displayName = "Thingymabobs"
 description = '''
 Adds compact, rotatable circuit-board components to Create: Power Grid:
 a realistic lumped-model transformer, an I²t fuse, a latching SCR thyristor,
 and a discharging zinc-carbon dry-cell battery pack.
 '''
 
-[[dependencies.moregrid]]
+[[dependencies.thingymabobs]]
 modId = "neoforge"
 type = "required"
 versionRange = "${neoforge_version_range}"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.moregrid]]
+[[dependencies.thingymabobs]]
 modId = "minecraft"
 type = "required"
 versionRange = "${minecraft_version_range}"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.moregrid]]
+[[dependencies.thingymabobs]]
 modId = "powergrid"
 type = "required"
 versionRange = "[0.5.5,)"
 ordering = "AFTER"
 side = "BOTH"
 
-[[dependencies.moregrid]]
+[[dependencies.thingymabobs]]
 modId = "create"
 type = "required"
 versionRange = "[6.0.9,)"
 ordering = "AFTER"
 side = "BOTH"
 
-[[dependencies.moregrid]]
+[[dependencies.thingymabobs]]
 modId = "architectury"
 type = "required"
 versionRange = "[13.0.0,)"
@@ -48,7 +48,7 @@ ordering = "AFTER"
 side = "BOTH"
 
 [[mixins]]
-config="META-INF/moregrid.mixins.json"
+config="META-INF/thingymabobs.mixins.json"
 
 [[accessTransformers]]
 file="META-INF/accesstransformer.cfg"

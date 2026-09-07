@@ -1,0 +1,49 @@
+{
+	"variants": {
+		"facing=north,rotation=0": {
+			"model": "thingymabobs:block/electric_furnace/base_left"
+		},
+		"facing=north,rotation=1": {
+			"model": "thingymabobs:block/electric_furnace/base_top"
+		},
+		"facing=north,rotation=2": {
+			"model": "thingymabobs:block/electric_furnace/base_right"
+		},
+		"facing=east,rotation=0": {
+			"model": "thingymabobs:block/electric_furnace/base_left",
+      		"y": 90
+		},
+		"facing=east,rotation=1": {
+			"model": "thingymabobs:block/electric_furnace/base_top",
+      		"y": 90
+		},
+		"facing=east,rotation=2": {
+			"model": "thingymabobs:block/electric_furnace/base_right",
+      		"y": 90
+		},
+		"facing=south,rotation=0": {
+			"model": "thingymabobs:block/electric_furnace/base_left",
+      		"y": 180
+		},
+		"facing=south,rotation=1": {
+			"model": "thingymabobs:block/electric_furnace/base_top",
+      		"y": 180
+		},
+		"facing=south,rotation=2": {
+			"model": "thingymabobs:block/electric_furnace/base_right",
+      		"y": 180
+		},
+		"facing=west,rotation=0": {
+			"model": "thingymabobs:block/electric_furnace/base_left",
+      		"y": -90
+		},
+		"facing=west,rotation=1": {
+			"model": "thingymabobs:block/electric_furnace/base_top",
+      		"y": -90
+		},
+		"facing=west,rotation=2": {
+			"model": "thingymabobs:block/electric_furnace/base_right",
+      		"y": -90
+		}
+	}
+}

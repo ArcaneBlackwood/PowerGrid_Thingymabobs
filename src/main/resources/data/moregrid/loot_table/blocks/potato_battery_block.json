@@ -11,11 +11,11 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "moregrid:potato_battery_block"
+          "name": "thingymabobs:potato_battery_block"
         }
       ],
       "rolls": 1.0
     }
   ],
-  "random_sequence": "moregrid:blocks/potato_battery_block"
+  "random_sequence": "thingymabobs:blocks/potato_battery_block"
 }

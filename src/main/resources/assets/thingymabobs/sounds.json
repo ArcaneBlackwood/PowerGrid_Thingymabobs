@@ -1,0 +1,54 @@
+{
+  "buzzer": {
+    "sounds": [
+      "thingymabobs:buzzer"
+    ]
+  },
+  "potato_electrocute": {
+    "sounds": [
+      "thingymabobs:potato_electrocute"
+    ]
+  },
+  "electric_furnace.open": {
+    "sounds": [
+      "thingymabobs:electric_furnace/open"
+    ]
+  },
+  "electric_furnace.close": {
+    "sounds": [
+      "thingymabobs:electric_furnace/close"
+    ]
+  },
+  "electric_furnace.fan_start": {
+    "sounds": [{
+      "name": "thingymabobs:electric_furnace/fan_start",
+      "preload": true
+    }]
+  },
+  "electric_furnace.fan_loop": {
+    "sounds": [
+      "thingymabobs:electric_furnace/fan_loop"
+    ]
+  },
+  "electric_furnace.fan_stop": {
+    "sounds": [{
+      "name": "thingymabobs:electric_furnace/fan_stop",
+      "preload": true
+    }]
+  },
+  "electric_furnace.buzz": {
+    "sounds": [
+      "thingymabobs:electric_furnace/buzz"
+    ]
+  },
+  "electric_furnace.on": {
+    "sounds": [
+      "thingymabobs:electric_furnace/on"
+    ]
+  },
+  "electric_furnace.off": {
+    "sounds": [
+      "thingymabobs:electric_furnace/off"
+    ]
+  }
+}

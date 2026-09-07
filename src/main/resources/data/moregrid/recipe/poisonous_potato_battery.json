@@ -6,5 +6,5 @@
 		{"tag": "c:plates/zinc"},
 		{"item": "minecraft:poisonous_potato"}
 	],
-	"result": {"count": 1, "id": "moregrid:poisonous_potato_battery"}
+	"result": {"count": 1, "id": "thingymabobs:poisonous_potato_battery"}
 }

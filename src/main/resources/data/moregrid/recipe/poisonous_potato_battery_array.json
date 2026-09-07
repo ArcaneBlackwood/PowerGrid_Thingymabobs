@@ -2,7 +2,7 @@
 	"type": "minecraft:crafting_shaped",
 	"category": "redstone",
 	"key": {
-		"P": {"item": "moregrid:poisonous_potato_battery"},
+		"P": {"item": "thingymabobs:poisonous_potato_battery"},
 		"C": {"item": "powergrid:conductive_casing"}
 	},
 	"pattern": [
@@ -10,5 +10,5 @@
 		"PCP",
 		"PPP"
 	],
-	"result": {"count": 1, "id": "moregrid:poisonous_potato_battery_array"}
+	"result": {"count": 1, "id": "thingymabobs:poisonous_potato_battery_array"}
 }

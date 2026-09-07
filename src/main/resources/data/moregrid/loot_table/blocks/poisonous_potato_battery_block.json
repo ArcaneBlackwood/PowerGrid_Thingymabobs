@@ -11,11 +11,11 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "moregrid:poisonous_potato_battery_block"
+          "name": "thingymabobs:poisonous_potato_battery_block"
         }
       ],
       "rolls": 1.0
     }
   ],
-  "random_sequence": "moregrid:blocks/poisonous_potato_battery_block"
+  "random_sequence": "thingymabobs:blocks/poisonous_potato_battery_block"
 }

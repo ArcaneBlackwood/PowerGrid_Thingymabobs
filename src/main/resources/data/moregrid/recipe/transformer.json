@@ -6,5 +6,5 @@
     "T": {"item": "powergrid:transformer_core"}
   },
   "pattern": ["CTC"],
-  "result": {"id": "moregrid:transformer", "count": 1}
+  "result": {"id": "thingymabobs:transformer", "count": 1}
 }

@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "thingymabobs:block/battery/poisonous_potato_battery_block"
+    }
+  }
+}

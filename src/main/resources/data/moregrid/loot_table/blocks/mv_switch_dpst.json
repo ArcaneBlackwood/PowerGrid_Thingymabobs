@@ -11,11 +11,11 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "moregrid:mv_switch_dpst"
+          "name": "thingymabobs:mv_switch_dpst"
         }
       ],
       "rolls": 1.0
     }
   ],
-  "random_sequence": "moregrid:blocks/mv_switch_dpst"
+  "random_sequence": "thingymabobs:blocks/mv_switch_dpst"
 }

@@ -1,0 +1,36 @@
+{
+	"format_version": "1.21.11",
+	"credit": "Made with Blockbench",
+	"textures": {
+		"0": "thingymabobs:block/electric_furnace",
+		"particle": "thingymabobs:block/electric_furnace"
+	},
+	"elements": [
+		{
+			"from": [2, 4, 0],
+			"to": [14, 16, 2],
+			"rotation": {"angle": 0, "axis": "y", "origin": [2, 10, 2]},
+			"faces": {
+				"north": {"uv": [13, 1, 16, 4], "texture": "#0"},
+				"east": {"uv": [6.5, 10, 9.5, 10.5], "rotation": 90, "texture": "#0"},
+				"south": {"uv": [13, 4, 16, 7], "texture": "#0"},
+				"west": {"uv": [9.5, 10, 12.5, 10.5], "rotation": 90, "texture": "#0"},
+				"up": {"uv": [16, 0.5, 13, 0], "texture": "#0"},
+				"down": {"uv": [16, 0.5, 13, 1], "texture": "#0"}
+			}
+		},
+		{
+			"name": "internal",
+			"from": [5, 7, 2],
+			"to": [11, 13, 3],
+			"rotation": {"angle": 0, "axis": "y", "origin": [2, 10, 2]},
+			"faces": {
+				"east": {"uv": [11.5, 9.5, 13, 9.75], "rotation": 90, "texture": "#0"},
+				"south": {"uv": [13.75, 4.75, 15.25, 6.25], "texture": "#0"},
+				"west": {"uv": [11.5, 9.25, 13, 9.5], "rotation": 90, "texture": "#0"},
+				"up": {"uv": [13, 10, 11.5, 9.75], "rotation": 180, "texture": "#0"},
+				"down": {"uv": [13, 9, 11.5, 9.25], "rotation": 180, "texture": "#0"}
+			}
+		}
+	]
+}

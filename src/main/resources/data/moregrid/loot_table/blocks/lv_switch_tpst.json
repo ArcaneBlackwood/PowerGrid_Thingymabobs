@@ -11,11 +11,11 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "moregrid:lv_switch_tpst"
+          "name": "thingymabobs:lv_switch_tpst"
         }
       ],
       "rolls": 1.0
     }
   ],
-  "random_sequence": "moregrid:blocks/lv_switch_tpst"
+  "random_sequence": "thingymabobs:blocks/lv_switch_tpst"
 }
