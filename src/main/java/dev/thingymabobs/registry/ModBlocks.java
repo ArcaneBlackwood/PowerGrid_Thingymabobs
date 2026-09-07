@@ -36,6 +36,8 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import dev.thingymabobs.blocks.Zoey.PlasmaGlobe.PlasmaGlobe;
+
 public final class ModBlocks {
 	public static final DeferredRegister.Blocks BLOCKS =
 		DeferredRegister.createBlocks(Thingymabobs.MOD_ID);
@@ -90,6 +92,10 @@ public final class ModBlocks {
 		BlockBehaviour.Properties.ofFullCopy(Blocks.ANDESITE).requiresCorrectToolForDrops());
 	public static final DeferredBlock<Block> ELECTRIC_FURNACE = BLOCKS.registerBlock(
 		"electric_furnace", ElectricFurnace::new,
+		BlockBehaviour.Properties.ofFullCopy(Blocks.ANDESITE).requiresCorrectToolForDrops());
+
+	public static final DeferredBlock<Block> PLASMA_GLOBE = BLOCKS.registerBlock(
+		"plasma_globe", PlasmaGlobe::new,
 		BlockBehaviour.Properties.ofFullCopy(Blocks.ANDESITE).requiresCorrectToolForDrops());
 	
 

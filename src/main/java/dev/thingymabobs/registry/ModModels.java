@@ -74,6 +74,8 @@ public final class ModModels {
 	public static final PartialModel FURN_BUTTON_PRESS = block("electric_furnace/button_pressed");
 	public static final PartialModel FURN_BUTTON_ON = block("electric_furnace/button_on");
 	public static final PartialModel FURN_TEMPERATURE = block("electric_furnace/temperature");
+
+	public static final PartialModel PLASMA_GLOBE = block("plasma_globe/PlasmaGlobe");
 	
 	public static void registerClient() {
 
