@@ -13,10 +13,10 @@ import org.patryk3211.powergrid.electricity.info.Power;
 import org.patryk3211.powergrid.electricity.info.Voltage;
 import org.patryk3211.powergrid.utility.Unit;
 
-import dev.thingymabobs.blocks.Zoey.PlasmaGlobe.PlasmaGlobeEntity;
+import com.simibubi.create.foundation.block.IBE;
+
 import dev.thingymabobs.registry.ModBlockEntities;
 import dev.thingymabobs.registry.ModLang;
-import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -58,18 +58,18 @@ public class PlasmaGlobe extends HorizontalElectricBlock implements IBE<PlasmaGl
 		return state == STATE_ON || state == STATE_ON_HIGH;
 	};
 
-	private static final TerminalBoundingBox SOCKET_SOUTH = new TerminalBoundingBox(IDecoratedTerminal.SOCKET, 6.5, 0, 5.5, 9.5, 3, 7.5).withOrigin(8f, 1.5f, 6f);
+	// NEEDS TO BE REDONE
+	private static final TerminalBoundingBox SOCKET_SOUTH = new TerminalBoundingBox(IDecoratedTerminal.SOCKET, 6.5, 0.25, 10.5, 9.5, 3.25, 13.5).withOrigin(8f, 1.5f, 6f);
     private static final TerminalBoundingBox SOCKET_WEST = SOCKET_SOUTH.rotateAroundY(90);
     private static final TerminalBoundingBox SOCKET_EAST = SOCKET_SOUTH.rotateAroundY(-90);
     private static final TerminalBoundingBox SOCKET_NORTH = SOCKET_SOUTH.rotateAroundY(180);
 
-	// NEEDS TO BE CHANGED !!!!
-	private static final VoxelShape SHAPE = box(6, 0, 6, 10, 16, 10);
+	private static final VoxelShape SHAPE = box(3.5, 0, 3.5, 12.5, 10.5, 12.5);
 
 
 	public PlasmaGlobe(Properties settings){
 		super(settings.lightLevel(state -> switch(state.getValue(STATE)) {
-            case STATE_ON -> 3;
+            case STATE_ON -> 5;
             case STATE_ON_HIGH -> 6;
             default -> 0;
         }));
@@ -106,7 +106,7 @@ public class PlasmaGlobe extends HorizontalElectricBlock implements IBE<PlasmaGl
 	}
     @Override
     public RenderShape getRenderShape(BlockState state) {
-        return RenderShape.ENTITYBLOCK_ANIMATED;
+        return RenderShape.MODEL;
     }
 
     @Override

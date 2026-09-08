@@ -1,7 +1,7 @@
 {
 	"variants": {
 		"": {
-			"model": "thingymabobs:block/plasma_globe/base_cutout_empty"
+			"model": "thingymabobs:block/plasma_globe/plasmaglobe"
 		}
 	}
 }

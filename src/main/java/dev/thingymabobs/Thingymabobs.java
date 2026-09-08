@@ -1,5 +1,18 @@
 package dev.thingymabobs;
 
+import org.joml.Vector3f;
+import org.patryk3211.powergrid.config.ResistanceValues;
+import org.patryk3211.powergrid.config.ThermalValues;
+import org.patryk3211.powergrid.electricity.wire.powercord.CordItem;
+import org.slf4j.Logger;
+
+import com.llamalad7.mixinextras.MixinExtrasBootstrap;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.logging.LogUtils;
+import com.simibubi.create.Create;
+
+import dev.architectury.event.events.common.LifecycleEvent;
 import dev.thingymabobs.blocks.LavaLampEntity;
 import dev.thingymabobs.mixin.RedstoneLinkNetworkHandlerExt;
 import dev.thingymabobs.registry.ModAttachments;
@@ -18,12 +31,6 @@ import dev.thingymabobs.registry.Resistances;
 import dev.thingymabobs.registry.Thermals;
 import dev.thingymabobs.util.IDirectionSocketElectric;
 import dev.thingymabobs.util.SableUtils;
-import com.llamalad7.mixinextras.MixinExtrasBootstrap;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.logging.LogUtils;
-import com.simibubi.create.Create;
-import dev.architectury.event.events.common.LifecycleEvent;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -34,11 +41,6 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
-import org.joml.Vector3f;
-import org.patryk3211.powergrid.config.ResistanceValues;
-import org.patryk3211.powergrid.config.ThermalValues;
-import org.patryk3211.powergrid.electricity.wire.powercord.CordItem;
-import org.slf4j.Logger;
 
 @Mod(Thingymabobs.MOD_ID)
 public final class Thingymabobs {

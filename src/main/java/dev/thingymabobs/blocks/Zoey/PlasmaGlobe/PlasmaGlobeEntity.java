@@ -1,10 +1,5 @@
 package dev.thingymabobs.blocks.Zoey.PlasmaGlobe;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
 import org.jetbrains.annotations.Nullable;
 import org.patryk3211.powergrid.collections.ModdedItems;
 import org.patryk3211.powergrid.collections.ModdedSoundEvents;
@@ -16,46 +11,34 @@ import org.patryk3211.powergrid.electricity.particles.SparkParticleData;
 import org.patryk3211.powergrid.electricity.sim.AbstractElectricWire;
 import org.patryk3211.powergrid.electricity.sim.SwitchedWire;
 
-import dev.thingymabobs.registry.ModAttachments;
-import dev.thingymabobs.registry.ModBlockEntities;
-import dev.thingymabobs.registry.ModPackets;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.tterrag.registrate.util.entry.ItemEntry;
+
+import dev.thingymabobs.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.entity.player.CanPlayerSleepEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerWakeUpEvent;
-import dev.thingymabobs.blocks.Zoey.PlasmaGlobe.PlasmaGlobe;
-import org.patryk3211.powergrid.electricity.base.ThermalBehaviour;
-import dev.thingymabobs.blocks.Zoey.PlasmaGlobe.PlasmaGlobe;
 
 public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBehaviour.SyncAppender{
 	
 	protected SwitchedWire wire;
 	protected int colorBase, colorGlass, colorPlasma;
 
-	public static float IDEAL_TEMPERATURE = 45f;
-	public static float RESISTANCE_MIN = 240*240 / (150*2);
-    public static float RESISTANCE_MAX = 240*240 / 150;
-	public static float RATED_VOLTAGE = Mth.sqrt(150 * RESISTANCE_MAX);
+	public static final float IDEAL_TEMPERATURE = 45f;
+	public static final float RESISTANCE_MIN = 240*240 / (150*2);
+    public static final float RESISTANCE_MAX = 240*240 / 150;
+	public static final float RATED_VOLTAGE = Mth.sqrt(150 * RESISTANCE_MAX);
 
 	public static final ItemEntry<GrowthLamp> BULB = ModdedItems.GROWTH_LAMP;
 
@@ -200,7 +183,7 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
     @Override
     public void lazyTick() {
         super.lazyTick();
-        if (level.isClientSide) return;
+        if (level.isClientSide) { return; };
     };
 
 
