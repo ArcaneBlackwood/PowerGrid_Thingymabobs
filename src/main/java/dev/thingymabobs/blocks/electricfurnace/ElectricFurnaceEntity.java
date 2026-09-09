@@ -71,7 +71,7 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
         EF_CONFIG = prop.get(ElectricFurnaceConfig.class, "ef");
         THERMAL = prop.getThermal();
         DISSIPATOIN_DOOR_OPEN = ThermalBehaviour.dissipationFactor(THERMAL.getPower(), EF_CONFIG.getDoorOpenTemp()) 
-            - ThermalBehaviour.dissipationFactor(THERMAL.getPower(), THERMAL.getTempMax());
+            - ThermalBehaviour.dissipationFactor(THERMAL.getPower(), THERMAL.getTemp());
         BLOW_POWER = THERMAL.getPower() * 18 / 13 * EF_CONFIG.getCoilPowerMul();
     }
 

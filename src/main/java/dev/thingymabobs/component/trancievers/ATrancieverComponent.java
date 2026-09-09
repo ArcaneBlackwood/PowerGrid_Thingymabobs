@@ -165,8 +165,8 @@ public abstract class ATrancieverComponent extends MirrorableComponent implement
 		((ThermalBuilderExt)thermal).withBuildCallback(
             (thermalUnit) -> {
 				Thermal t = CONFIG.getThermal();
-                state.overheatPercent = (thermalUnit.getTemperature() - t.getTempMax())
-					/ (t.getOverheat() - t.getTempMax());
+                state.overheatPercent = (thermalUnit.getTemperature() - t.getTemp())
+					/ (t.getOverheat() - t.getTemp());
             });
     }
 	protected boolean setupLink(PlacedComponent placed, State state) {

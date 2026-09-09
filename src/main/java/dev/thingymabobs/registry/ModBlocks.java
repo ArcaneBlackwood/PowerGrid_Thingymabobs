@@ -43,6 +43,7 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import dev.thingymabobs.blocks.Zoey.PlasmaGlobe.PlasmaGlobe;
+import dev.thingymabobs.blocks.Zoey.PlasmaGlobe.PlasmaGlobeEntity;
 
 public final class ModBlocks {
 	public static final DeferredRegister.Blocks BLOCKS =
@@ -199,6 +200,13 @@ public final class ModBlocks {
 				2.5f, 2f/400f, 20*20f,
 				500f, 3.5f))
 			.complete(ElectricFurnaceEntity::configUpdated);
+
+
+		CProperties.register(PLASMA_GLOBE.getId())
+			.registerFloat("voltage", 240f)
+			.registerThermal(20f, 150f, 45f, 175f)
+			.complete(PlasmaGlobeEntity::configUpdated);
+		
 
         BlockMovementChecks.registerAttachedCheck((BlockState state, Level world, BlockPos pos, Direction direction) -> {
 			var block = state.getBlock();

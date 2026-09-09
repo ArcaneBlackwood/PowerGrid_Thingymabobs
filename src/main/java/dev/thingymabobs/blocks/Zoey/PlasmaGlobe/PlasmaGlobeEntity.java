@@ -10,10 +10,9 @@ import org.patryk3211.powergrid.electricity.light.bulb.GrowthLamp;
 import org.patryk3211.powergrid.electricity.particles.SparkParticleData;
 import org.patryk3211.powergrid.electricity.sim.AbstractElectricWire;
 import org.patryk3211.powergrid.electricity.sim.SwitchedWire;
-
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.tterrag.registrate.util.entry.ItemEntry;
-
+import dev.thingymabobs.config.properties.CProperties;
 import dev.thingymabobs.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -22,7 +21,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeItem;
@@ -30,15 +28,24 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBehaviour.SyncAppender{
+public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBehaviour.SyncAppender {
 	
 	protected SwitchedWire wire;
 	protected int colorBase, colorGlass, colorPlasma;
 
-	public static final float IDEAL_TEMPERATURE = 45f;
-	public static final float RESISTANCE_MIN = 240*240 / (150*2);
-    public static final float RESISTANCE_MAX = 240*240 / 150;
-	public static final float RATED_VOLTAGE = Mth.sqrt(150 * RESISTANCE_MAX);
+    protected static CProperties.Prop CONFIG = null;
+	public static float IDEAL_TEMPERATURE;
+	public static float RESISTANCE_MIN;
+    public static float RESISTANCE_MAX;
+	public static float RATED_VOLTAGE;
+    public static void configUpdated(CProperties.Prop prop) {
+        CONFIG = prop;
+        float power = prop.getThermal().getPower();
+        IDEAL_TEMPERATURE = prop.getThermal().getTemp();
+        RATED_VOLTAGE = prop.getFloat("voltage").get();
+        RESISTANCE_MIN = RATED_VOLTAGE*RATED_VOLTAGE/(power*2);
+        RESISTANCE_MAX = RATED_VOLTAGE*RATED_VOLTAGE/power;
+    }
 
 	public static final ItemEntry<GrowthLamp> BULB = ModdedItems.GROWTH_LAMP;
 
@@ -55,7 +62,7 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
 
 	@Override
     public @Nullable ThermalBehaviour specifyThermalBehaviour() {
-        return ThermalBehaviour.forMaxPower(this, 200f,150f).behaviourFlags(ThermalBehaviour.OVERHEAT_PARTICLES);
+        return CONFIG.getThermal().createBehaviour(this);
     };
 
 	@Override

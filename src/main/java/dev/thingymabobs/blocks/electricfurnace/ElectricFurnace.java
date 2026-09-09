@@ -122,7 +122,7 @@ public class ElectricFurnace extends HorizontalElectricBlock implements IBE<Elec
 			Resistance.coil(resistance, player, tooltip);
 			float voltage = Mth.sqrt(ElectricFurnaceEntity.THERMAL.getPower() * resistance);
 			ModLang.translate("tooltip.voltage.rated_for",
-					ModLang.number(ElectricFurnaceEntity.THERMAL.getTempMax()).text(" ")
+					ModLang.number(ElectricFurnaceEntity.THERMAL.getTemp()).text(" ")
 					.add(org.patryk3211.powergrid.utility.Unit.TEMPERATURE.get()).string())
 				.style(ChatFormatting.GRAY).addTo(tooltip);
 			ModLang.builder()

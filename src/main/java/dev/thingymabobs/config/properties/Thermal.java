@@ -33,7 +33,7 @@ public class Thermal extends ASubProp  {
 		if (unloaded) return powerDefault;
 		return power.getF();
 	}
-	public float getTempMax() {
+	public float getTemp() {
 		if (unloaded) return tempMaxDefault;
 		return tempMax.getF();
 	}
@@ -57,11 +57,11 @@ public class Thermal extends ASubProp  {
 		overheat = builder.f(overheatDefault, 0f, id+"_overheat");
 	}
 	public ThermalBehaviour createBehaviour(SmartBlockEntity be) {
-		return ThermalBehaviour.simple(be,  getMass(), getPower() / (getTempMax() - 22.0F), getOverheat());
+		return ThermalBehaviour.simple(be,  getMass(), getPower() / (getTemp() - 22.0F), getOverheat());
 	}
 	public ThermalBuilder apply(ThermalBuilder.IEmitter thermals) {
         return thermals.builder()
-			.setMaxPower(getPower(), getTempMax())
+			.setMaxPower(getPower(), getTemp())
 			.setThermalMass(getMass()).setOverheatTemperature(getOverheat());
 	}
 
