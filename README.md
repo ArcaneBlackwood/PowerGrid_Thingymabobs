@@ -6,6 +6,14 @@ Also check out W00PKER's fork, they added some cool stuff too at https://github.
 
 A NeoForge 1.21.1 add-on for Create: Power Grid, adding a bunch of little things that dont quite fit into the basemod!
 
+Items appear in both a dedicated Thingymabobs tab and the vanilla Redstone Blocks tab.
+
+### Zoeys ideas ❤️ >:3
+
+- [ ] Plasma globe
+
+### Arcanes ideas 💙
+
 - [x] Transformer component
 - [x] SCR Thyristor
 - [x] Non recharcable zinc-carbom battery component 
@@ -14,14 +22,20 @@ A NeoForge 1.21.1 add-on for Create: Power Grid, adding a bunch of little things
 	- [x] Array (8 potatos)
 	- [x] Multiblock (24 potatos per block)
 - [x] Switch variants (DPDT, SPDT, TPST, DPST and LV, MV)
-	- [x] Components
+	- [x] LV Components
+- [ ] Button component variants (SPDT, small)
 - [x] Small low power Resistor, Diode, Capacitor
-- [ ] Small logic level thyratron, electron tube, triode
+	- [ ] Transistors (Low power, less efficient, less gain)
+- [ ] LED (Default era accurate, low efficiency, limited colors)
 - [ ] Bistable relay(two seperate coils for each side)
+- [ ] Small low power relays
+- [ ] Thermocouple
+- [ ] Bimetalic switch(Heat switch)
 - [x] Linked reciever/transmitters/directional reciever
 - [x] Tall connector component
 - [x] Small Bulb
 - [x] Shunt resistor
+- [ ] Small logic level thyratron, electron tube, triode
 - [ ] Aeronautics stuff
 	- [ ] Tilt switch /w variants (Off placed axis, approaching axis)
 	- [ ] Gyroscope (Spun up flywheel off axis rotation detected by coil)
@@ -37,6 +51,7 @@ A NeoForge 1.21.1 add-on for Create: Power Grid, adding a bunch of little things
 	- [ ] Nixie tubes
 - [ ] Punch card reader component(seekable)
 	- Maybe string multiple cards together?
+- [ ] Multistranded cable that can connect to circuit board headers (1x4 small, 4x4 medium, 8x8 large)
 - [ ] Some block to route power and signal conduit cables through walls
 	- [ ] Addable endpoints, sockets, switches, and all "modular display" items
 	Maybe done with a "cable facade" like style.  Possibly work with copycat blocks and microblocks too?
@@ -53,8 +68,6 @@ A NeoForge 1.21.1 add-on for Create: Power Grid, adding a bunch of little things
 - [ ] Midi keyboard/precussion switch?
 - [ ] Add sequenced recipes for most components, gives double output
 - [ ] Large block railgun?
-
-Items appear in both a dedicated Thingymabobs tab and the vanilla Redstone Blocks tab.
 
 ## Setup
 
