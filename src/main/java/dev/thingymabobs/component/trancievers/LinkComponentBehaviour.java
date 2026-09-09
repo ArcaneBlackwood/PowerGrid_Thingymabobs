@@ -25,6 +25,8 @@ import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxRenderer;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform;
 import com.simibubi.create.foundation.gui.AllIcons;
 import com.simibubi.create.infrastructure.config.AllConfigs;
+
+import dev.thingymabobs.mixin.LinkBehaviourExt;
 import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.data.Iterate;
 import net.createmod.catnip.math.VecHelper;
@@ -50,7 +52,7 @@ import net.minecraft.world.phys.Vec3;
 public class LinkComponentBehaviour {
 	public LinkBehaviour link;
 	protected AABB slot1, slot2;
-	protected int value;
+	protected float value;
 	public boolean isTransmitter;
 
 	protected LinkComponentBehaviour(boolean isTransmitter, AABB slot1, AABB slot2) {
@@ -68,18 +70,13 @@ public class LinkComponentBehaviour {
 		blockEntity.attachBehaviourLate(multi);
 		Pair<ValueBoxTransform, ValueBoxTransform> slots = Pair.of(null, null);
 		if (isTransmitter)
-			link = LinkBehaviour.transmitter(blockEntity, slots, () -> value);
-		else
-			link = LinkBehaviour.receiver(blockEntity, slots, (int value) -> this.value = value);
+			link = LinkBehaviour.transmitter(blockEntity, slots, () -> Math.round(value));
+		else {
+			link = LinkBehaviour.receiver(blockEntity, slots, null);
+			LinkBehaviourExt linkExt = (LinkBehaviourExt)link;
+			linkExt.setRecieveCallback((float value) -> this.value = value);
+		}
 		multi.addBehaviour(placed.x + placed.y * 128, link);
-	}
-	public void load(PlacedComponent placed) {
-		if (link == null || link.blockEntity == null || link.blockEntity.isRemoved()) return;
-		ItemStack newSlot1 = placed.get(ATrancieverComponent.PROP_SLOT1);
-		ItemStack newSlot2 = placed.get(ATrancieverComponent.PROP_SLOT2);
-		Couple<Frequency> key = link.getNetworkKey();
-		if (!ItemStack.matches(newSlot1, key.getFirst().getStack())) link.setFrequency(true, newSlot1);
-		if (!ItemStack.matches(newSlot2, key.getSecond().getStack())) link.setFrequency(false, newSlot2);
 	}
 	public void save(PlacedComponent placed) {
 		if (link == null || link.blockEntity == null || link.blockEntity.isRemoved()) return;
@@ -95,6 +92,14 @@ public class LinkComponentBehaviour {
 			placed.notifyClients(ATrancieverComponent.PROP_SLOT2);
 		}
 	}
+	public void load(PlacedComponent placed) {
+		if (link == null || link.blockEntity == null || link.blockEntity.isRemoved()) return;
+		ItemStack newSlot1 = placed.get(ATrancieverComponent.PROP_SLOT1);
+		ItemStack newSlot2 = placed.get(ATrancieverComponent.PROP_SLOT2);
+		Couple<Frequency> key = link.getNetworkKey();
+		if (!ItemStack.matches(newSlot1, key.getFirst().getStack())) link.setFrequency(true, newSlot1);
+		if (!ItemStack.matches(newSlot2, key.getSecond().getStack())) link.setFrequency(false, newSlot2);
+	}
 	public void onRemove() {
 		if (link == null || link.blockEntity == null || link.blockEntity.isRemoved()) return;
 		MultiBehaviour<Integer> multi = link.blockEntity.getBehaviour(MultiBehaviour.getType(Integer.class));
@@ -104,10 +109,10 @@ public class LinkComponentBehaviour {
 	}
 
 	protected static Matrix4f ROTATE_XN90 = new Matrix4f(
-  1,  0,  0,  0,
-  0,  0, 1,  0,
-  0,  -1,  0,  0,
-  0,  0,  0,  1);
+		1,  0,  0,  0,
+		0,  0, 1,  0,
+		0,  -1,  0,  0,
+		0,  0,  0,  1);
 	public void render(PlacedComponent placed, float partialTicks, PoseStack ms, MultiBufferSource buffer, int light, int overlay) {
 		if (link == null) return;
 
@@ -224,10 +229,10 @@ public class LinkComponentBehaviour {
 	}
 	
 	
-	public int getRecieved() {
+	public float getRecieved() {
 		return value;
 	}
-	public void setTransmission(int value) {
+	public void setTransmission(float value) {
 		if (value < 0) value = 0;
 		if (value > 15) value = 15;
 		if (value == this.value) return;

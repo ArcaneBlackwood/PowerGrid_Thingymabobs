@@ -23,6 +23,13 @@ public class ModSounds {
 			SoundEvent.createVariableRangeEvent(
 				ResourceLocation.fromNamespaceAndPath(Thingymabobs.MOD_ID, "potato_electrocute"))
 		);
+	public static final DeferredHolder<SoundEvent, SoundEvent> BATTERY_REPLACE =
+		SOUND_EVENTS.register("battery_replace", () ->
+			SoundEvent.createVariableRangeEvent(
+				ResourceLocation.fromNamespaceAndPath(Thingymabobs.MOD_ID, "battery_replace"))
+		);
+
+
 	public static final DeferredHolder<SoundEvent, SoundEvent> ELECTRIC_FURNACE_OPEN =
 		SOUND_EVENTS.register("electric_furnace.open", () ->
 			SoundEvent.createVariableRangeEvent(

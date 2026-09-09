@@ -1,8 +1,12 @@
 package dev.thingymabobs.component;
 
 import dev.thingymabobs.Thingymabobs;
+import dev.thingymabobs.component.properties.LazyConstantProperty;
+import dev.thingymabobs.config.properties.CProperties;
+
 import com.google.common.collect.ImmutableCollection;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -16,6 +20,7 @@ import org.patryk3211.powergrid.circuits.schematic.PlacedComponent;
 import org.patryk3211.powergrid.circuits.thermal.ThermalBuilder;
 import org.patryk3211.powergrid.collections.ModdedSoundEvents;
 import org.patryk3211.powergrid.electricity.sim.SwitchedWire;
+import org.patryk3211.powergrid.utility.Unit;
 import org.patryk3211.powergrid.circuits.components.OrientableComponent;
 import org.patryk3211.powergrid.circuits.components.IInteractableComponent;
 import org.patryk3211.powergrid.circuits.components.IGoggleLabel;
@@ -27,44 +32,56 @@ import java.util.List;
 
 public class SwitchTPSTComponent extends OrientableComponent implements IInteractableComponent, IGoggleLabel {
     private static final ComponentFootprint FOOTPRINT = new ComponentFootprint.Builder(
-				5,3, "component." + Thingymabobs.MOD_ID + ".switch_tpst", null)
-            .addPad(0, 0, 0, "Common", "C")
-            .addPad(2, 0, 1, "Common", "C")
-            .addPad(4, 0, 2, "Common", "C")
-            .addPad(0, 2, 3, "Normally Open", "NO")
-            .addPad(2, 2, 4, "Normally Open", "NO")
-            .addPad(4, 2, 5, "Normally Open", "NO")
-            .withItem().withOutline().build();
+            5,3, "component." + Thingymabobs.MOD_ID + ".switch_tpst", null)
+        .addPad(0, 0, 0, "Common", "C")
+        .addPad(2, 0, 1, "Common", "C")
+        .addPad(4, 0, 2, "Common", "C")
+        .addPad(0, 2, 3, "Normally Open", "NO")
+        .addPad(2, 2, 4, "Normally Open", "NO")
+        .addPad(4, 2, 5, "Normally Open", "NO")
+        .withItem().withOutline().build();
+    
+    protected static CProperties.Prop CONFIG = null;
+    public static void configUpdated(CProperties.Prop prop) {
+        CONFIG = prop;
+        MAX_CURRENT.markDirty();
+        RESISTANCE.markDirty();
+    }
 
     public static final BooleanProperty STATE = SwitchComponent.STATE;
+    public static final LazyConstantProperty MAX_CURRENT = new LazyConstantProperty(
+        Thingymabobs.MOD_ID, "current_max",
+        () -> Unit.CURRENT.formatWithPrefixes(Mth.sqrt(CONFIG.getThermal().getPower() / CONFIG.getResistance().get())).string());
+    public static final LazyConstantProperty RESISTANCE = new LazyConstantProperty(
+        Thingymabobs.MOD_ID, "resistance",
+        () -> Unit.RESISTANCE.formatWithPrefixes(CONFIG.getResistance().get()).string());
+        
 
     public SwitchTPSTComponent() {
         super(FOOTPRINT);
     }
-
     @Override
     protected void addProperties(ImmutableCollection.Builder<ComponentProperty<?>> properties) {
         super.addProperties(properties);
-        properties.add(STATE, LABEL, current(16));
+        properties.add(LABEL, STATE, MAX_CURRENT, RESISTANCE);
     }
-
     @Override
     public void bake(@NotNull PlacedComponent placed, @NotNull ComponentCircuitBuilder builder, @NotNull ThermalBuilder.IEmitter thermals) {
-        var wireNO1 = builder.connectSwitch(0.1f, builder.terminalNode(0), builder.terminalNode(3), placed.get(STATE));
-        var wireNO2 = builder.connectSwitch(0.1f, builder.terminalNode(1), builder.terminalNode(4), placed.get(STATE));
-        var wireNO3 = builder.connectSwitch(0.1f, builder.terminalNode(2), builder.terminalNode(5), placed.get(STATE));
+        float resistance = CONFIG.getResistance().get();
+        var wireNO1 = builder.connectSwitch(resistance, builder.terminalNode(0), builder.terminalNode(3), placed.get(STATE));
+        var wireNO2 = builder.connectSwitch(resistance, builder.terminalNode(1), builder.terminalNode(4), placed.get(STATE));
+        var wireNO3 = builder.connectSwitch(resistance, builder.terminalNode(2), builder.terminalNode(5), placed.get(STATE));
         placed.add(wireNO1);
         placed.add(wireNO2);
         placed.add(wireNO3);
-        thermals.builder()
-                .setMaxCurrent(1.0f, 0.1f, 150).setThermalMass(0.04f)
-                .addHeatSource(wireNO1).addHeatSource(wireNO2).addHeatSource(wireNO3);
+        CONFIG.getThermal().apply(thermals)
+            .addHeatSource(wireNO1).addHeatSource(wireNO2).addHeatSource(wireNO3);
     }
-
     @Override
     public VoxelShape getShape(@NotNull PlacedComponent placed) {
         return IInteractableComponent.extrudedFootprint(placed, 2 / 16f);
     }
+
 
     @Override
     public InteractionResult use(CircuitBoardBlockEntity be, PlacedComponent placed, Player player) {
@@ -103,7 +120,6 @@ public class SwitchTPSTComponent extends OrientableComponent implements IInterac
                 ? Thingymabobs.asResource("switch_long_on")
                 : Thingymabobs.asResource("switch_long");
     }
-
     @Override
     public @NotNull Collection<ResourceLocation> requestedModels() {
         return List.of(

@@ -2,6 +2,7 @@ package dev.thingymabobs.blocks.battery;
 
 import dev.thingymabobs.client.ISoundSource;
 import dev.thingymabobs.client.PotatoElectrocuteSoundInstance;
+import dev.thingymabobs.config.properties.CProperties;
 import dev.thingymabobs.registry.ModBlockEntities;
 import dev.thingymabobs.registry.ModLang;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
@@ -9,6 +10,8 @@ import org.jetbrains.annotations.Nullable;
 import org.patryk3211.powergrid.electricity.base.ElectricBehaviour;
 import org.patryk3211.powergrid.electricity.base.ThermalBehaviour;
 import org.patryk3211.powergrid.electricity.battery.BatteryBlockEntity;
+import org.patryk3211.powergrid.electricity.battery.BatterySpec;
+
 import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -32,6 +35,17 @@ public class PotatoBatteryArrayEntity extends BatteryBlockEntity implements Elec
 	protected float electrocuteVolume = 0f;
 	public boolean hasAudioSource = false;
 	
+    protected static CProperties.Prop CONFIG_POTATO = null, CONFIG_POISON = null;
+	protected static BatterySpec SPEC_POTATO, SPEC_POISON;
+    public static void configUpdatedPotato(CProperties.Prop prop) {
+        CONFIG_POTATO = prop;
+		SPEC_POTATO = prop.getBattery();
+    }
+    public static void configUpdatedPoison(CProperties.Prop prop) {
+        CONFIG_POISON = prop;
+		SPEC_POISON = prop.getBattery();
+    }
+
     public PotatoBatteryArrayEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.POTATO_BATTERY_ARRAY.get(), pos, state);
 		if (state.getBlock() instanceof PoisonousPotatoBatteryArray) {

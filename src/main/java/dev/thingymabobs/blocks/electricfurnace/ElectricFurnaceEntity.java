@@ -2,6 +2,8 @@ package dev.thingymabobs.blocks.electricfurnace;
 
 import dev.thingymabobs.Thingymabobs;
 import dev.thingymabobs.client.SoundScapeSource;
+import dev.thingymabobs.config.properties.CProperties;
+import dev.thingymabobs.config.properties.Thermal;
 import dev.thingymabobs.registry.ModBlockEntities;
 import dev.thingymabobs.registry.ModLang;
 import dev.thingymabobs.registry.ModSoundScapes;
@@ -59,17 +61,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCapability.Provider, IHaveGoggleInformation, MenuProvider, SoundScapeSource {
-    public static final float MAX_POWER = 5000f;
-    public static final float BLOW_POWER = MAX_POWER * 18 / 13 * 1.5f;
-    public static final float MAX_TEMPERATURE = 2000f;
-    public static final float OVERHEAT_TEMPERATURE = MAX_TEMPERATURE * 18 / 13;
+    protected static CProperties.Prop CONFIG = null;
+    protected static Thermal THERMAL;
+    protected static ElectricFurnaceConfig EF_CONFIG;
+    protected static float DISSIPATOIN_DOOR_OPEN;
+    protected static float BLOW_POWER;
+    public static void configUpdated(CProperties.Prop prop) {
+        CONFIG = prop;
+        EF_CONFIG = prop.get(ElectricFurnaceConfig.class, "ef");
+        THERMAL = prop.getThermal();
+        DISSIPATOIN_DOOR_OPEN = ThermalBehaviour.dissipationFactor(THERMAL.getPower(), EF_CONFIG.getDoorOpenTemp()) 
+            - ThermalBehaviour.dissipationFactor(THERMAL.getPower(), THERMAL.getTempMax());
+        BLOW_POWER = THERMAL.getPower() * 18 / 13 * EF_CONFIG.getCoilPowerMul();
+    }
+
     public static final int SLOTS_INPUT = 4, SLOTS_OUTPUT = 4;
-    public static final int ITEMS_PER_PROCESS = 16;
-    public static final float SPEED_MAX_TEMP = 2f;
-    public static final float SPEED_BURN_PER_DEGREE = 2 / 400f;
-    public static final float BURN_DURATION = 10 * 20;
-    public static final float DISSIPATOIN_DOOR_OPEN = ThermalBehaviour.dissipationFactor(MAX_POWER, 500f) 
-        - ThermalBehaviour.dissipationFactor(MAX_POWER, MAX_TEMPERATURE);
 
 
     protected SwitchedWire wire;
@@ -103,8 +109,8 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
     }
     @Override
     public @Nullable ThermalBehaviour specifyThermalBehaviour() {
-        return ThermalBehaviour.fromConfig(this, OVERHEAT_TEMPERATURE)
-            .behaviourFlags(ThermalBehaviour.OVERHEAT_PARTICLES);
+        return THERMAL.createBehaviour(this)
+            .behaviourFlags(ThermalBehaviour.OVERHEAT_PARTICLES | ThermalBehaviour.OVERHEAT_EXPLOSION);
     }
     @Override
     public void initialize() {
@@ -233,15 +239,17 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
 
     @Override
     public void electricalTick() {
+        if (CONFIG == null) return;
         applyPower(wire);
         BlockState state = getBlockState();
-        if(!state.getValue(ElectricFurnace.BLOWN) && (thermalBehaviour.isOverheated() || wire.power() > BLOW_POWER)) {
+        if(!state.getValue(ElectricFurnace.BLOWN) && (wire.power() > BLOW_POWER)) {
 			setBlown(true);
         }
     }
     @Override
     public void tick() {
         super.tick();
+        if (CONFIG == null) return;
         if (level.isClientSide) {
             doorState = ElectricFurnaceRenderer.approach(doorState, isDoorOpen() ? 1 : 0,
                 ElectricFurnaceRenderer.DOOR_SPEED * 0.05f);
@@ -256,7 +264,7 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
             contentsChanged = false;
             if (recipe == null)
                 findRecipe();
-            else if (recipe.testRecipe(level, getShadow(), ITEMS_PER_PROCESS, null) != recipe.getMultiplier() || recipe.getMultiplier() == 0)
+            else if (recipe.testRecipe(level, getShadow(), EF_CONFIG.getItemsPerProcess(), null) != recipe.getMultiplier() || recipe.getMultiplier() == 0)
                 findRecipe();
             notifyUpdate();
         }
@@ -274,11 +282,11 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
                 if (burnTimeOutputs[i] < 0) burnTimeOutputs[i] = 0;
                 continue;
             }
-            float burnSpeed = Math.max(0, (temp - burnTemp) * SPEED_BURN_PER_DEGREE);
+            float burnSpeed = Math.max(0, (temp - burnTemp) * EF_CONFIG.getOverburnSpeedMul());
             burnTimeOutputs[i] += burnSpeed;
-            if (burnTimeOutputs[i] >= BURN_DURATION) {
+            if (burnTimeOutputs[i] >= EF_CONFIG.getBurnTicks()) {
                 burnTimeOutputs[i] = 0;
-                List<ItemStack> outputs = ElectricFurnaceRecipe.Either.getBurntOutputItem(level.random, ITEMS_PER_PROCESS, slot);
+                List<ItemStack> outputs = ElectricFurnaceRecipe.Either.getBurntOutputItem(level.random, EF_CONFIG.getItemsPerProcess(), slot);
                 Thingymabobs.LOGGER.info("Burnt output: "+i+" "+slot+" into #"+outputs.size());
                 for (ItemStack output : outputs) {
                     Thingymabobs.LOGGER.info("   item: "+output);
@@ -291,7 +299,7 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
         float minTemp = recipe.getMinTemp();
         float maxTemp = recipe.getMaxTemp();
         goingToBurn = recipe.shouldBurnInput(temp);
-        float progressSpeed = Math.max(0, (temp - minTemp) * SPEED_MAX_TEMP / (maxTemp - minTemp));
+        float progressSpeed = Math.max(0, (temp - minTemp) * EF_CONFIG.getMaxSpeedMul() / (maxTemp - minTemp));
         if (minTemp <= temp && recipeFits) {
             progress += progressSpeed;
             if (progress >= recipe.getProcessingTime()) applyRecipe();
@@ -303,6 +311,7 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
     @Override
     public void lazyTick() {
         super.lazyTick();
+        if (CONFIG == null) return;
         if (level.isClientSide) return;
         checkMenuCount();
         if (recipe != null) {
@@ -316,7 +325,7 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
         }
     }
     private void applyRecipe() {
-        List<ItemStack> outputs = recipe.applyRecipe(level, getShadow(), ITEMS_PER_PROCESS, thermalBehaviour.getTemperature());
+        List<ItemStack> outputs = recipe.applyRecipe(level, getShadow(), EF_CONFIG.getItemsPerProcess(), thermalBehaviour.getTemperature());
         progress = 0;
         recipe = null;
         contentsChanged = true;
@@ -360,7 +369,7 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
             for (int i = 0; i < SLOTS_INPUT; i++) isProcessing[i] = false;
             return;
         }
-        recipe.realizeRecipe(level, shadow, ITEMS_PER_PROCESS, isProcessing);
+        recipe.realizeRecipe(level, shadow, EF_CONFIG.getItemsPerProcess(), isProcessing);
         List<ItemStack> outputs = recipe.getResults();
         List<ItemStack> slots = getShadowCopy();
         mainLoop: for (ItemStack output : outputs) {
@@ -414,7 +423,7 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
     }
     @Override
     public boolean getSoundScapeState() {
-        float powerNorm = Mth.abs((float)(wire.power()/ MAX_POWER));
+        float powerNorm = Mth.abs((float)(wire.power()/ THERMAL.getPower()));
         return powerNorm >= 0.05f;
     }
     @OnlyIn(Dist.CLIENT)
@@ -497,28 +506,30 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
         return menuCount > 0;
     }
     public int getCoilLevel() {
-        float powerNorm = Mth.abs((float)(wire.power()/ MAX_POWER));
+        if (CONFIG == null) return 0;
+        float powerNorm = Mth.abs((float)(wire.power()/ THERMAL.getPower()));
         if (powerNorm < 0.05) return 0;
         return Math.min(Mth.ceil(powerNorm * 4), 3);
     }
     public int getTempLevel() {
-        if (thermalBehaviour == null) return 0;
+        if (thermalBehaviour == null || CONFIG == null) return 0;
         float temp = thermalBehaviour.getTemperature();
-        if (temp < ElectricFurnaceRecipe.TEMP_SMOKE_MIN) return 0;
-        if (temp < ElectricFurnaceRecipe.TEMP_SMOKE_MAX) return 1;
-        if (temp < ElectricFurnaceRecipe.TEMP_SMELT_MIN) return 2;
+        if (temp < EF_CONFIG.getTempSmokeMin()) return 0;
+        if (temp < EF_CONFIG.getTempSmokeMax()) return 1;
+        if (temp < EF_CONFIG.getTempSmeltMin()) return 2;
         return 3;
     }
     public float getTempNorm() {
-        if (thermalBehaviour == null) return 0f;
-        return thermalBehaviour.getTemperature() / OVERHEAT_TEMPERATURE;
+        if (thermalBehaviour == null || CONFIG == null) return 0f;
+        return thermalBehaviour.getTemperature() / THERMAL.getOverheat();
     }
 	public float getProgress(int slot) {
 		return goingToBurn || !isProcessing[slot] ? 0 : recipe == null ? progress : progress / recipe.getProcessingTime();
 	}
 	public float getBurnProgress(boolean input, int slot) {
+        if (CONFIG == null) return 0;
 		if (input) return goingToBurn ? getProgress(slot) : 0f;
-		else return burnTimeOutputs[slot] / BURN_DURATION;
+		else return burnTimeOutputs[slot] / EF_CONFIG.getBurnTicks();
 	}
 
 
@@ -551,7 +562,7 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
         }
         if (burningItems) {
             List<Byte> burnings = new ArrayList<>();
-            float burnScale = 255 / BURN_DURATION;
+            float burnScale = 255 / EF_CONFIG.getBurnTicks();
             for (int i = 0; i < SLOTS_OUTPUT; i++) burnings.add((byte)(burnTimeOutputs[i] * burnScale));
             tag.putByteArray("BurnO", burnings);
         }
@@ -579,7 +590,7 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
         }
         if (tag.contains("BurnO")) {
             byte[] burnings = tag.getByteArray("BurnO");
-            float burnScale = BURN_DURATION / 255;
+            float burnScale = EF_CONFIG.getBurnTicks() / 255;
             for (int i = 0; i < SLOTS_OUTPUT; i++) burnTimeOutputs[i] = (burnings[i] & 0xFF) * burnScale;
         } else {
             for (int i = 0; i < SLOTS_OUTPUT; i++) burnTimeOutputs[i] = 0;

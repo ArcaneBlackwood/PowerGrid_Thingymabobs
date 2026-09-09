@@ -1,10 +1,10 @@
 package dev.thingymabobs.component;
 
 import dev.thingymabobs.Thingymabobs;
-import dev.thingymabobs.blocks.battery.PoisonousPotatoBattery;
+import dev.thingymabobs.component.properties.DynamicFloatProperty;
+import dev.thingymabobs.config.properties.CProperties;
 import dev.thingymabobs.mixin.ThermalBuilderExt;
 import com.google.common.collect.ImmutableCollection;
-
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
@@ -20,6 +20,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
+import org.patryk3211.powergrid.PowerGrid;
 import org.patryk3211.powergrid.circuits.circuitboard.CircuitBoardBlock;
 import org.patryk3211.powergrid.circuits.circuitboard.CircuitBoardBlockEntity;
 import org.patryk3211.powergrid.circuits.circuitboard.ComponentCircuitBuilder;
@@ -27,8 +28,6 @@ import org.patryk3211.powergrid.circuits.components.IInteractableComponent;
 import org.patryk3211.powergrid.circuits.components.OrientableComponent;
 import org.patryk3211.powergrid.circuits.components.properties.CalculatedProperty;
 import org.patryk3211.powergrid.circuits.components.properties.ComponentProperty;
-import org.patryk3211.powergrid.circuits.components.properties.ConstantProperty;
-import org.patryk3211.powergrid.circuits.components.properties.FloatProperty;
 import org.patryk3211.powergrid.circuits.components.properties.IntProperty;
 import org.patryk3211.powergrid.circuits.schematic.ComponentFootprint;
 import org.patryk3211.powergrid.circuits.schematic.PlacedComponent;
@@ -38,46 +37,55 @@ import org.patryk3211.powergrid.circuits.thermal.ThermalUnit;
 import org.patryk3211.powergrid.electricity.battery.BatterySpec;
 import org.patryk3211.powergrid.electricity.sim.node.VoltageSourceCoupling;
 import org.patryk3211.powergrid.utility.Unit;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
 /** Dont look in here, its messy :(. */
 public final class PoisonousPotatoBatteryComponent extends OrientableComponent implements IInteractableComponent {
-	public static final BatterySpec BATTERY_SPEC = PoisonousPotatoBattery.BATTERY_SPEC;
     private static final ComponentFootprint FOOTPRINT = new ComponentFootprint.Builder(
 				6,4, "component." + Thingymabobs.MOD_ID + ".potato_battery", null)
             .addPad(1, 1, 0, "Positive", "+")
             .addPad(4, 2, 1, "Negative", "-")
             .withItem().withOutline().build();
 
-	public static final ConstantProperty CAPACITY_AH = new ConstantProperty(
-		Thingymabobs.MOD_ID,
-		"dry_cell_capacity",
-		Unit.POWER.formatWithPrefixes(BATTERY_SPEC.getMaxCharge()).component()
-	);
-	public static final FloatProperty STATE_OF_CHARGE = (FloatProperty) new FloatProperty(
-		Thingymabobs.MOD_ID,
-		"soc",
-		BATTERY_SPEC.getInitialCharge(),
-		0.0F,
-		BATTERY_SPEC.getMaxCharge()
-	).hidden().cast();
+
+    protected static CProperties.Prop CONFIG = null;
+	protected static BatterySpec SPEC;
+    public static void configUpdated(CProperties.Prop prop) {
+        CONFIG = prop;
+		SPEC = prop.getBattery();
+    }
+
+	public static CalculatedProperty<Float> CAPACITY_AH = new CalculatedProperty<>(
+        Thingymabobs.MOD_ID, "capacity",
+        placed -> SPEC.getMaxCharge(),
+        value -> Unit.ENERGY.formatWithPrefixes(value).string()
+    );
+	public static DynamicFloatProperty STATE_OF_CHARGE = new DynamicFloatProperty(
+        Thingymabobs.MOD_ID, "soc",
+        () -> SPEC.getInitialCharge(),
+        () -> 0.0F,
+        () -> SPEC.getMaxCharge()
+    ).hidden().cast();
 	public static final IntProperty STATE = new IntProperty(
-			Thingymabobs.MOD_ID,"baked", 0, 0, 2).hidden().cast();
+        Thingymabobs.MOD_ID,"potato.baked", 0, 0, 2).hidden().cast();
 	public static final CalculatedProperty<Float> OPEN_VOLTAGE = new CalculatedProperty<>(
-        Thingymabobs.MOD_ID,
-        "open_voltage",
-        placed -> (float) BATTERY_SPEC.calculateVoltage(placed.get(STATE_OF_CHARGE) / BATTERY_SPEC.getMaxCharge()),
+        Thingymabobs.MOD_ID, "open_voltage",
+        placed -> (float) SPEC.calculateVoltage(placed.get(STATE_OF_CHARGE) / SPEC.getMaxCharge()),
         value -> String.format(Locale.ROOT, "%.2f V", value)
 	);
 	public static final CalculatedProperty<Float> INTERNAL_RESISTANCE = new CalculatedProperty<>(
-        Thingymabobs.MOD_ID,
-        "internal_resistance",
-        placed -> (float) BATTERY_SPEC.calculateResistance(placed.get(STATE_OF_CHARGE) / BATTERY_SPEC.getMaxCharge()),
-        value -> String.format(Locale.ROOT, "%.3f Ω", value)
+        Thingymabobs.MOD_ID, "internal_resistance",
+        placed -> (float) SPEC.calculateResistance(placed.get(STATE_OF_CHARGE) / SPEC.getMaxCharge()),
+        value -> Unit.RESISTANCE.formatWithPrefixes(value).string()
 	);
+	public static final CalculatedProperty<Float> MAX_POWER = new CalculatedProperty<>(
+        PowerGrid.MOD_ID, "power",
+        placed -> calculateMaxPower(),
+        value -> Unit.POWER.formatWithPrefixes(value).string()
+	);
+
 
     public static final int STATE_POTATO = 0;
     public static final int STATE_BAKED = 1;
@@ -95,11 +103,11 @@ public final class PoisonousPotatoBatteryComponent extends OrientableComponent i
 		properties.add(INTERNAL_RESISTANCE);
 		properties.add(STATE_OF_CHARGE);
 		properties.add(STATE);
-		properties.add(power(calculateMaxPower()));
+		properties.add(MAX_POWER);
 	}
 	public static float calculateMaxPower() {
-		float v = BATTERY_SPEC.calculateVoltage(1);
-		return v*v/BATTERY_SPEC.calculateResistance(1);
+		float v = SPEC.calculateVoltage(1);
+		return v*v/SPEC.calculateResistance(1);
 	}
 	@Override
 	public void bake(
@@ -107,8 +115,8 @@ public final class PoisonousPotatoBatteryComponent extends OrientableComponent i
         @NotNull ComponentCircuitBuilder builder,
         ThermalBuilder.@NotNull IEmitter thermals
 	) {
-		float soc = Mth.clamp(BATTERY_SPEC.getInitialCharge() / BATTERY_SPEC.getMaxCharge(), 0, 1);
-		float resistance = (float) BATTERY_SPEC.calculateResistance(soc);
+		float soc = Mth.clamp(SPEC.getInitialCharge() / SPEC.getMaxCharge(), 0, 1);
+		float resistance = (float) SPEC.calculateResistance(soc);
 		
 		VoltageSourceCoupling source = builder.addInternalNode(
             VoltageSourceCoupling.class,
@@ -150,11 +158,11 @@ public final class PoisonousPotatoBatteryComponent extends OrientableComponent i
 			if (!Double.isFinite(source.getCurrent()))
 				return true;
 
-			float capacity = BATTERY_SPEC.getMaxCharge();
+			float capacity = SPEC.getMaxCharge();
 			float soc = Mth.clamp(placed.get(STATE_OF_CHARGE).floatValue(), 0, capacity);
 			soc = Mth.clamp(soc - Math.max(0.0f, power) * 0.05f, 0, capacity);
 			placed.set(STATE_OF_CHARGE, soc);
-			updateSource(placed, soc / BATTERY_SPEC.getMaxCharge());
+			updateSource(placed, soc / SPEC.getMaxCharge());
 		}
 
         if(placed.isClient() && data.thermal != null) {
@@ -220,7 +228,7 @@ public final class PoisonousPotatoBatteryComponent extends OrientableComponent i
 		if (!(placed.customData instanceof CustomData data)) return InteractionResult.PASS;
 		ItemStack stack = player.getMainHandItem();
         int state = placed.get(STATE);
-        double usage = placed.get(STATE_OF_CHARGE) / BATTERY_SPEC.getMaxCharge();
+        double usage = placed.get(STATE_OF_CHARGE) / SPEC.getMaxCharge();
         boolean hasItems = stack.is(Items.POISONOUS_POTATO) && stack.getCount() >= 1;
 
         if (hasItems || (player.isShiftKeyDown() && player.isCreative())) {
@@ -232,7 +240,7 @@ public final class PoisonousPotatoBatteryComponent extends OrientableComponent i
                 if (potatos != null)
                     if (!player.addItem(potatos)) player.spawnAtLocation(potatos);
             }
-            placed.set(STATE_OF_CHARGE, BATTERY_SPEC.getInitialCharge());
+            placed.set(STATE_OF_CHARGE, SPEC.getInitialCharge());
             updateSource(placed, 1.0f);
             data.thermal.setTemperature(0);
             setState(placed, STATE_POTATO);
@@ -274,8 +282,8 @@ public final class PoisonousPotatoBatteryComponent extends OrientableComponent i
 		if (!(placed.customData instanceof CustomData data)) return;
         if (data.source == null) return;
         if (placed.get(STATE) != STATE_POTATO) return;
-		data.source.setVoltage(BATTERY_SPEC.calculateVoltage(soc));
-		data.source.setResistance(BATTERY_SPEC.calculateResistance(soc));
+		data.source.setVoltage(SPEC.calculateVoltage(soc));
+		data.source.setResistance(SPEC.calculateResistance(soc));
 	}
 
     @Override

@@ -7,7 +7,7 @@ import dev.thingymabobs.blocks.LavaLampRenderer;
 import dev.thingymabobs.blocks.PowerShuntEntity;
 import dev.thingymabobs.blocks.battery.PotatoBatteryArrayEntity;
 import dev.thingymabobs.blocks.battery.PotatoBatteryBlockEntity;
-import dev.thingymabobs.blocks.battery.PotatoBatteryEntity;
+import dev.thingymabobs.blocks.battery.PoisonousPotatoBatteryEntity;
 import dev.thingymabobs.blocks.electricfurnace.ElectricFurnaceEntity;
 import dev.thingymabobs.blocks.electricfurnace.ElectricFurnaceRenderer;
 import dev.thingymabobs.blocks.switches.SwitchBlockEntity;
@@ -38,9 +38,9 @@ public final class ModBlockEntities {
 			ModBlocks.MV_SWITCH_DPST.get())
 		.build(null));
 
-	public static final Supplier<BlockEntityType<PotatoBatteryEntity>> POTATO_BATTERY = 
+	public static final Supplier<BlockEntityType<PoisonousPotatoBatteryEntity>> POTATO_BATTERY = 
     BLOCK_ENTITY_TYPES.register("potato_battery", () -> 
-        BlockEntityType.Builder.of(PotatoBatteryEntity::new,
+        BlockEntityType.Builder.of(PoisonousPotatoBatteryEntity::new,
 			ModBlocks.POISONOUS_POTATO_BATTERY.get())
 		.build(null));
 	public static final Supplier<BlockEntityType<PotatoBatteryArrayEntity>> POTATO_BATTERY_ARRAY = 

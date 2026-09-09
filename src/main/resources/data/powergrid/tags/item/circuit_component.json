@@ -2,7 +2,6 @@
   "replace": false,
   "values": [
     "thingymabobs:transformer",
-    "thingymabobs:scr",
     "thingymabobs:dry_cell",
     "thingymabobs:dip_switch",
     "thingymabobs:ceramic_capacitor",
@@ -12,6 +11,7 @@
     "thingymabobs:transmitter",
     "thingymabobs:reciever",
     "thingymabobs:directional_reciever",
+    "thingymabobs:distance_reciever",
     "thingymabobs:tall_connector",
     "thingymabobs:buzzer",
     "thingymabobs:variable_buzzer",
@@ -23,6 +23,6 @@
     "powergrid:potato_battery",
     "thingymabobs:poisonous_potato_battery",
     "thingymabobs:accelerometer",
-    "distance_reciever"
+    "thingymabobs:gyroscope"
   ]
 }

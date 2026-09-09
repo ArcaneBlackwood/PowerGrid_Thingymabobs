@@ -39,7 +39,6 @@ import org.patryk3211.powergrid.electricity.GlobalElectricNetworks;
 import org.patryk3211.powergrid.electricity.battery.AbstractBatteryBlock;
 import org.patryk3211.powergrid.electricity.battery.BatterySpec;
 import org.patryk3211.powergrid.electricity.battery.CustomConnectivityHandler;
-import org.patryk3211.powergrid.electricity.battery.SimpleBatterySpec;
 import org.patryk3211.powergrid.electricity.deviceconnector.IAcceptConnector;
 import org.patryk3211.powergrid.electricity.info.IHaveElectricProperties;
 import org.patryk3211.powergrid.electricity.info.Power;
@@ -54,12 +53,6 @@ import java.util.List;
 public class PoisonousPotatoBatteryBlock extends AbstractBatteryBlock<PotatoBatteryBlockEntity> implements IAcceptConnector, IHaveElectricProperties, IRedstoneConverterBehaviour, CustomModelItemRenderer.Provider, IPotatoBattery {
     public static final BooleanProperty BAKED = APotatoBatteryArray.BAKED;
     
-    public static final BatterySpec BATTERY_SPEC = new SimpleBatterySpec(
-		26f,
-		26f,
-		e -> 1.3f * e + 1.7f,
-		e -> (float) Math.exp(6.5f - 11f * e) + 25
-    );
     public PoisonousPotatoBatteryBlock(Properties settings) {
         super(settings);
         registerDefaultState(defaultBlockState().setValue(BAKED, false));
@@ -75,7 +68,7 @@ public class PoisonousPotatoBatteryBlock extends AbstractBatteryBlock<PotatoBatt
     }
     @Override
     public BatterySpec getSpec() {
-        return BATTERY_SPEC;
+        return PotatoBatteryBlockEntity.SPEC_POISON;
     }
     @Override
     public Item getUsedItem() {
@@ -171,7 +164,7 @@ public class PoisonousPotatoBatteryBlock extends AbstractBatteryBlock<PotatoBatt
 			} else if (isRequired) {
                 usedPotatos = stack.getCount();
                 stack.shrink(usedPotatos);
-                double energyPerPotato = BATTERY_SPEC.getMaxCharge() / 24.0d;
+                double energyPerPotato = PotatoBatteryBlockEntity.SPEC_POISON.getMaxCharge() / 24.0d;
                 if (baked) be.resetState(energyPerPotato * usedPotatos);
                 else be.setEnergy(be.getEnergy() + energyPerPotato * usedPotatos);
                 if (be.getLevel() != null) {
@@ -273,7 +266,7 @@ public class PoisonousPotatoBatteryBlock extends AbstractBatteryBlock<PotatoBatt
 
     @Override
     public void appendProperties(ItemStack stack, Player player, List<Component> tooltip) {
-        Voltage.max(BATTERY_SPEC.calculateVoltage(1), player, tooltip);
+        Voltage.max(PotatoBatteryBlockEntity.SPEC_POISON.calculateVoltage(1), player, tooltip);
         Power.max(stack, player, tooltip);
         float charge;
         float maxCharge = getSpec().getMaxCharge();

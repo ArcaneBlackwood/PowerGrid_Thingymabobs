@@ -25,17 +25,15 @@ import org.patryk3211.powergrid.electricity.base.IDecoratedTerminal;
 import org.patryk3211.powergrid.electricity.base.TerminalBoundingBox;
 import org.patryk3211.powergrid.electricity.battery.AbstractBatteryBlock;
 import org.patryk3211.powergrid.electricity.battery.BatterySpec;
-import org.patryk3211.powergrid.electricity.battery.SimpleBatterySpec;
-
+import dev.thingymabobs.config.properties.CProperties;
 import dev.thingymabobs.registry.ModBlockEntities;
 
-public class PoisonousPotatoBattery extends AbstractBatteryBlock<PotatoBatteryEntity> {
-    public static final BatterySpec BATTERY_SPEC = new SimpleBatterySpec(
-		2.88f,
-		2.88f,
-		e -> 0.7f * e + 0.8f,
-		e -> (float) Math.exp(7.2f - 7f * e) + 300
-    );
+public class PoisonousPotatoBattery extends AbstractBatteryBlock<PoisonousPotatoBatteryEntity> {
+    public static final String CONFIG_RECHARGE = "recharge_power";
+
+    public static float getRecharge(CProperties.Prop prop) {
+        return prop.getFloat(CONFIG_RECHARGE).get();
+    }
 
     public static final DirectionProperty HORIZONTAL_FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty BAKED = PotatoBatteryBlock.BAKED;
@@ -86,16 +84,16 @@ public class PoisonousPotatoBattery extends AbstractBatteryBlock<PotatoBatteryEn
 
     @Override
     public BatterySpec getSpec() {
-        return BATTERY_SPEC;
+        return PoisonousPotatoBatteryEntity.SPEC;
     }
 
     @Override
-    public Class<PotatoBatteryEntity> getBlockEntityClass() {
-        return PotatoBatteryEntity.class;
+    public Class<PoisonousPotatoBatteryEntity> getBlockEntityClass() {
+        return PoisonousPotatoBatteryEntity.class;
     }
 
     @Override
-    public BlockEntityType<? extends PotatoBatteryEntity> getBlockEntityType() {
+    public BlockEntityType<? extends PoisonousPotatoBatteryEntity> getBlockEntityType() {
         return ModBlockEntities.POTATO_BATTERY.get();
     }
 }

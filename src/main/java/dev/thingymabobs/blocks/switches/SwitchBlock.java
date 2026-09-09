@@ -1,5 +1,6 @@
 package dev.thingymabobs.blocks.switches;
 
+import dev.thingymabobs.config.properties.CProperties;
 import dev.thingymabobs.registry.ModBlockEntities;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.foundation.block.IBE;
@@ -46,11 +47,11 @@ import java.util.function.Function;
 
 @MethodsReturnNonnullByDefault
 public abstract class SwitchBlock extends ElectricBlock implements IBE<SwitchBlockEntity>, IHaveElectricProperties {
+    public static final String CONFIG_MAX_VOLTAGE = "max_voltage";
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
     public static final IntegerProperty ROTATION = CustomProperties.ROTATION_4;
     public static final IntegerProperty STATE = IntegerProperty.create("state", 0, 2);
 
-    protected float maxVoltage = 200f;
     protected boolean isButton = false;
 	protected SwitchStates switchStates;
 	//If the zero state is triggered with shift right click
@@ -106,6 +107,7 @@ public abstract class SwitchBlock extends ElectricBlock implements IBE<SwitchBlo
     }
 
     abstract public void useSound(Level world, BlockPos pos, boolean open);
+    abstract protected CProperties.Prop getConfig();
 
     @Override
     public Class<SwitchBlockEntity> getBlockEntityClass() {
@@ -118,14 +120,14 @@ public abstract class SwitchBlock extends ElectricBlock implements IBE<SwitchBlo
     }
 
     public float getMaxVoltage() {
-        return maxVoltage;
+        return getConfig().getFloat(CONFIG_MAX_VOLTAGE).get();
     }
 
     @Override
     public void appendProperties(ItemStack stack, Player player, List<Component> tooltip) {
         Resistance.series(resistance(), player, tooltip);
         Current.max(stack, player, tooltip);
-        Voltage.max(maxVoltage, player, tooltip);
+        Voltage.max(getMaxVoltage(), player, tooltip);
     }
 
     @Nullable

@@ -22,13 +22,17 @@ public class PowerShuntValueBehaviour extends ScrollValueBehaviour {
       precise.setMinimumFractionDigits(0);
       precise.setGroupingUsed(true);
    }
-   private final int minOffset;
+   private int minOffset;
 
    public PowerShuntValueBehaviour(Component label, SmartBlockEntity be, ValueBoxTransform slot, int minOffset, int max) {
       super(label, be, slot);
       this.minOffset = minOffset;
       this.between(0, max);
       this.withFormatter((i) -> precise.format(exponentialValue(minOffset, i)).replace(" ", " "));
+   }
+   public void setProps(int minOffset, int max) {
+      this.minOffset = minOffset;
+      this.between(0, max);
    }
 
    public ValueSettingsBoard createBoard(Player player, BlockHitResult hitResult) {

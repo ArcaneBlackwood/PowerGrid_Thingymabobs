@@ -1,6 +1,9 @@
 package dev.thingymabobs.component;
 
 import dev.thingymabobs.Thingymabobs;
+import dev.thingymabobs.component.properties.DynamicFloatProperty;
+import dev.thingymabobs.config.properties.CProperties;
+
 import com.google.common.collect.ImmutableCollection;
 import org.jetbrains.annotations.NotNull;
 import org.patryk3211.powergrid.circuits.circuitboard.ComponentCircuitBuilder;
@@ -14,31 +17,41 @@ import org.patryk3211.powergrid.circuits.components.OrientableComponent;
 
 public class CeramicCapacitorComponent extends OrientableComponent {
     private static final ComponentFootprint FOOTPRINT = new ComponentFootprint.Builder(
-				3, 1, "component." + Thingymabobs.MOD_ID + ".ceramic_capacitor", null)
-			.addPad(0, 0, 0)
-			.addPad(2, 0, 1)
-			.withItem().withOutline().build();
+            3, 1, "component." + Thingymabobs.MOD_ID + ".ceramic_capacitor", null)
+        .addPad(0, 0, 0)
+        .addPad(2, 0, 1)
+        .withItem().withOutline().build();
 
-    public static final FloatProperty CAPACITANCE = new FloatProperty(Thingymabobs.MOD_ID, "capacitor_value", 0.1f, 1e-8f, 10.0f);
+    protected static CProperties.Prop CONFIG = null;
+    public static void configUpdated(CProperties.Prop prop) {
+        CONFIG = prop;
+        CAPACITANCE.markDirty();
+    }
+
+    public static final DynamicFloatProperty CAPACITANCE = new DynamicFloatProperty(
+        Thingymabobs.MOD_ID, "capacitor_value", () -> CONFIG.getFloat("capacitance")).useMetrics();
     private static final ChargeProperty CHARGE = new ChargeProperty(Thingymabobs.MOD_ID, "charge");
+
 
     public CeramicCapacitorComponent() {
         super(FOOTPRINT);
     }
-
     @Override
     protected void addProperties(ImmutableCollection.Builder<ComponentProperty<?>> properties) {
         super.addProperties(properties);
         properties.add(CAPACITANCE, CHARGE);
     }
-
     @Override
     public void bake(@NotNull PlacedComponent placed, @NotNull ComponentCircuitBuilder builder, ThermalBuilder.@NotNull IEmitter thermals) {
-        var capacitorWire = new CRSeriesWire(placed.get(CAPACITANCE) / 1000, 0.01f, builder.terminalNode(0), builder.terminalNode(1));
+        var capacitorWire = new CRSeriesWire(placed.get(CAPACITANCE),
+            CONFIG.getResistance().get(), builder.terminalNode(0), builder.terminalNode(1));
         capacitorWire.setVoltage(placed.get(CHARGE));
         builder.add(capacitorWire);
         placed.add(capacitorWire);
+        CONFIG.getThermal().apply(thermals)
+            .addHeatSource(capacitorWire);
     }
+
 
     @Override
     public boolean tick(@NotNull PlacedComponent placed) {
@@ -48,7 +61,6 @@ public class CeramicCapacitorComponent extends OrientableComponent {
         }
         return true;
     }
-
     @Override
     public void stateUpdated(@NotNull PlacedComponent placed) {
         if(placed.wires.isEmpty())
@@ -56,6 +68,7 @@ public class CeramicCapacitorComponent extends OrientableComponent {
         var wire = (CRSeriesWire) placed.wires.get(0);
         wire.setVoltage(placed.get(CHARGE));
     }
+
 
     private static class ChargeProperty extends FloatProperty {
         public ChargeProperty(String namespace, String name) {

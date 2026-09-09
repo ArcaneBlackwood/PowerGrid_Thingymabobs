@@ -38,13 +38,6 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 
 public class ElectricFurnaceRecipe extends ARecipe<ElectricFurnaceRecipe.Parameters> {
-    public static final float DEFAULT_TIME_PER_PROCESS = 10; //20x faster than furnace, speed is scaled by current temp / min temp
-	public static final float VANILLA_PROCESS_SCALE = DEFAULT_TIME_PER_PROCESS / 200f;
-    public static final float TEMP_SMOKE_MIN = ElectricFurnaceEntity.MAX_TEMPERATURE * 1 / 13;
-    public static final float TEMP_SMOKE_BURN = ElectricFurnaceEntity.MAX_TEMPERATURE * 3 / 13;
-    public static final float TEMP_SMOKE_MAX = ElectricFurnaceEntity.MAX_TEMPERATURE * 5 / 13;
-    public static final float TEMP_SMELT_MIN = ElectricFurnaceEntity.MAX_TEMPERATURE * 10 / 13;
-
 	public static final Map<Item, Burnt> ITEM_BURN_TEMPS = new HashMap<>();
 	public ElectricFurnaceRecipe(Parameters params) {
 		this(ModRecipies.ELECTRIC_FURNACE, params);
@@ -65,14 +58,14 @@ public class ElectricFurnaceRecipe extends ARecipe<ElectricFurnaceRecipe.Paramet
 			AbstractCookingRecipe recipe = recipeHold.value();
 			if (getIsSmoking(recipe)) continue;
 			ITEM_BURN_TEMPS.put(recipe.getResultItem(world.registryAccess()).getItem(), 
-				new Burnt(ElectricFurnaceEntity.OVERHEAT_TEMPERATURE, Parameters.BURNT_OUTPUT_DEFAULT));
+				new Burnt(ElectricFurnaceEntity.THERMAL.getOverheat(), Parameters.BURNT_OUTPUT_DEFAULT));
 		}
 
 		for (RecipeHolder<? extends AbstractCookingRecipe> recipeHold : listVanilla) {
 			AbstractCookingRecipe recipe = recipeHold.value();
 			if (!getIsSmoking(recipe)) continue;
 			ITEM_BURN_TEMPS.put(recipe.getResultItem(world.registryAccess()).getItem(), 
-				new Burnt(TEMP_SMOKE_BURN, Parameters.BURNT_OUTPUT_DEFAULT));
+				new Burnt(ElectricFurnaceEntity.EF_CONFIG.getTempSmokeBurn(), Parameters.BURNT_OUTPUT_DEFAULT));
 		}
 
 		List<RecipeHolder<ElectricFurnaceRecipe>> list = getAll(world);
@@ -90,7 +83,7 @@ public class ElectricFurnaceRecipe extends ARecipe<ElectricFurnaceRecipe.Paramet
 	//Fetch and find recipies by using ElectricFurnaceRecipe.tryMatch(Level world, List<ItemStack> inputs)
 
 	public static class Burnt {
-		public static final Burnt DEFAULT = new Burnt(ElectricFurnaceEntity.OVERHEAT_TEMPERATURE, Parameters.BURNT_OUTPUT_DEFAULT);
+		public static final Burnt DEFAULT = new Burnt(ElectricFurnaceEntity.THERMAL.getOverheat(), Parameters.BURNT_OUTPUT_DEFAULT);
 		public float temp;
 		public NonNullList<ProcessingOutput> item;
 		public Burnt(float temp, NonNullList<ProcessingOutput> item) {
@@ -188,15 +181,16 @@ public class ElectricFurnaceRecipe extends ARecipe<ElectricFurnaceRecipe.Paramet
 		}
 
 		public float getProcessingTime() {
-			return (isElectric ? electric.params.duration : vanilla.getCookingTime() * VANILLA_PROCESS_SCALE) * multiplier;
+			return (isElectric ? electric.params.duration : vanilla.getCookingTime()
+				* ElectricFurnaceEntity.EF_CONFIG.getVanillaProcessScale()) * multiplier;
 		}
 		public float getMinTemp() {
-			return isElectric ? electric.params.temps.minTemp : 
-				vanillaIsSmoking ? TEMP_SMOKE_MIN : TEMP_SMELT_MIN;
+			return isElectric ? electric.params.temps.minTemp : vanillaIsSmoking ? 
+				ElectricFurnaceEntity.EF_CONFIG.getTempSmokeMin() : ElectricFurnaceEntity.EF_CONFIG.getTempSmeltMin();
 		}
 		public float getMaxTemp() {
-			return isElectric ? electric.params.temps.maxTemp : 
-				vanillaIsSmoking ? TEMP_SMOKE_MAX : ElectricFurnaceEntity.OVERHEAT_TEMPERATURE;
+			return isElectric ? electric.params.temps.maxTemp : vanillaIsSmoking ? 
+				ElectricFurnaceEntity.EF_CONFIG.getTempSmokeMax() : ElectricFurnaceEntity.THERMAL.getOverheat();
 		}
 		public boolean shouldBurnInput(float temp) {
 			return temp >= getMaxTemp();
@@ -370,7 +364,7 @@ public class ElectricFurnaceRecipe extends ARecipe<ElectricFurnaceRecipe.Paramet
 			return burntOutput;
 		}
 		public float duration() {
-			return duration;
+			return duration < 0  ? ElectricFurnaceEntity.EF_CONFIG.getDefaultTimePerProcess() : duration;
 		}
 		public Temps temps() {
 			return temps;
@@ -409,7 +403,7 @@ public class ElectricFurnaceRecipe extends ARecipe<ElectricFurnaceRecipe.Paramet
 			ProcessingOutput.CODEC_NEW.listOf().xmap(
 				NonNullList::copyOf, list -> list
 			).optionalFieldOf("burnt", BURNT_OUTPUT_DEFAULT).forGetter(Parameters::burntOutput),
-			Codec.FLOAT.optionalFieldOf("duration", DEFAULT_TIME_PER_PROCESS)
+			Codec.FLOAT.optionalFieldOf("duration", -1f)
 				.forGetter(Parameters::duration),
 			CODE_TEMPS.fieldOf("temps").forGetter(Parameters::temps)
 		).apply(instance, Parameters::new));

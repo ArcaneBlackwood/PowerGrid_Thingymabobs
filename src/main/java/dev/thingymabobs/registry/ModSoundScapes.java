@@ -1,10 +1,7 @@
 package dev.thingymabobs.registry;
 
-import java.util.ArrayList;
 import java.util.List;
-
 import dev.thingymabobs.client.SoundScape;
-
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;

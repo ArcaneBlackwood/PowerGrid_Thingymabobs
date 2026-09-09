@@ -9,6 +9,11 @@
       "thingymabobs:potato_electrocute"
     ]
   },
+  "battery_replace": {
+    "sounds": [
+      "thingymabobs:battery_replace"
+    ]
+  },
   "electric_furnace.open": {
     "sounds": [
       "thingymabobs:electric_furnace/open"

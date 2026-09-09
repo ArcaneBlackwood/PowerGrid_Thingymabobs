@@ -11,33 +11,22 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import java.util.List;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.patryk3211.powergrid.electricity.battery.BatterySpec;
-import org.patryk3211.powergrid.electricity.battery.SimpleBatterySpec;
-
 import dev.thingymabobs.client.CustomModelItemRenderer;
 import dev.thingymabobs.registry.ModDataComponents;
 import dev.thingymabobs.registry.ModModels;
 import com.mojang.datafixers.util.Unit;
-
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 
 public class PotatoBatteryArray extends APotatoBatteryArray implements CustomModelItemRenderer.Provider {
-    public static final BatterySpec BATTERY_SPEC = new SimpleBatterySpec(
-		0.864f,
-		0.864f,
-		e -> 0.7f * e + 0.9f,
-		e -> (float) Math.exp(9f - 8f * e) + 110
-    );
-
     public PotatoBatteryArray(Properties settings) {
         super(settings);
     }
     @Override
     public BatterySpec getSpec() {
-        return BATTERY_SPEC;
+        return PotatoBatteryArrayEntity.SPEC_POTATO;
     }
     @Override
     public PartialModel getModel(ItemStack stack) {

@@ -7,7 +7,6 @@ import org.patryk3211.powergrid.circuits.circuitboard.CircuitBoardBlock;
 import org.patryk3211.powergrid.circuits.components.properties.ComponentProperty;
 import org.patryk3211.powergrid.circuits.schematic.PlacedComponent;
 import org.patryk3211.powergrid.collections.ModdedBlocks;
-
 import dev.thingymabobs.mixin.LinkBehaviourExt;
 import dev.thingymabobs.registry.ModModels;
 import com.google.common.collect.ImmutableCollection;
@@ -26,8 +25,8 @@ public class DirectionalRecieverComponent extends AVertTrancieverComponent {
 	}
     @Override
     protected void addProperties(ImmutableCollection.Builder<ComponentProperty<?>> properties) {
+		properties.add(LABEL, PROP_RECIEVE_RESISTANCE_MIN, PROP_RECIEVE_RESISTANCE_MAX);
 		super.addProperties(properties);
-		properties.add(PROP_RECIEVE_RESISTANCE_MIN, PROP_RECIEVE_RESISTANCE_MAX);
     }
 	@Override
 	protected boolean isTransmitter() {
@@ -36,11 +35,11 @@ public class DirectionalRecieverComponent extends AVertTrancieverComponent {
 
 	
 	@Override
-	protected void updateState(PlacedComponent placed, ServerState state, int currentSignal) {
+	protected void updateState(PlacedComponent placed, ServerState state, float currentSignal) {
 		state.signalWire.setResistance(getSignalResistance(placed, currentSignal));
 	}
 	@Override
-	protected float getSignalResistance(PlacedComponent placed, int signalValue) {
+	protected float getSignalResistance(PlacedComponent placed, float signalValue) {
 		return Mth.lerp(signalValue / 15f, placed.get(PROP_RECIEVE_RESISTANCE_MAX), placed.get(PROP_RECIEVE_RESISTANCE_MIN));
 	}
 
@@ -53,7 +52,7 @@ public class DirectionalRecieverComponent extends AVertTrancieverComponent {
 		facing =  Vec3.atLowerCornerOf(getFacing(placed).getNormal());
 		((LinkBehaviourExt)state2.link.link).setTransformer((level, self, other) -> {
 			float dot = (float)this.facing.dot(self.getLocation().getCenter().subtract(other.getLocation().getCenter()).normalize());
-			return Math.round(level * Mth.clamp(dot, 0, 1));
+			return level * Mth.clamp(dot, 0, 1);
 		});
 		return result;
 	}

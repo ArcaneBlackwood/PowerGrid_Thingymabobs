@@ -3,7 +3,6 @@ package dev.thingymabobs.component;
 import dev.thingymabobs.Thingymabobs;
 import dev.thingymabobs.mixin.ThermalBuilderExt;
 import com.google.common.collect.ImmutableCollection;
-
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
@@ -38,7 +37,6 @@ import org.patryk3211.powergrid.electricity.battery.BatterySpec;
 import org.patryk3211.powergrid.electricity.battery.PotatoBatteryBlock;
 import org.patryk3211.powergrid.electricity.sim.node.VoltageSourceCoupling;
 import org.patryk3211.powergrid.utility.Unit;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -47,10 +45,11 @@ import java.util.Locale;
 public final class PotatoBatteryComponent extends OrientableComponent implements IInteractableComponent {
 	public static final BatterySpec BATTERY_SPEC = PotatoBatteryBlock.BATTERY_SPEC;
     private static final ComponentFootprint FOOTPRINT = new ComponentFootprint.Builder(
-				6,4, "component." + Thingymabobs.MOD_ID + ".potato_battery", null)
-            .addPad(1, 1, 0, "Positive", "+")
-            .addPad(4, 2, 1, "Negative", "-")
-            .withItem().withOutline().build();
+            6,4, "component." + Thingymabobs.MOD_ID + ".potato_battery", null)
+        .addPad(1, 1, 0, "Positive", "+")
+        .addPad(4, 2, 1, "Negative", "-")
+        .withItem().withOutline().build();
+
 
 	public static final ConstantProperty CAPACITY_AH = new ConstantProperty(
 		Thingymabobs.MOD_ID,
@@ -87,7 +86,6 @@ public final class PotatoBatteryComponent extends OrientableComponent implements
 	public PotatoBatteryComponent() {
 		super(FOOTPRINT);
 	}
-
 	@Override
 	protected void addProperties(ImmutableCollection.Builder<ComponentProperty<?>> properties) {
 		super.addProperties(properties);
@@ -98,11 +96,11 @@ public final class PotatoBatteryComponent extends OrientableComponent implements
 		properties.add(STATE);
 		properties.add(power(calculateMaxPower()));
 	}
-
 	public static float calculateMaxPower() {
 		float v = BATTERY_SPEC.calculateVoltage(1);
 		return v*v/BATTERY_SPEC.calculateResistance(1);
 	}
+
 
 	@Override
 	public void bake(
@@ -114,11 +112,7 @@ public final class PotatoBatteryComponent extends OrientableComponent implements
 		float resistance = (float) BATTERY_SPEC.calculateResistance(soc);
 		
 		VoltageSourceCoupling source = builder.addInternalNode(
-            VoltageSourceCoupling.class,
-            builder.terminalNode(0),
-            builder.terminalNode(1),
-            resistance
-		);
+            VoltageSourceCoupling.class, builder.terminalNode(0), builder.terminalNode(1), resistance);
 		updateSource(placed, soc);
         placed.customData = new CustomData(source);
 
@@ -140,7 +134,6 @@ public final class PotatoBatteryComponent extends OrientableComponent implements
         VoltageSourceCoupling source = data.source;
 		if (source == null || !source.isConverged())
 			return true;
-        
 
         int state = placed.get(STATE);
         float power = (float)(-source.getCurrent() * source.getVoltage());

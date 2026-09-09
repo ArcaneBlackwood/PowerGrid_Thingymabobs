@@ -32,7 +32,6 @@ import org.patryk3211.powergrid.electricity.GlobalElectricNetworks;
 import org.patryk3211.powergrid.electricity.battery.AbstractBatteryBlock;
 import org.patryk3211.powergrid.electricity.battery.BatterySpec;
 import org.patryk3211.powergrid.electricity.battery.CustomConnectivityHandler;
-import org.patryk3211.powergrid.electricity.battery.SimpleBatterySpec;
 import org.patryk3211.powergrid.electricity.deviceconnector.IAcceptConnector;
 import org.patryk3211.powergrid.electricity.info.IHaveElectricProperties;
 import org.patryk3211.powergrid.electricity.info.Power;
@@ -47,12 +46,6 @@ public class PotatoBatteryBlock extends AbstractBatteryBlock<PotatoBatteryBlockE
 
     public static final BooleanProperty BAKED = APotatoBatteryArray.BAKED;
     
-    public static final BatterySpec BATTERY_SPEC = new SimpleBatterySpec(
-		2.6f,
-		2.6f,
-		e -> 0.8f * e + 1f,
-		e -> (float) Math.exp(8.5f - 8.5f * e) + 35
-    );
     public PotatoBatteryBlock(Properties settings) {
         super(settings);
         registerDefaultState(defaultBlockState().setValue(BAKED, false));
@@ -68,7 +61,7 @@ public class PotatoBatteryBlock extends AbstractBatteryBlock<PotatoBatteryBlockE
     }
     @Override
     public BatterySpec getSpec() {
-        return BATTERY_SPEC;
+        return PotatoBatteryBlockEntity.SPEC_POTATO;
     }
     @Override
     public Item getUsedItem() {
@@ -195,7 +188,7 @@ public class PotatoBatteryBlock extends AbstractBatteryBlock<PotatoBatteryBlockE
 
     @Override
     public void appendProperties(ItemStack stack, Player player, List<Component> tooltip) {
-        Voltage.max(BATTERY_SPEC.calculateVoltage(1), player, tooltip);
+        Voltage.max(PotatoBatteryBlockEntity.SPEC_POTATO.calculateVoltage(1), player, tooltip);
         Power.max(stack, player, tooltip);
         float charge;
         float maxCharge = getSpec().getMaxCharge();

@@ -29,21 +29,22 @@ public class SableUtils {
 		return SableCompanion.INSTANCE.getContaining(block);
 	}
 
-	private static Map<UUID, PoseMotion> poseMotions = new HashMap<>();
+	private static Map<UUID, ThreadLocal<PoseMotion>> poseMotions = new HashMap<>();
 	public static PoseMotion getPoseMotion(BlockEntity block) {
 		if (!isLoaded) return null;
         final SubLevelAccess level = SableCompanion.INSTANCE.getContaining(block);
 		if (level == null) return null;
 		UUID uuid = level.getUniqueId();
-		PoseMotion motion = poseMotions.computeIfAbsent(uuid, $ -> new PoseMotion());
-		motion.tickCounter = 0;
-		motion.level = new WeakReference<>(level);
+		ThreadLocal<PoseMotion> thread = poseMotions.computeIfAbsent(uuid, 
+			$ -> ThreadLocal.withInitial(() -> new PoseMotion(new WeakReference<>(level))));
+		PoseMotion motion = thread.get();
+		motion.markDirty();
 		return motion;
 	}
 
 	public static void tick() {
 		for (var iter = poseMotions.values().iterator(); iter.hasNext();) {
-			PoseMotion motion = iter.next();
+			PoseMotion motion = iter.next().get();
 			SubLevelAccess level = motion.level.get();
 			if (motion.tickCounter++ > 20 || level == null) iter.remove();
 			motion.update(level, 20);
@@ -80,6 +81,13 @@ public class SableUtils {
 		public WeakReference<SubLevelAccess> level;
 
 		private final Vector3f center = new Vector3f();
+
+		protected PoseMotion(WeakReference<SubLevelAccess> level) {
+			this.level = level;
+		}
+		protected void markDirty() {
+			tickCounter = 0;
+		}
 
 		private byte state = 0;
 		public int tickCounter = 0;
@@ -187,6 +195,7 @@ public class SableUtils {
 			acceleration.set(velocity).sub(velocityPrev).mul(dtInv);
 			velocityPrev.set(velocity);
 			positionPrev.set(position);
+			//Thingymabobs.LOGGER.info(this+" acceleration: "+acceleration+", velocity: "+velocity+", "+position);
 
 			angularVelocity.set((float)orientation.x(), (float)orientation.y(), (float)orientation.z(), (float)orientation.w())
 				.mul(orientationPrev.invert()).normalize();

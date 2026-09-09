@@ -18,7 +18,6 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.patryk3211.powergrid.electricity.battery.BatterySpec;
-import org.patryk3211.powergrid.electricity.battery.SimpleBatterySpec;
 import dev.thingymabobs.client.CustomModelItemRenderer;
 import dev.thingymabobs.registry.ModDataComponents;
 import dev.thingymabobs.registry.ModModels;
@@ -26,13 +25,6 @@ import com.mojang.datafixers.util.Unit;
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 
 public class PoisonousPotatoBatteryArray extends APotatoBatteryArray implements CustomModelItemRenderer.Provider {
-    public static final BatterySpec BATTERY_SPEC = new SimpleBatterySpec(
-		8.64f,
-		8.64f,
-		e -> 1.2f * e + 1.4f,
-		e -> (float) Math.exp(7f - 8.5f * e) + 75
-    );
-
     public PoisonousPotatoBatteryArray(Properties settings) {
         super(settings);
     }
@@ -42,7 +34,7 @@ public class PoisonousPotatoBatteryArray extends APotatoBatteryArray implements 
     }
     @Override
     public BatterySpec getSpec() {
-        return BATTERY_SPEC;
+        return PotatoBatteryArrayEntity.SPEC_POISON;
     }
     @Override
     public Item getUsedItem() {

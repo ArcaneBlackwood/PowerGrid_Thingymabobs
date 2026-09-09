@@ -113,16 +113,16 @@ public class ElectricFurnace extends HorizontalElectricBlock implements IBE<Elec
     public void appendProperties(ItemStack stack, Player player, List<Component> tooltip) {
         ModLang.translate("tooltip.temperature.max").style(ChatFormatting.GRAY).addTo(tooltip);
         ModLang.builder()
-            .add(Component.nullToEmpty(" ")).add(ModLang.number(ElectricFurnaceEntity.OVERHEAT_TEMPERATURE))
+            .add(Component.nullToEmpty(" ")).add(ModLang.number(ElectricFurnaceEntity.THERMAL.getOverheat()))
             .add(Component.nullToEmpty(" ")).add(org.patryk3211.powergrid.utility.Unit.TEMPERATURE.get())
 			.style(ChatFormatting.DARK_BLUE).addTo(tooltip);
 		Power.max(ElectricFurnaceEntity.BLOW_POWER, player, tooltip);
 		if (stack.getItem() instanceof BlockItem blockItem) {
 			float resistance = ResistanceValues.get(blockItem.getBlock());
 			Resistance.coil(resistance, player, tooltip);
-			float voltage = Mth.sqrt(ElectricFurnaceEntity.MAX_POWER * resistance);
+			float voltage = Mth.sqrt(ElectricFurnaceEntity.THERMAL.getPower() * resistance);
 			ModLang.translate("tooltip.voltage.rated_for",
-					ModLang.number(ElectricFurnaceEntity.MAX_TEMPERATURE).text(" ")
+					ModLang.number(ElectricFurnaceEntity.THERMAL.getTempMax()).text(" ")
 					.add(org.patryk3211.powergrid.utility.Unit.TEMPERATURE.get()).string())
 				.style(ChatFormatting.GRAY).addTo(tooltip);
 			ModLang.builder()

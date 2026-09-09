@@ -3,9 +3,11 @@ package dev.thingymabobs.blocks.battery;
 import javax.annotation.Nullable;
 import org.patryk3211.powergrid.electricity.base.ElectricBehaviour;
 import org.patryk3211.powergrid.electricity.base.ThermalBehaviour;
+import org.patryk3211.powergrid.electricity.battery.BatterySpec;
 import org.patryk3211.powergrid.electricity.battery.MultiBlockBatteryEntity;
 import dev.thingymabobs.client.ISoundSource;
 import dev.thingymabobs.client.PotatoElectrocuteSoundInstance;
+import dev.thingymabobs.config.properties.CProperties;
 import dev.thingymabobs.registry.ModBlockEntities;
 import dev.thingymabobs.registry.ModLang;
 import net.minecraft.client.Minecraft;
@@ -29,10 +31,25 @@ public class PotatoBatteryBlockEntity extends MultiBlockBatteryEntity implements
 	protected float rechargePower;
 	protected float electrocuteVolume = 0f;
 	public boolean hasAudioSource = false;
+	protected boolean isPoison;
+
+    protected static CProperties.Prop CONFIG_POTATO = null, CONFIG_POISON = null;
+	protected static BatterySpec SPEC_POTATO, SPEC_POISON;
+    public static void configUpdatedPotato(CProperties.Prop prop) {
+        CONFIG_POTATO = prop;
+		SPEC_POTATO = prop.getBattery();
+    }
+    public static void configUpdatedPoison(CProperties.Prop prop) {
+        CONFIG_POISON = prop;
+		SPEC_POISON = prop.getBattery();
+    }
+	protected CProperties.Prop getConfig() {
+		return isPoison ? CONFIG_POISON : CONFIG_POTATO;
+	}
 
 	public PotatoBatteryBlockEntity(BlockPos pos, BlockState state) {
 		super(ModBlockEntities.POTATO_BATTERY_BLOCK.get(), pos, state);
-		if (state.getBlock() instanceof PoisonousPotatoBatteryArray) {
+		if (isPoison = state.getBlock() instanceof PoisonousPotatoBatteryArray) {
 			float maxPower = spec.calculateVoltage(1);
 			maxPower = maxPower * maxPower / spec.calculateResistance(1);
 			rechargePower = maxPower * 0.1f;
@@ -47,7 +64,7 @@ public class PotatoBatteryBlockEntity extends MultiBlockBatteryEntity implements
     }
     @Override
     public @Nullable ThermalBehaviour specifyThermalBehaviour() {
-        var b = ThermalBehaviour.fromConfig(this, 100f);
+        var b = getConfig().getThermal().createBehaviour(this);
         if(b != null)
             b.behaviourFlags(ThermalBehaviour.OVERHEAT_PARTICLES);
         return b;

@@ -34,18 +34,28 @@ public class SwitchBlockEntity extends ElectricBlockEntity implements IHaveGoggl
         isButton = ((SwitchBlock) state.getBlock()).isButton;
         switchStates = ((SwitchBlock) state.getBlock()).switchStates;
     }
-
     @Override
     public @Nullable ThermalBehaviour specifyThermalBehaviour() {
-        return ThermalBehaviour.fromConfig(this);
+        SwitchBlock block = (SwitchBlock)getBlockState().getBlock();
+        return block.getConfig().getThermal().createBehaviour(this);
+    }
+    @Override
+    public void buildCircuit(CircuitBuilder builder) {
+        if(!(getBlockState().getBlock() instanceof SwitchBlock block))
+            throw new IllegalArgumentException("Blocks with SwitchBlockEntity must inherit from SwitchBlock");
+        builder.setTerminalCount(block.terminalCount);
+        maxVoltage = block.getMaxVoltage();
+        switchState = getBlockState().getValue(SwitchBlock.STATE);
+        if (switchStates==null) switchStates =  block.switchStates;
+        wires = new SwitchedWire[switchStates.connections.length];
+        for(int i = 0; i < switchStates.connections.length; i++) {
+            SwitchStates.Connection con = switchStates.connections[i];
+            wires[i] = builder.connectSwitch((float)block.getConfig().getResistance().get(),
+                builder.terminalNode(con.a), builder.terminalNode(con.b), false);
+        }
+        updateWires();
     }
 
-    private void overvoltEffect() {
-        var pos = worldPosition.getCenter();
-        var face = getBlockState().getValue(SwitchBlock.FACING);
-        SparkParticleData.explodeParticles(level, (float) pos.x, (float) pos.y, (float) pos.z, face.getOpposite(), 7);
-        ModdedSoundEvents.COMPONENT_EXPLODE.playAt(level, pos, 1, 1, true);
-    }
 
     @Override
     public void electricalTick() {
@@ -62,7 +72,6 @@ public class SwitchBlockEntity extends ElectricBlockEntity implements IHaveGoggl
             }
         }
     }
-
     @Override
     public void tick() {
         super.tick();
@@ -78,6 +87,13 @@ public class SwitchBlockEntity extends ElectricBlockEntity implements IHaveGoggl
         }
     }
 
+
+    private void overvoltEffect() {
+        var pos = worldPosition.getCenter();
+        var face = getBlockState().getValue(SwitchBlock.FACING);
+        SparkParticleData.explodeParticles(level, (float) pos.x, (float) pos.y, (float) pos.z, face.getOpposite(), 7);
+        ModdedSoundEvents.COMPONENT_EXPLODE.playAt(level, pos, 1, 1, true);
+    }
     public void setState(int state) {
         switchState = state;
         if(isButton && state == 1)
@@ -108,27 +124,9 @@ public class SwitchBlockEntity extends ElectricBlockEntity implements IHaveGoggl
             wires[i].setState(con.state != isNormallyClosed);
         }
     }
-    @Override
-    public void buildCircuit(CircuitBuilder builder) {
-        if(!(getBlockState().getBlock() instanceof SwitchBlock block))
-            throw new IllegalArgumentException("Blocks with SwitchBlockEntity must inherit from SwitchBlock");
-        builder.setTerminalCount(block.terminalCount);
-        maxVoltage = block.getMaxVoltage();
-        switchState = getBlockState().getValue(SwitchBlock.STATE);
-        if (switchStates==null) switchStates =  block.switchStates;
-        wires = new SwitchedWire[switchStates.connections.length];
-        for(int i = 0; i < switchStates.connections.length; i++) {
-            SwitchStates.Connection con = switchStates.connections[i];
-            wires[i] = builder.connectSwitch(resistance(), builder.terminalNode(con.a), builder.terminalNode(con.b), false);
-        }
-        updateWires();
-    }
-
-
     public void setNormallyClosed(boolean normallyClosed) {
         isNormallyClosed = normallyClosed;
     }
-
     public boolean isNormallyClosed() {
         return isNormallyClosed;
     }
@@ -155,7 +153,6 @@ public class SwitchBlockEntity extends ElectricBlockEntity implements IHaveGoggl
         }
         updateWires();
     }
-
     @Override
     protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.write(tag, registries, clientPacket);

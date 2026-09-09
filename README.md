@@ -6,39 +6,9 @@ Also check out W00PKER's fork, they added some cool stuff too at https://github.
 
 A NeoForge 1.21.1 add-on for Create: Power Grid, adding a bunch of little things that dont quite fit into the basemod!
 
-- 4-terminal lumped-model transformer with an integer winding divider (up to 30 total turns)
-- Latching SCR thyristor with gate trigger, holding current, forward drop and on resistance
-- Discharging, non-rechargeable zinc-carbon dry-cell pack
-- Poisonous/Potato Battery Array+Multiblock (Poisonous variants slowly self recharge)
-- DPDT/SPDT/TPST LV/MV Switches
-- Small Bulb/Diode/Capacitor/Resistor/DIP Switch
-- Buzzer with current dependant frequency version
-- Tall connector component
-- High power, low resistance shunt resistor
-- Lava lamp(Allows to sleep with monsters, and prevents phantoms longer!)
-- Electric furnace. Decently fast, but requires some careful temperature management
-
-Items appear in both a dedicated Thingymabobs tab and the vanilla Redstone Blocks tab.
-
-## Setup
-
-Place the released Power Grid JAR at:
-
-```text
-libs/powergrid-mc1.21.1-0.5.5.1.jar
-```
-
-Then open the project in IntelliJ with Java 21 and run the `client` configuration.
-
-Build with:
-
-```bash
-./gradlew build
-```
-
-See [README_KO.md](README_KO.md) for the complete model specifications and testing instructions.
-
-## Planned
+- [x] Transformer component
+- [x] SCR Thyristor
+- [x] Non recharcable zinc-carbom battery component 
 - [x] Potato batteries
 	- [x] Poisonous variants
 	- [x] Array (8 potatos)
@@ -55,7 +25,7 @@ See [README_KO.md](README_KO.md) for the complete model specifications and testi
 - [ ] Aeronautics stuff
 	- [ ] Tilt switch /w variants (Off placed axis, approaching axis)
 	- [ ] Gyroscope (Spun up flywheel off axis rotation detected by coil)
-	- [ ] Accelerometer (Spring bound magnetic mass detected by coil)
+	- [x] Accelerometer (Spring bound magnetic mass detected by coil)
 	- [ ] Altitude (Acts like a potentiometer?)
 - [ ] Fancy dispalys (Compatable with modular display block)
 	- [ ] Meter with configurable color, labels and unity
@@ -79,6 +49,23 @@ See [README_KO.md](README_KO.md) for the complete model specifications and testi
 - [ ] Self extendable cable from holdable item.  Connects to portable battery.
 - [ ] Retractable cable block
 - [x] Electric furnace
+- [ ] Particle spawner?
 - [ ] Midi keyboard/precussion switch?
 - [ ] Add sequenced recipes for most components, gives double output
 - [ ] Large block railgun?
+
+Items appear in both a dedicated Thingymabobs tab and the vanilla Redstone Blocks tab.
+
+## Setup
+
+Place my custom build Power Grid JAR at:
+
+```text
+libs/powergrid-mc1.21.1-0.6.0.1.jar
+```
+
+Build with:
+
+```bash
+./gradlew build
+```

@@ -1,5 +1,6 @@
 package dev.thingymabobs.blocks;
 
+import dev.thingymabobs.config.properties.CProperties;
 import dev.thingymabobs.registry.ModBlockEntities;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
@@ -10,7 +11,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-
 import org.jetbrains.annotations.Nullable;
 import org.patryk3211.powergrid.collections.ModdedSoundEvents;
 import org.patryk3211.powergrid.electricity.base.ElectricBlockEntity;
@@ -24,8 +24,21 @@ import org.patryk3211.powergrid.utility.Lang;
 import java.util.List;
 
 public class PowerShuntEntity extends ElectricBlockEntity {
+    public static final String CONFIG_RES_PRECISION = "resistance_precision";
+    public static final String CONFIG_RES_STEPS = "resistance_precision";
     protected PowerShuntValueBehaviour value;
     protected SwitchedWire wire;
+
+    protected static CProperties.Prop CONFIG = null;
+    public static void configUpdated(CProperties.Prop prop) {
+        CONFIG = prop;
+    }
+    protected static int getPrecision() {
+        return CONFIG.getInt(CONFIG_RES_PRECISION).get();
+    }
+    protected static int getSteps() {
+        return CONFIG.getInt(CONFIG_RES_STEPS).get();
+    }
 
     public PowerShuntEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.POWER_SHUNT.get(), pos, state);
@@ -33,7 +46,7 @@ public class PowerShuntEntity extends ElectricBlockEntity {
 
     protected PowerShuntValueBehaviour makeScroll() {
         return new PowerShuntValueBehaviour(Lang.translateDirect("devices.resistor.resistance"),
-			this, new ResistorBoxTransform(), 4, 36);
+			this, new ResistorBoxTransform(), getPrecision(), getSteps());
     }
 
     @Override

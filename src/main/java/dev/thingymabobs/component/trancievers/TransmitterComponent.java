@@ -9,7 +9,6 @@ import dev.thingymabobs.registry.ModModels;
 import com.google.common.collect.ImmutableCollection;
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 
 public class TransmitterComponent extends ATrancieverComponent {
 	public TransmitterComponent() {
@@ -17,8 +16,8 @@ public class TransmitterComponent extends ATrancieverComponent {
 	}
     @Override
     protected void addProperties(ImmutableCollection.Builder<ComponentProperty<?>> properties) {
+		properties.add(LABEL, PROP_TRANSMIT_CURRENT_FULL, PROP_TRANSMIT_RESISTANCE);
 		super.addProperties(properties);
-		properties.add(PROP_TRANSMIT_CURRENT_FULL, PROP_TRANSMIT_RESISTANCE);
     }
 	@Override
 	protected boolean isTransmitter() {
@@ -27,12 +26,12 @@ public class TransmitterComponent extends ATrancieverComponent {
 
 
 	@Override
-	protected void updateState(PlacedComponent placed, ServerState state, int currentSignal) {
-		int transmitValue = Mth.abs(Mth.floor(state.signalWire.current() / TRANSMIT_CURRENT_FULL * 16f));
-		state.link.setTransmission(transmitValue);
+	protected void updateState(PlacedComponent placed, ServerState state, float currentSignal) {
+		float transmitValue = Math.abs((float)state.signalWire.current() / TRANSMIT_CURRENT_FULL * 16f);
+		setTransmission(state, transmitValue);
 	}
 	@Override
-	protected float getSignalResistance(PlacedComponent placed, int signalValue) {
+	protected float getSignalResistance(PlacedComponent placed, float signalValue) {
 		return TRANSMIT_RESISTANCE;
 	}
 

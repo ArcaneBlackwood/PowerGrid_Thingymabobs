@@ -8,6 +8,8 @@ import org.patryk3211.powergrid.collections.ModdedSoundEvents;
 import org.patryk3211.powergrid.electricity.base.IDecoratedTerminal;
 import org.patryk3211.powergrid.electricity.base.TerminalBoundingBox;
 
+import dev.thingymabobs.config.properties.CProperties;
+import dev.thingymabobs.config.properties.CProperties.Prop;
 
 public class MVSwitchTPSTBlock extends SwitchBlock {
     private static final TerminalBoundingBox[] DOWN_TERMINALS = new TerminalBoundingBox[] {
@@ -19,12 +21,20 @@ public class MVSwitchTPSTBlock extends SwitchBlock {
             new TerminalBoundingBox(IDecoratedTerminal.CONNECTOR, 2.5, 0, 2.5, 5.5, 2, 4.5)
     };
 
+    protected static CProperties.Prop CONFIG = null;
+    public static void configUpdated(CProperties.Prop prop) {
+        CONFIG = prop;
+    }
+    @Override
+    protected Prop getConfig() {
+        return CONFIG;
+    }
+
     private static final VoxelShape SHAPE_DOWN = 
         box(2.5, 0, 4.5, 13.5, 3, 11.5);
     
     public MVSwitchTPSTBlock(Properties settings) {
         super(settings);
-        this.maxVoltage = 640;
 		this.zeroStateShift = false;
         this.terminalCount = DOWN_TERMINALS.length;
 		this.switchStates = new SwitchStates(

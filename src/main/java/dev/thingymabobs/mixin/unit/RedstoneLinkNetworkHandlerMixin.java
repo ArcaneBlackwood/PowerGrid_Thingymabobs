@@ -62,12 +62,12 @@ public abstract class RedstoneLinkNetworkHandlerMixin implements RedstoneLinkNet
 				if (!destin.isListening() || !destin.isAlive()) continue;
 
 				LevelTransformer destinTransformer = destin instanceof LinkBehaviourExt ext ? ext.getTransform() : null;
-				int power = 0;
+				float power = 0;
 				for (Iterator<IRedstoneLinkable> sources = network.links.iterator(); sources.hasNext(); ) {
 					IRedstoneLinkable source = sources.next();
 					if (source == destin || source.isListening() || !thingymabobs$withinRange(destin, source, network.world)) continue;
 
-					int powerOther = source.getTransmittedStrength();
+					float powerOther = source.getTransmittedStrength();
 					LevelTransformer transformer = source instanceof LinkBehaviourExt ext ? ext.getTransform() : null;
 					if (transformer != null) powerOther = transformer.transform(powerOther, source, destin);
 					if (destinTransformer != null) powerOther = destinTransformer.transform(powerOther, source, destin);
@@ -76,7 +76,9 @@ public abstract class RedstoneLinkNetworkHandlerMixin implements RedstoneLinkNet
 				}
 
 				if (destin instanceof LinkBehaviour linkBehaviour) linkBehaviour.newPosition = true;
-				destin.setReceivedStrength(power);
+				destin.setReceivedStrength(Math.round(power));
+				if (destin instanceof LinkBehaviourExt destinExt)
+					destinExt.setReceivedStrength(power);
 			}
 		}
 		pending.clear();
@@ -87,7 +89,10 @@ public abstract class RedstoneLinkNetworkHandlerMixin implements RedstoneLinkNet
 		globalPowerVersion.incrementAndGet();
         Set<IRedstoneLinkable> network = getNetworkOf(world, actor);
         if (network == null || network.size() < 2) {
-			if (actor.isListening()) actor.setReceivedStrength(0);
+			if (!actor.isListening()) return;
+			actor.setReceivedStrength(0);
+			if (actor instanceof LinkBehaviourExt destinExt)
+				destinExt.setReceivedStrength(0f);
 			return;
 		};
         pending.add(new RedstoneLinkNetworkHandlerExt.Network(network, world));

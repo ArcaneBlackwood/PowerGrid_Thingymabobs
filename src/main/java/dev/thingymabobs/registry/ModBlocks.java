@@ -1,6 +1,5 @@
 package dev.thingymabobs.registry;
 
-import org.patryk3211.powergrid.electricity.base.ThermalBehaviour;
 import dev.thingymabobs.Thingymabobs;
 import dev.thingymabobs.blocks.switches.LVSwitchDPDTBlock;
 import dev.thingymabobs.blocks.switches.LVSwitchDPSTBlock;
@@ -10,16 +9,23 @@ import dev.thingymabobs.blocks.switches.MVSwitchDPDTBlock;
 import dev.thingymabobs.blocks.switches.MVSwitchDPSTBlock;
 import dev.thingymabobs.blocks.switches.MVSwitchSPDTBlock;
 import dev.thingymabobs.blocks.switches.MVSwitchTPSTBlock;
+import dev.thingymabobs.blocks.switches.SwitchBlock;
+import dev.thingymabobs.config.properties.CProperties;
 import dev.thingymabobs.blocks.LavaLamp;
 import dev.thingymabobs.blocks.PowerShunt;
+import dev.thingymabobs.blocks.PowerShuntEntity;
 import dev.thingymabobs.blocks.battery.PoisonousPotatoBattery;
 import dev.thingymabobs.blocks.battery.PoisonousPotatoBatteryArray;
 import dev.thingymabobs.blocks.battery.PoisonousPotatoBatteryBlock;
 import dev.thingymabobs.blocks.battery.PoisonousPotatoBatteryBlockCT;
 import dev.thingymabobs.blocks.battery.PotatoBatteryArray;
+import dev.thingymabobs.blocks.battery.PotatoBatteryArrayEntity;
 import dev.thingymabobs.blocks.battery.PotatoBatteryBlock;
 import dev.thingymabobs.blocks.battery.PotatoBatteryBlockCT;
+import dev.thingymabobs.blocks.battery.PotatoBatteryBlockEntity;
+import dev.thingymabobs.blocks.battery.PoisonousPotatoBatteryEntity;
 import dev.thingymabobs.blocks.electricfurnace.ElectricFurnace;
+import dev.thingymabobs.blocks.electricfurnace.ElectricFurnaceConfig;
 import dev.thingymabobs.blocks.electricfurnace.ElectricFurnaceEntity;
 import com.simibubi.create.api.connectivity.ConnectivityHandler;
 import com.simibubi.create.api.contraption.BlockMovementChecks;
@@ -95,39 +101,98 @@ public final class ModBlocks {
 
 	public static void register(IEventBus modBus) {
         ModBlocks.BLOCKS.register(modBus);
-		Resistances.register(LV_SWITCH_DPDT.getId(), 0.15);
-		Thermals.register(LV_SWITCH_DPDT.getId(), 1, 37.4*2);
-		Resistances.register(LV_SWITCH_SPDT.getId(), 0.15);
-		Thermals.register(LV_SWITCH_SPDT.getId(), 0.5, 37.4);
-		Resistances.register(LV_SWITCH_TPST.getId(), 0.15);
-		Thermals.register(LV_SWITCH_TPST.getId(), 1.5, 37.4*3);
-		Resistances.register(LV_SWITCH_DPST.getId(), 0.15);
-		Thermals.register(LV_SWITCH_DPST.getId(), 1, 37.4*2);
 
-		Resistances.register(MV_SWITCH_DPDT.getId(), 0.05);
-		Thermals.register(MV_SWITCH_DPDT.getId(), 2, 51.2*2);
-		Resistances.register(MV_SWITCH_SPDT.getId(), 0.05);
-		Thermals.register(MV_SWITCH_SPDT.getId(), 1, 51.2);
-		Resistances.register(MV_SWITCH_TPST.getId(), 0.05);
-		Thermals.register(MV_SWITCH_TPST.getId(), 3, 51.2*3);
-		Resistances.register(MV_SWITCH_DPST.getId(), 0.05);
-		Thermals.register(MV_SWITCH_DPST.getId(), 2, 51.2*2);
+		CProperties.register(LV_SWITCH_DPDT.getId())
+			.registerResistance(0.15f)
+			.registerThermal(1f, 37.4f*2)
+			.registerFloat(SwitchBlock.CONFIG_MAX_VOLTAGE, 320f)
+			.complete(LVSwitchDPDTBlock::configUpdated);
+		CProperties.register(LV_SWITCH_SPDT.getId())
+			.registerResistance(0.15f)
+			.registerThermal(0.5f, 37.4f)
+			.registerFloat(SwitchBlock.CONFIG_MAX_VOLTAGE, 320f)
+			.complete(LVSwitchSPDTBlock::configUpdated);
+		CProperties.register(LV_SWITCH_TPST.getId())
+			.registerResistance(0.15f)
+			.registerThermal(1.5f, 37.4f*3)
+			.registerFloat(SwitchBlock.CONFIG_MAX_VOLTAGE,320f)
+			.complete(LVSwitchTPSTBlock::configUpdated);
+		CProperties.register(LV_SWITCH_DPST.getId())
+			.registerResistance(0.15f)
+			.registerThermal(1f, 37.4f*2)
+			.registerFloat(SwitchBlock.CONFIG_MAX_VOLTAGE, 320f)
+			.complete(LVSwitchDPSTBlock::configUpdated);
 
-		//Resistances.register(POTATO_BATTERY_ARRAY.getId(), 35);
-		Thermals.register(POTATO_BATTERY_ARRAY.getId(), 100f, 0.04f);
-		//Resistances.register(POISONOUS_POTATO_BATTERY_ARRAY.getId(), 25);
-		Thermals.register(POISONOUS_POTATO_BATTERY_ARRAY.getId(), 100f, 0.04f);
-		//Resistances.register(POTATO_BATTERY_BLOCK.getId(), 35);
-		Thermals.register(POTATO_BATTERY_BLOCK.getId(), 100f, 0.08f);
-		//Resistances.register(POISONOUS_POTATO_BATTERY_BLOCK.getId(), 25);
-		Thermals.register(POISONOUS_POTATO_BATTERY_BLOCK.getId(), 100f, 0.08f);
 
-		Thermals.register(POWER_SHUNT.getId(), 25f, 1000f);
-		Thermals.register(LAVA_LAMP.getId(), 30f, ThermalBehaviour.dissipationFactor(150f, 1450f));
-		Resistances.register(ELECTRIC_FURNACE.getId(), 240*240 / ElectricFurnaceEntity.MAX_POWER);
-		Thermals.register(ELECTRIC_FURNACE.getId(), 600f,
-			ElectricFurnaceEntity.MAX_POWER / (ElectricFurnaceEntity.MAX_TEMPERATURE - 22f)
-			* (ElectricFurnaceEntity.OVERHEAT_TEMPERATURE - 47f));
+		CProperties.register(MV_SWITCH_DPDT.getId())
+			.registerResistance(0.05f)
+			.registerThermal(2f, 51.2f*2)
+			.registerFloat(SwitchBlock.CONFIG_MAX_VOLTAGE, 640f)
+			.complete(MVSwitchDPDTBlock::configUpdated);
+		CProperties.register(MV_SWITCH_SPDT.getId())
+			.registerResistance(0.05f)
+			.registerThermal(1f, 51.2f)
+			.registerFloat(SwitchBlock.CONFIG_MAX_VOLTAGE, 640f)
+			.complete(MVSwitchSPDTBlock::configUpdated);
+		CProperties.register(MV_SWITCH_TPST.getId())
+			.registerResistance(0.05f)
+			.registerThermal(3f, 51.2f*3)
+			.registerFloat(SwitchBlock.CONFIG_MAX_VOLTAGE, 640f)
+			.complete(MVSwitchTPSTBlock::configUpdated);
+		CProperties.register(MV_SWITCH_DPST.getId())
+			.registerResistance(0.05f)
+			.registerThermal(2f, 51.2f*2)
+			.registerFloat(SwitchBlock.CONFIG_MAX_VOLTAGE, 640f)
+			.complete(MVSwitchDPSTBlock::configUpdated);
+
+
+		CProperties.register(POISONOUS_POTATO_BATTERY.getId())
+			.registerThermal(100f, 0.04f)
+			.registerFloat(PoisonousPotatoBattery.CONFIG_RECHARGE, 0.009f)
+			.registerBattery(2.88f, 2.88f,
+				0.8f, 1.5f, 300, 10000, 1f)
+			.complete(PoisonousPotatoBatteryEntity::configUpdated);
+
+		CProperties.register(POTATO_BATTERY_ARRAY.getId())
+			.registerThermal(100f, 0.04f)
+			.registerBattery(0.864f, 0.864f,
+				0.9f, 1.6f, 110, 10000, 1f)
+			.complete(PotatoBatteryArrayEntity::configUpdatedPotato);
+		CProperties.register(POISONOUS_POTATO_BATTERY_ARRAY.getId())
+			.registerThermal(100f, 0.04f)
+			.registerFloat(PoisonousPotatoBattery.CONFIG_RECHARGE, 0.009f)
+			.registerBattery(8.64f, 8.64f,
+				1.4f, 2.6f, 75, 10000, 1.2f)
+			.complete(PotatoBatteryArrayEntity::configUpdatedPoison);
+
+		CProperties.register(POTATO_BATTERY_BLOCK.getId())
+			.registerThermal(100f, 0.08f)
+			.registerBattery(2.6f, 2.6f,
+				1.0f, 1.8f, 35, 10000, 1.2f)
+			.complete(PotatoBatteryBlockEntity::configUpdatedPotato);
+		CProperties.register(POISONOUS_POTATO_BATTERY_BLOCK.getId())
+			.registerThermal(100f, 0.08f)
+			.registerFloat(PoisonousPotatoBattery.CONFIG_RECHARGE, 0.036f)
+			.registerBattery(25f, 25f,
+				1.7f, 3.0f, 25, 10000, 1.4f)
+			.complete(PotatoBatteryBlockEntity::configUpdatedPoison);
+
+		
+		CProperties.register(POWER_SHUNT.getId())
+			.registerThermal(25f, 1000f, 300f, 500f)
+			.registerInt(PowerShuntEntity.CONFIG_RES_PRECISION, 4)
+			.registerInt(PowerShuntEntity.CONFIG_RES_STEPS, 36)
+			.complete(PowerShuntEntity::configUpdated);
+		float furnaceTemp = 2000f, furnaceTempSt = furnaceTemp / 13;
+		CProperties.register(ELECTRIC_FURNACE.getId())
+			.registerResistance(240*240 / 5000f)
+			.registerThermal(600f, 5000f, furnaceTemp, furnaceTempSt * 18)
+			.register("ef", new ElectricFurnaceConfig(
+				16, 10, 10/200f,
+				furnaceTempSt*1, furnaceTempSt*3, furnaceTempSt*5, furnaceTempSt*10,
+				2.5f, 2f/400f, 20*20f,
+				500f, 3.5f))
+			.complete(ElectricFurnaceEntity::configUpdated);
 
         BlockMovementChecks.registerAttachedCheck((BlockState state, Level world, BlockPos pos, Direction direction) -> {
 			var block = state.getBlock();
