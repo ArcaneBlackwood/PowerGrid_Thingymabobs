@@ -242,19 +242,21 @@ public class LavaLampEntity extends ElectricBlockEntity implements ElectricBehav
     public void tick() {
         super.tick();
         updateParticles(1/20f);
-        if (level.isClientSide) return;
+        if (level.isClientSide) { return; };
         if (!registered) {
             registered = true;
             ALL_LOADED_LAMPS.add(this);
-        }
+        };
         spawnParticles();
-    }
+    };
+
     @Override
     public void lazyTick() {
         super.lazyTick();
         if (level.isClientSide) return;
         checkWaxTotals();
-    }
+    };
+
     public void checkWaxTotals() {
         int waxTotal = waxBottom + waxTop;
         for (Glob glob : globs) waxTotal += glob.volume;

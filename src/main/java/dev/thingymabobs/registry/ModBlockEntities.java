@@ -21,6 +21,8 @@ import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import dev.thingymabobs.blocks.Zoey.PlasmaGlobe.PlasmaGlobeEntity;
+
 public final class ModBlockEntities {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES =
 		DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, Thingymabobs.MOD_ID);
@@ -67,6 +69,14 @@ public final class ModBlockEntities {
         BlockEntityType.Builder.of(LavaLampEntity::new,
 			ModBlocks.LAVA_LAMP.get())
 		.build(null));
+
+
+	public static final Supplier<BlockEntityType<PlasmaGlobeEntity>> PLASMA_GLOBE = 
+    BLOCK_ENTITY_TYPES.register("plasma_globe", () -> 
+        BlockEntityType.Builder.of(PlasmaGlobeEntity::new,
+			ModBlocks.PLASMA_GLOBE.get())
+		.build(null));
+
 
 	public static final Supplier<BlockEntityType<ElectricFurnaceEntity>> ELECTRIC_FURNACE = 
     BLOCK_ENTITY_TYPES.register("electric_furnace", () -> 
