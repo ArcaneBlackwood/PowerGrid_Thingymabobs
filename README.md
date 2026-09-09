@@ -69,13 +69,18 @@ Items appear in both a dedicated Thingymabobs tab and the vanilla Redstone Block
 - [ ] Add sequenced recipes for most components, gives double output
 - [ ] Large block railgun?
 
-## Setup
+## Installation
 
-Currently this build is waiting on pull requests on the Power Grid mod this mod requires. They also need to make their way into the main official build. The PR's in question are
-patryk3211/PowerGrid#1076 For allowing components to save and load items. This is used for the wireless receiver/transmitter.
-patryk3211/PowerGrid#1051 For enabling the lava lamp to use a custom thermal behaviour. It works quite differently, and cannot use the builtin type.
+Replace your powergrid with my custom build here:  
+https://github.com/ArcaneBlackwood/PowerGrid-tweaks/releases/latest  
 
-Due to this I have built my custom powergrid. If you are testing this mod, please use this custom build else it wont work. Note in my custom build I have a few modifications such as motor current is dependent on load, as well as generators volume dependent on load as well. Ill probably work these into a separate mod, or this mod with a config option.
+Currently this build is waiting on pull requests on the Power Grid mod this mod requires. They also need to make their way into the main official build. The PR's in question are  
+patryk3211/PowerGrid#1076  For allowing components to save and load items. This is used for the wireless receiver/transmitter.  
+patryk3211/PowerGrid#1051  For enabling the lava lamp to use a custom thermal behaviour. It works quite differently, and cannot use the builtin type.  
+
+Due to this I have built my custom powergrid. If you are testing this mod, please use this custom build else it wont work. Note in my custom build I have a few modifications such as motor current is dependent on load, as well as generators volume dependent on load as well. Ill probably work these into a separate mod, or this mod with a config option.  
+
+## Building
 
 Place my custom build Power Grid JAR at:
 
