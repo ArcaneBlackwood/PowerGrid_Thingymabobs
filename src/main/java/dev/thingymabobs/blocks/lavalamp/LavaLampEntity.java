@@ -15,9 +15,7 @@ import org.patryk3211.powergrid.electricity.light.bulb.GrowthLamp;
 import org.patryk3211.powergrid.electricity.particles.SparkParticleData;
 import org.patryk3211.powergrid.electricity.sim.AbstractElectricWire;
 import org.patryk3211.powergrid.electricity.sim.SwitchedWire;
-
 import dev.thingymabobs.Thingymabobs;
-import dev.thingymabobs.blocks.lavalamp.LavaLampThermalBehaviour.Properties;
 import dev.thingymabobs.config.properties.CProperties;
 import dev.thingymabobs.config.properties.CProperties.ASubProp;
 import dev.thingymabobs.registry.ModAttachments;
@@ -25,7 +23,6 @@ import dev.thingymabobs.registry.ModBlockEntities;
 import dev.thingymabobs.registry.ModPackets;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.tterrag.registrate.util.entry.ItemEntry;
-
 import net.createmod.catnip.config.ConfigBase;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

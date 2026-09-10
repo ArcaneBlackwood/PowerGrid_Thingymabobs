@@ -5,16 +5,26 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Stream;
+
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
+
+import com.mojang.datafixers.util.Pair;
+
 import dev.thingymabobs.mixin.unit.KeyMappingMixin;
 import dev.thingymabobs.registry.ModPackets;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.IEventBus;
@@ -239,16 +249,37 @@ public abstract class InteractionHandler {
 	public int getPlayerCount() {
 		return players==null ? 1 : players.size();
 	}
-	public static BlockHitResult getBlockHit(Player player) {
+	public Stream<Pair<Player, BlockHitResult>> getBlockHits() {
+		return players.stream().map((Player player) ->
+			new Pair<>(player, getBlockHit(player)));
+	}
+	public BlockHitResult getBlockHit(Player player) {
+		double range = player.blockInteractionRange() + 0.5f;
+        Vec3 eyePos = player.getEyePosition(0);
+        Vec3 viewNorm = player.getViewVector(0);
+        Vec3 endPos = eyePos.add(viewNorm.x * range, viewNorm.y * range, viewNorm.z * range);
+        return player.level().clip(new ClipContext(eyePos, endPos, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player));
+
+
+
+		BlockState blockstate = world.getBlockState(pos);
+		VoxelShape voxelshape = this.get(p_45695_, p_45696_, p_45697_, this.collisionContext);
+		BlockHitResult blockhitresult = this.clipWithInteractionOverride(eyePos, endPos, pos, voxelshape, blockstate);
+		float distance = blockhitresult == null ? Double.MAX_VALUE : eyePos.distanceToSqr(blockhitresult.getLocation());
+	}, p_275153_ -> {
+		Vec3 vec3 = p_275153_.getFrom().subtract(p_275153_.getTo());
+		return BlockHitResult.miss(p_275153_.getTo(), Direction.getNearest(vec3.x, vec3.y, vec3.z), BlockPos.containing(p_275153_.getTo()));
+}
+	public static BlockHitResult getBlockHitOcclude(Player player) {
 		if (player.level().isClientSide && player == Minecraft.getInstance().player) {
-			BlockHitResult hit = getBlockHitClient(player);
+			BlockHitResult hit = getBlockHitOccludeClient(player);
 			if (hit != null) return hit;
 		}
 		if (!(player.pick(player.blockInteractionRange(), 0, false) instanceof BlockHitResult hit)) return null;
 		return hit;
 	}
 	@OnlyIn(Dist.CLIENT)
-	private static BlockHitResult getBlockHitClient(Player player) {
+	private static BlockHitResult getBlockHitOccludeClient(Player player) {
 		Minecraft mc = Minecraft.getInstance();
 		if (player == mc.player && mc.hitResult instanceof BlockHitResult hit) return hit;
 		return null;

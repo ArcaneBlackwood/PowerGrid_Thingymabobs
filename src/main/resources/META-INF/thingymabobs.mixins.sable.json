@@ -1,0 +1,12 @@
+{
+	"required": true,
+	"package": "dev.thingymabobs.mixin.unit.sable",
+	"compatibilityLevel": "JAVA_21",
+	"minVersion": "0.8.3",
+	"mixins": [
+		"SubLevelMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

@@ -13,6 +13,7 @@ import org.joml.Vector3fc;
 import dev.ryanhcode.sable.companion.SableCompanion;
 import dev.ryanhcode.sable.companion.SubLevelAccess;
 import dev.ryanhcode.sable.companion.math.Pose3dc;
+import dev.thingymabobs.mixin.SubLevelExt;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
@@ -29,26 +30,38 @@ public class SableUtils {
 		return SableCompanion.INSTANCE.getContaining(block);
 	}
 
-	private static Map<UUID, ThreadLocal<PoseMotion>> poseMotions = new HashMap<>();
+	private static ThreadLocal<Map<UUID, PoseMotion>> poseMotions = 
+		ThreadLocal.withInitial(() -> new HashMap<>());
 	public static PoseMotion getPoseMotion(BlockEntity block) {
 		if (!isLoaded) return null;
         final SubLevelAccess level = SableCompanion.INSTANCE.getContaining(block);
 		if (level == null) return null;
 		UUID uuid = level.getUniqueId();
-		ThreadLocal<PoseMotion> thread = poseMotions.computeIfAbsent(uuid, 
-			$ -> ThreadLocal.withInitial(() -> new PoseMotion(new WeakReference<>(level))));
-		PoseMotion motion = thread.get();
+		PoseMotion motion = poseMotions.get().computeIfAbsent(uuid, 
+			$ -> new PoseMotion(new WeakReference<>(level)));
 		motion.markDirty();
 		return motion;
 	}
 
 	public static void tick() {
-		for (var iter = poseMotions.values().iterator(); iter.hasNext();) {
-			PoseMotion motion = iter.next().get();
+		for (var iter = poseMotions.get().values().iterator(); iter.hasNext();) {
+			PoseMotion motion = iter.next();
 			SubLevelAccess level = motion.level.get();
-			if (motion.tickCounter++ > 20 || level == null) iter.remove();
-			motion.update(level, 20);
+			if (level != null && !((SubLevelExt)level).isRemoved()) continue;
+			if (motion.tickCounter != -1 && motion.tickCounter++ < 20) continue;
+			iter.remove();
 		}
+	}
+	public static void tickSubLevel(SubLevelAccess level) {
+		UUID uuid = level.getUniqueId();
+		PoseMotion motion = poseMotions.get().get(uuid);
+		if (motion == null) return;
+		motion.tick(20);
+	}
+	public static void onRemoveSubLevel(SubLevelAccess level) {
+		UUID uuid = level.getUniqueId();
+		PoseMotion motion = poseMotions.get().remove(uuid);
+		motion.destroy();
 	}
 
 	public static Vector3d getGlobalPos(LevelAccessor world, BlockPos block, Vector3d output)  {
@@ -68,7 +81,7 @@ public class SableUtils {
 	}
 
 
-	public final static class PoseMotion {///TODO: Add into SubLevel mixin
+	public final static class PoseMotion {
 		private final Vector3f positionPrev = new Vector3f();
 		private final Vector3f velocity = new Vector3f();
 		private final Vector3f velocityPrev = new Vector3f();
@@ -86,7 +99,46 @@ public class SableUtils {
 			this.level = level;
 		}
 		protected void markDirty() {
+			if (tickCounter == -1) return;
 			tickCounter = 0;
+		}
+		public void destroy() {
+
+		}
+		public void tick(float dtInv) {
+			if (level.get() == null) {
+				tickCounter = -1;
+				return;
+			}
+			Pose3dc pose = level.get().logicalPose();
+			Vector3dc position = pose.position();
+			Quaterniondc orientation = pose.orientation();
+
+			center.set(pose.rotationPoint());
+
+			if (state != 2) {
+				if (state == 1) {
+					velocityPrev.set(position).sub(positionPrev).mul(dtInv);
+				}
+				positionPrev.set(position);
+				orientationPrev.set(orientation);
+				state = (byte)(state == 0 ? 1 : 2);
+				return;
+			}
+
+			velocity.set(position).sub(positionPrev).mul(dtInv);
+			acceleration.set(velocity).sub(velocityPrev).mul(dtInv);
+			velocityPrev.set(velocity);
+			positionPrev.set(position);
+			//Thingymabobs.LOGGER.info(this+" acceleration: "+acceleration+", velocity: "+velocity+", "+position);
+
+			angularVelocity.set((float)orientation.x(), (float)orientation.y(), (float)orientation.z(), (float)orientation.w())
+				.mul(orientationPrev.invert()).normalize();
+			scaleRotation(angularVelocity, dtInv);
+			angularAcceleration.set(angularVelocity).mul(angularVelocityPrev.invert()).normalize();
+			scaleRotation(angularAcceleration, dtInv);
+			angularVelocityPrev.set(angularVelocity);
+			orientationPrev.set(orientation);
 		}
 
 		private byte state = 0;
@@ -173,38 +225,6 @@ public class SableUtils {
 		}
 
 
-
-		public void update(SubLevelAccess level, float dtInv) {
-			Pose3dc pose = level.logicalPose();
-			Vector3dc position = pose.position();
-			Quaterniondc orientation = pose.orientation();
-
-			center.set(pose.rotationPoint());
-
-			if (state != 2) {
-				if (state == 1) {
-					velocityPrev.set(position).sub(positionPrev).mul(dtInv);
-				}
-				positionPrev.set(position);
-				orientationPrev.set(orientation);
-				state = (byte)(state == 0 ? 1 : 2);
-				return;
-			}
-
-			velocity.set(position).sub(positionPrev).mul(dtInv);
-			acceleration.set(velocity).sub(velocityPrev).mul(dtInv);
-			velocityPrev.set(velocity);
-			positionPrev.set(position);
-			//Thingymabobs.LOGGER.info(this+" acceleration: "+acceleration+", velocity: "+velocity+", "+position);
-
-			angularVelocity.set((float)orientation.x(), (float)orientation.y(), (float)orientation.z(), (float)orientation.w())
-				.mul(orientationPrev.invert()).normalize();
-			scaleRotation(angularVelocity, dtInv);
-			angularAcceleration.set(angularVelocity).mul(angularVelocityPrev.invert()).normalize();
-			scaleRotation(angularAcceleration, dtInv);
-			angularVelocityPrev.set(angularVelocity);
-			orientationPrev.set(orientation);
-		}
 		private static void scaleRotation(Quaternionf q, float t) {
 			float w = Mth.clamp(q.w, -1.0f, 1.0f);
 			float theta = (float)Math.acos(w);

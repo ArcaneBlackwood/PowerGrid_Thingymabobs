@@ -19,7 +19,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -217,10 +216,6 @@ public abstract class SwitchBlock extends ElectricBlock implements IBE<SwitchBlo
 
     public BlockState rotate(BlockState state, Rotation rot) {
         return state.setValue(FACING, rot.rotate(state.getValue(FACING)));
-    }
-
-    public BlockState mirror(BlockState state, Mirror mirrorIn) {
-        return state.rotate(mirrorIn.getRotation(state.getValue(FACING)));
     }
 
 	public static class ShaperUtils extends VoxelShaper {
