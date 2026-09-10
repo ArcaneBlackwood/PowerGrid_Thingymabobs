@@ -45,7 +45,7 @@ public class PlasmaGlobe extends HorizontalElectricBlock implements IBE<PlasmaGl
 	public static final int STATE_ON_HIGH = 3;
 	public static final int STATE_BLOWN = 4;
 
-	public static boolean hasFunctionalBulb(int state) {
+	public static boolean hasFunctionalTransformer(int state) {
 		return state != STATE_BLOWN && state != STATE_EMPTY;
 	};
 
@@ -124,7 +124,7 @@ public class PlasmaGlobe extends HorizontalElectricBlock implements IBE<PlasmaGl
         if(!player.getMainHandItem().isEmpty())
             return InteractionResult.PASS;
         return onBlockEntityUse(level, pos, be -> {
-            if (be.replaceBulb(player, InteractionHand.MAIN_HAND, ItemStack.EMPTY, (float)hitResult.getLocation().y - pos.getY()))
+            if (be.replaceTransformer(player, InteractionHand.MAIN_HAND, ItemStack.EMPTY, (float)hitResult.getLocation().y - pos.getY()))
                 return InteractionResult.SUCCESS;
             return interactTry(state, level, pos, player, hitResult);
         });
@@ -134,7 +134,7 @@ public class PlasmaGlobe extends HorizontalElectricBlock implements IBE<PlasmaGl
         if(hand != InteractionHand.MAIN_HAND)
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         return onBlockEntityUseItemOn(level, pos, be -> {
-            if (be.replaceBulb(player, hand, stack, (float)hitResult.getLocation().y - pos.getY() ))
+            if (be.replaceTransformer(player, hand, stack, (float)hitResult.getLocation().y - pos.getY() ))
                 return ItemInteractionResult.SUCCESS;
             return interactTry(stack, state, level, pos, player, hand, hitResult);
         });

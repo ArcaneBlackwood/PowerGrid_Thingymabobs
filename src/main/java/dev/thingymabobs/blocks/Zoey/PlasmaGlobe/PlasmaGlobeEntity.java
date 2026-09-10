@@ -14,6 +14,7 @@ import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.tterrag.registrate.util.entry.ItemEntry;
 import dev.thingymabobs.config.properties.CProperties;
 import dev.thingymabobs.registry.ModBlockEntities;
+import dev.thingymabobs.registry.ModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup.Provider;
@@ -25,8 +26,10 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.registries.DeferredItem;
 
 public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBehaviour.SyncAppender {
 	
@@ -47,7 +50,7 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
         RESISTANCE_MAX = RATED_VOLTAGE*RATED_VOLTAGE/power;
     }
 
-	public static final ItemEntry<GrowthLamp> BULB = ModdedItems.GROWTH_LAMP;
+	public static final DeferredItem<Item> TRANSFORMER = ModItems.TRANSFORMER;
 
 	public PlasmaGlobeEntity(BlockPos pos, BlockState state){
 		super(ModBlockEntities.PLASMA_GLOBE.get(), pos, state);
@@ -71,7 +74,7 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
         BlockState blockState = getBlockState();
         wire = builder.connectSwitch(
             getGlobeResistance(), builder.terminalNode(0), builder.terminalNode(1),
-            PlasmaGlobe.hasFunctionalBulb(blockState.getValue(PlasmaGlobe.STATE)));
+            PlasmaGlobe.hasFunctionalTransformer(blockState.getValue(PlasmaGlobe.STATE)));
     };
 
 
@@ -80,29 +83,29 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
     public ItemRequirement getRequiredItems(BlockState state) {
 		super.getRequiredItems(state);
         if(state.getValue(PlasmaGlobe.STATE) == PlasmaGlobe.STATE_EMPTY)
-            return new ItemRequirement(ItemRequirement.ItemUseType.CONSUME, BULB.get());
+            return new ItemRequirement(ItemRequirement.ItemUseType.CONSUME, TRANSFORMER.get());
         return ItemRequirement.NONE;
     };
 
-    public boolean replaceBulb(Player player, InteractionHand hand, ItemStack usedStack, float hitY) {
-        assert level != null;
-        BlockState blockState = getBlockState();
-        int newState = replaceBulbInternal(player, hand, usedStack, hitY, blockState);
-        if(newState != -1) updateState(newState);
-        return newState != -1;
-    };
+    public boolean replaceTransformer(Player player, InteractionHand hand, ItemStack usedStack, float hitY){
+		assert level != null;
+		BlockState blockState = getBlockState();
+		int newState = replaceTransformerInternal(player,hand,usedStack,hitY,blockState);
+		if(newState != -1){ updateState(newState);};
+		return newState != -1;
+	};
 
-    private int replaceBulbInternal(Player player, InteractionHand hand, ItemStack usedStack, float hitY, BlockState blockState) {
+    private int replaceTransformerInternal(Player player, InteractionHand hand, ItemStack usedStack, float hitY, BlockState blockState) {
         assert level != null;
         int state = blockState.getValue(PlasmaGlobe.STATE);
         boolean stackEmpty = usedStack == null || usedStack.isEmpty();
         if (stackEmpty) return -1;
-        if (usedStack.is(BULB.get()) && (usedStack.getCount() > 1 || player.isCreative())) {
-            playInteractBulbSound();
+        if (usedStack.is(TRANSFORMER.get()) && (usedStack.getCount() > 1 || player.isCreative())) {
+            playInteractTransformerSound();
             notifyUpdate();
             if(!level.isClientSide) {
                 ((ThermalBehaviour)thermalBehaviour).resetTemperature();
-                if (!PlasmaGlobe.hasFunctionalBulb(state) && !player.isCreative()) usedStack.shrink(1);
+                if (!PlasmaGlobe.hasFunctionalTransformer(state) && !player.isCreative()) usedStack.shrink(1);
             };
             if (!(player.getOffhandItem().getItem() instanceof DyeItem dye)) return PlasmaGlobe.STATE_OFF;
             colorBase = colorGlass = colorPlasma = dye.getDyeColor().getTextureDiffuseColor();
@@ -119,10 +122,10 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
         return -1;
     };
 
-    public void playInteractBulbSound() {
-        if (level == null || level.isClientSide) return;
-        level.playSound(null, worldPosition, SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 0.30F, 1.0F);
-    };
+    public void playInteractTransformerSound() {
+		if (level == null || level.isClientSide) return;
+		level.playSound(null, worldPosition, SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 0.30F, 1.0F);
+	};
 
     public void playInteractDyeSound() {
         if (level == null || level.isClientSide) return;
@@ -141,34 +144,26 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
     };
 
     protected void updateState(int newState) {
-        BlockState blockState = getBlockState();
-        if(!level.isClientSide) {
-            ThermalBehaviour thermal = (ThermalBehaviour)thermalBehaviour;
-            int oldState = blockState.getValue(PlasmaGlobe.STATE), state = newState == -1 ? oldState : newState;
-            if (PlasmaGlobe.hasFunctionalBulb(state)) {
-                if (thermal.isOverheated()) {
-                    state = PlasmaGlobe.STATE_BLOWN;
-                } else {
-                    float temperaturePercent = thermal.getTemperature() / 175.0F;
-                    state = PlasmaGlobe.STATE_OFF;
-                    if(temperaturePercent > 0.7f) {
-                        state = PlasmaGlobe.STATE_ON_HIGH;
-                    } else if(temperaturePercent > 0.35f) {
-                        state = PlasmaGlobe.STATE_ON;
-                    };
-                };
-            };
-            boolean functionalBulb = PlasmaGlobe.hasFunctionalBulb(state);
-            if (oldState != state) {
-                wire.setState(functionalBulb);
-                if (!functionalBulb) thermal.resetTemperature();
-                if (state == PlasmaGlobe.STATE_BLOWN) playBlowEffect();
-                level.setBlock(worldPosition, blockState.setValue(PlasmaGlobe.STATE, state), Block.UPDATE_ALL_IMMEDIATE);
-                notifyUpdate();
-            };
-            if (functionalBulb) {wire.setResistance(getGlobeResistance());};
-        };
-    };
+		BlockState blockState = getBlockState();
+		if(!level.isClientSide) {
+			ThermalBehaviour thermal = (ThermalBehaviour)thermalBehaviour;
+			int oldState = blockState.getValue(PlasmaGlobe.STATE), state = newState == -1 ? oldState : newState;
+			if (PlasmaGlobe.hasFunctionalTransformer(state)) {
+				if (thermal.isOverheated()) {
+					state = PlasmaGlobe.STATE_BLOWN;
+				};
+			};
+			boolean functionalTransformer = PlasmaGlobe.hasFunctionalTransformer(state);
+			if (oldState != state) {
+				wire.setState(functionalTransformer);
+				if (!functionalTransformer) thermal.resetTemperature();
+				if (state == PlasmaGlobe.STATE_BLOWN) playBlowEffect();
+				level.setBlock(worldPosition, blockState.setValue(PlasmaGlobe.STATE, state), Block.UPDATE_ALL_IMMEDIATE);
+				notifyUpdate();
+			};
+			if (functionalTransformer) {wire.setResistance(getGlobeResistance());};
+		};
+	};
 
 
 	// Tick stuff
