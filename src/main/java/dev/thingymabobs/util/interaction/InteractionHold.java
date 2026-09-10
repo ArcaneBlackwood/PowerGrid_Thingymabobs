@@ -1,7 +1,11 @@
 package dev.thingymabobs.util.interaction;
 
+import java.util.stream.Stream;
+
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
+
+import com.mojang.datafixers.util.Pair;
 import com.simibubi.create.AllItems;
 import dev.thingymabobs.util.SableUtils;
 import net.minecraft.client.Minecraft;
@@ -30,7 +34,7 @@ public class InteractionHold extends InteractionHandler {
 		BlockState state = world.getBlockState(pos);
 		if (state == null) return;
 		var blockBase = state.getBlock();
-		if (!(blockBase instanceof Block block)) return;
+		if (!(blockBase instanceof Capable block)) return;
 		block.interactOnStart(state, this, player, getPlayerCount());
 	}
 	@Override
@@ -38,13 +42,13 @@ public class InteractionHold extends InteractionHandler {
 		BlockState state = world.getBlockState(pos);
 		if (state == null) return;
 		var blockBase = state.getBlock();
-		if (!(blockBase instanceof Block block)) return;
+		if (!(blockBase instanceof Capable block)) return;
 		block.interactOnStop(state, this, player, getPlayerCount());
 	}
 	@Override
 	protected boolean tick() {
 		BlockState state = world.getBlockState(pos);
-		if (state == null || !(state.getBlock() instanceof Block block)) return false;
+		if (state == null || !(state.getBlock() instanceof Capable block)) return false;
 
 		if (world.isClientSide && tickClient(world, block))
 			return false;
@@ -53,7 +57,7 @@ public class InteractionHold extends InteractionHandler {
 		return block.interactTick(state, this);
 	}
 	@OnlyIn(Dist.CLIENT)
-	protected boolean tickClient(Level world, Block block) {
+	protected boolean tickClient(Level world, Capable block) {
 		Minecraft mc = Minecraft.getInstance();
 		Player player = mc.player;
 		if (!(mc.hitResult instanceof BlockHitResult hit)) return true;
@@ -73,7 +77,7 @@ public class InteractionHold extends InteractionHandler {
 
 
 	private static final Vector3d vec = new Vector3d();
-	public static interface Block {
+	public static interface Capable {
 		/**
 		 * @return If returns false, stops interaction.  Note on server side this wont sync with clients hand.
 		 */
@@ -82,14 +86,18 @@ public class InteractionHold extends InteractionHandler {
 		default public void interactOnStop(BlockState state, InteractionHold interact, Player player, int oldCount) {};
 
 		@OnlyIn(Dist.CLIENT)
-		/**
-		 * Should only be used on client side.
-		 */
 		default public void interactStart(BlockPos pos) {
 			setActiveLocal(new InteractionHold(Minecraft.getInstance().player, pos));
 		}
+		@OnlyIn(Dist.CLIENT)
 		default public void interactionStop() {
 			InteractionHandler.clearActiveLocal();
+		}
+		default public void interactStart(Player player, BlockPos pos) {
+			InteractionHandler.setActive(player, InteractionHold::new, pos);
+		}
+		default public void interactionStop(Player player) {
+			InteractionHandler.clearActive(player);
 		}
 
 		default public boolean interactIsValid(Player player, BlockPos pos) {
@@ -115,6 +123,12 @@ public class InteractionHold extends InteractionHandler {
 			if (level.isClientSide && player.isLocalPlayer())
 				interactStart(pos);
 			return InteractionResult.SUCCESS;
+		}
+		static public BlockHitResult getInteractHit(InteractionHold interact, Player player) {
+			return interact.getBlockHit(player);
+		}
+		static public Stream<Pair<Player, BlockHitResult>> getInteractHits(InteractionHold interact) {
+			return interact.getBlockHits();
 		}
 	}
 }

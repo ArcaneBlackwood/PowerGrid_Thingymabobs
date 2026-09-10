@@ -1,5 +1,7 @@
 package dev.thingymabobs.util.interaction;
 
+import java.util.function.Consumer;
+
 import org.patryk3211.powergrid.network.C2SPacket;
 
 import net.minecraft.core.BlockPos;

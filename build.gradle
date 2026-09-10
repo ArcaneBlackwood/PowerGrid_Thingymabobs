@@ -101,6 +101,7 @@ dependencies {
             prefer project.sable_companion_version
         }
     }
+    compileOnly("dev.ryanhcode.sable:sable-neoforge-${minecraft_version}:${sable_version}")
     runtimeOnly("dev.ryanhcode.sable:sable-neoforge-${minecraft_version}:${sable_version}")
     runtimeOnly "curse.maven:aeronautics-676721:8763471"
 }
@@ -111,9 +112,10 @@ tasks.withType(JavaCompile).configureEach {
 
 tasks.named('processResources', ProcessResources).configure {
     def replaceProperties = [
-            mod_version            : mod_version,
-            minecraft_version_range: minecraft_version_range,
-            neoforge_version_range : neoforge_version_range
+            mod_version             : mod_version,
+            minecraft_version_range : minecraft_version_range,
+            neoforge_version_range  : neoforge_version_range,
+            sable_version           : sable_version
     ]
     inputs.properties replaceProperties
     filesMatching('META-INF/neoforge.mods.toml') {

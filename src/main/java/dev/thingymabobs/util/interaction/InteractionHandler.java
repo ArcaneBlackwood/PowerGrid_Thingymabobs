@@ -5,16 +5,22 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
+import com.mojang.datafixers.util.Pair;
 import dev.thingymabobs.mixin.unit.KeyMappingMixin;
 import dev.thingymabobs.registry.ModPackets;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.IEventBus;
@@ -38,12 +44,21 @@ public abstract class InteractionHandler {
 	// #### REGISTER & CONSTRUCTORS
 	public static void register(IEventBus modBus) {
 		CONSTRUCTORS.put(InteractionHold.KEY, InteractionHold::new);
+
 		NeoForge.EVENT_BUS.addListener(InteractionHandler::tickAll);
 		NeoForge.EVENT_BUS.addListener(InteractionHandler::onPlayerTrack);
 		NeoForge.EVENT_BUS.addListener(InteractionHandler::onPlayerUntrack);
 		NeoForge.EVENT_BUS.addListener(InteractionHandler::onLevelUnload);
 		NeoForge.EVENT_BUS.addListener(InteractionHandler::onServerDisconnect);
 	}
+	@OnlyIn(Dist.CLIENT)
+	public static void registerClient(IEventBus modBus) {
+		NeoForge.EVENT_BUS.addListener(InteractionHandler::tickAllClient);
+	}
+
+
+
+	// #### EVENT LISTENERS
 	private static void tickAll(ServerTickEvent.Post event) {
 		for (InteractionHandler handler : ACTIVE_BLOCKS.values()) {
 			if (handler.tick()) continue;
@@ -89,11 +104,7 @@ public abstract class InteractionHandler {
 			ACTIVE_LOCAL.onStop(null);
 		ACTIVE_LOCAL = null;
 	}
-
-	@OnlyIn(Dist.CLIENT)
-	public static void registerClient(IEventBus modBus) {
-		NeoForge.EVENT_BUS.addListener(InteractionHandler::tickAllClient);
-	}
+	// #### CLIENT
 	@OnlyIn(Dist.CLIENT)
 	private static void tickAllClient(ClientTickEvent.Post event) {
 		if (ACTIVE_LOCAL != null && (Minecraft.getInstance().screen != null || !ACTIVE_LOCAL.tick()))
@@ -119,23 +130,6 @@ public abstract class InteractionHandler {
 
 
 	// #### ACTIVE SETTERS & RESETTERS
-	@OnlyIn(Dist.CLIENT)
-	protected static void setActiveLocal(InteractionHandler handler) {
-		//Thingymabobs.LOGGER.info("InteractionHandler.setActiveClient");
-		ACTIVE_LOCAL = handler;
-		handler.onStart(null);
-		((KeyMappingMixin)Minecraft.getInstance().options.keyUse).invokeRelease();
-		ModPackets.PACKETS.send(new InteractionPacketC2S(handler));
-	}
-	@OnlyIn(Dist.CLIENT)
-	protected static void clearActiveLocal() {
-		//Thingymabobs.LOGGER.info("InteractionHandler.clearActiveClient");
-		if (ACTIVE_LOCAL == null) return;
-		ACTIVE_LOCAL.onStop(null);
-		ACTIVE_LOCAL = null;
-		ModPackets.PACKETS.send(new InteractionPacketC2S());
-	}
-	// #### COMMON
 	protected static void clearActive(Level world, BlockPos pos) {
 		//Thingymabobs.LOGGER.info("InteractionHandler.clearActiveServer");
 		InteractionHandler oldHandler = ACTIVE_BLOCKS.remove(new LevelBlock(world, pos));
@@ -145,6 +139,11 @@ public abstract class InteractionHandler {
 			ACTIVE_PLAYERS.remove(player);
 	}
 	protected static void setActive(Player player, String key, BlockPos pos) {
+		var constructor = CONSTRUCTORS.get(key);
+		if (constructor == null) return;
+		setActive(player, constructor, pos);
+	}
+	protected static void setActive(Player player, Constructor constructor, BlockPos pos) {
 		//.info("InteractionHandler.setActiveServer");
 		InteractionHandler handler = ACTIVE_PLAYERS.get(player);
 		LevelBlock location = new LevelBlock(player.level(), pos);
@@ -154,8 +153,6 @@ public abstract class InteractionHandler {
 			if (handler.players.size() == 0)
 				ACTIVE_BLOCKS.remove(location);
 		} else {
-			var constructor = CONSTRUCTORS.get(key);
-			if (constructor == null) return;
 			handler = constructor.construct(player, pos);
 			ACTIVE_PLAYERS.put(player, handler);
 		}
@@ -173,6 +170,23 @@ public abstract class InteractionHandler {
 			oldHandler.onStop(player);
 		if (oldHandler.players.size() > 0) return;
 		ACTIVE_BLOCKS.remove(new LevelBlock(player.level(), oldHandler.pos));
+	}
+	// #### CLIENT
+	@OnlyIn(Dist.CLIENT)
+	protected static void setActiveLocal(InteractionHandler handler) {
+		//Thingymabobs.LOGGER.info("InteractionHandler.setActiveClient");
+		ACTIVE_LOCAL = handler;
+		handler.onStart(null);
+		((KeyMappingMixin)Minecraft.getInstance().options.keyUse).invokeRelease();
+		ModPackets.PACKETS.send(new InteractionPacketC2S(handler));
+	}
+	@OnlyIn(Dist.CLIENT)
+	protected static void clearActiveLocal() {
+		//Thingymabobs.LOGGER.info("InteractionHandler.clearActiveClient");
+		if (ACTIVE_LOCAL == null) return;
+		ACTIVE_LOCAL.onStop(null);
+		ACTIVE_LOCAL = null;
+		ModPackets.PACKETS.send(new InteractionPacketC2S());
 	}
 
 
@@ -239,16 +253,34 @@ public abstract class InteractionHandler {
 	public int getPlayerCount() {
 		return players==null ? 1 : players.size();
 	}
-	public static BlockHitResult getBlockHit(Player player) {
+	public Stream<Pair<Player, BlockHitResult>> getBlockHits() {
+		return players.stream().map((Player player) ->
+				new Pair<>(player, getBlockHit(player)))
+			.filter((hit) -> hit != null);
+	}
+	public BlockHitResult getBlockHit(Player player) {
+		double range = player.blockInteractionRange() + 0.5f;
+        Vec3 eyePos = player.getEyePosition(0);
+        Vec3 viewNorm = player.getViewVector(0);
+        Vec3 endPos = eyePos.add(viewNorm.x * range, viewNorm.y * range, viewNorm.z * range);
+		BlockState state = world.getBlockState(pos);
+		BlockHitResult blockhitresult = world.clipWithInteractionOverride(
+			eyePos, endPos, pos, state.getCollisionShape(world, pos, CollisionContext.of(player)), state);
+		
+		if (blockhitresult == null)
+			return BlockHitResult.miss(endPos, Direction.getNearest(viewNorm), pos);
+		else return blockhitresult;
+	}
+	public static BlockHitResult getBlockHitOcclude(Player player) {
 		if (player.level().isClientSide && player == Minecraft.getInstance().player) {
-			BlockHitResult hit = getBlockHitClient(player);
+			BlockHitResult hit = getBlockHitOccludeClient(player);
 			if (hit != null) return hit;
 		}
 		if (!(player.pick(player.blockInteractionRange(), 0, false) instanceof BlockHitResult hit)) return null;
 		return hit;
 	}
 	@OnlyIn(Dist.CLIENT)
-	private static BlockHitResult getBlockHitClient(Player player) {
+	private static BlockHitResult getBlockHitOccludeClient(Player player) {
 		Minecraft mc = Minecraft.getInstance();
 		if (player == mc.player && mc.hitResult instanceof BlockHitResult hit) return hit;
 		return null;
@@ -271,5 +303,8 @@ public abstract class InteractionHandler {
 		public boolean equals(Object obj) {
 			return obj instanceof LevelBlock that && that.pos.equals(pos) && that.world.equals(world);
 		}
+	}
+	public static interface Transcoder {
+		
 	}
 }
