@@ -36,6 +36,8 @@ Items appear in both a dedicated Thingymabobs tab and the vanilla Redstone Block
 - [x] Small Bulb
 - [x] Shunt resistor
 - [ ] Small logic level thyratron, electron tube, triode
+- [ ] Multi position stackable rotaty switch (With non stackable component) (4 can stack in single block?)
+	- [ ] Electrically operated variant
 - [ ] Aeronautics stuff
 	- [ ] Tilt switch /w variants (Off placed axis, approaching axis)
 	- [ ] Gyroscope (Spun up flywheel off axis rotation detected by coil)
@@ -57,7 +59,7 @@ Items appear in both a dedicated Thingymabobs tab and the vanilla Redstone Block
 	Maybe done with a "cable facade" like style.  Possibly work with copycat blocks and microblocks too?
 	- [ ] Cable tray variant (Endpoints only on underside, but can interface easily with conduits)
 - [ ] Fancy traffic lights
-- [ ] Mechanical counter (Like a cars odometer).  Power applied for rotation, resetting.  Could have internal voltage dividers or encoders for number positions?  "Latch" option, if power removed move to next number if not settled
+- [ ] Mechanical counter (Like a cars odometer).  Power applied for rotation, resetting.  Could have internal voltage dividers or encoders for number positions?  "Latch" option, if power removed move to next number if not settled(Tick tick sounds, and togglable ding if added bell?  Can be used without electricicty)
 - [ ] Mechanically timed button.  Like a cooking timer, twist to set.
 - [x] Lava lamp!
 - [ ] Pressure sensor multiblock.  Senses weight of entitie or aeronautic ships

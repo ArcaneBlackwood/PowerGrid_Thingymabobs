@@ -1,17 +1,15 @@
 package dev.thingymabobs.component;
 
-import dev.thingymabobs.Thingymabobs;
-import dev.thingymabobs.component.properties.LazyConstantProperty;
-import dev.thingymabobs.config.properties.CProperties;
-import com.google.common.collect.ImmutableCollection;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.phys.shapes.VoxelShape;
+import java.util.Collection;
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
 import org.patryk3211.powergrid.circuits.circuitboard.CircuitBoardBlockEntity;
 import org.patryk3211.powergrid.circuits.circuitboard.ComponentCircuitBuilder;
+import org.patryk3211.powergrid.circuits.components.Component;
+import org.patryk3211.powergrid.circuits.components.IGoggleLabel;
+import org.patryk3211.powergrid.circuits.components.IInteractableComponent;
+import org.patryk3211.powergrid.circuits.components.VerticallyOrientableComponent;
 import org.patryk3211.powergrid.circuits.components.properties.BooleanProperty;
 import org.patryk3211.powergrid.circuits.components.properties.ComponentProperty;
 import org.patryk3211.powergrid.circuits.schematic.ComponentFootprint;
@@ -20,41 +18,47 @@ import org.patryk3211.powergrid.circuits.thermal.ThermalBuilder;
 import org.patryk3211.powergrid.collections.ModdedSoundEvents;
 import org.patryk3211.powergrid.electricity.sim.SwitchedWire;
 import org.patryk3211.powergrid.utility.Unit;
-import org.patryk3211.powergrid.circuits.components.OrientableComponent;
-import org.patryk3211.powergrid.circuits.components.IInteractableComponent;
-import org.patryk3211.powergrid.circuits.components.IGoggleLabel;
-import org.patryk3211.powergrid.circuits.components.Component;
-import org.patryk3211.powergrid.circuits.components.SwitchComponent;
+import com.google.common.collect.ImmutableCollection;
+import dev.thingymabobs.Thingymabobs;
+import dev.thingymabobs.component.properties.LazyConstantProperty;
+import dev.thingymabobs.config.properties.CProperties;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
-import java.util.Collection;
-import java.util.List;
+public class SmallButtonComponent extends VerticallyOrientableComponent implements IInteractableComponent, IGoggleLabel {
+    protected static final ComponentFootprint FOOTPRINT_H = new ComponentFootprint.Builder(
+			6,4, "component." + Thingymabobs.MOD_ID + ".gyroscope", null)
+		.addPad(0, 1, 0)
+		.addPad(5, 2, 1)
+		.withItem().withOutline().build();
+    protected static final ComponentFootprint FOOTPRINT_V = new ComponentFootprint.Builder(
+			6,4, "component." + Thingymabobs.MOD_ID + ".gyroscope", null)
+		.addPad(0, 0, 0)
+		.addPad(0, 3, 1)
+		.withItem().withOutline().build();
 
-public class SwitchSPDTComponent extends OrientableComponent implements IInteractableComponent, IGoggleLabel {
-    private static final ComponentFootprint FOOTPRINT = new ComponentFootprint.Builder(
-            5,3, "component." + Thingymabobs.MOD_ID + ".switch_spdt", null)
-        .addPad(0, 1, 0, "Common", "C")
-        .addPad(2, 1, 1, "Normally Open", "NO")
-        .addPad(4, 1, 2, "Normally Closed", "NC")
-        .withItem().withOutline().build();
-    
     protected static CProperties.Prop CONFIG = null;
     public static void configUpdated(CProperties.Prop prop) {
         CONFIG = prop;
-        MAX_CURRENT.markDirty();
-        RESISTANCE.markDirty();
     }
 
-    public static final BooleanProperty STATE = SwitchComponent.STATE;
+
+    public static final BooleanProperty NORMALLY_CLOSED = new BooleanProperty(
+		Thingymabobs.MOD_ID, "switch_state");
+    public static final BooleanProperty STATE = new BooleanProperty(
+		Thingymabobs.MOD_ID, "switch_state").hidden().cast();
     public static final LazyConstantProperty MAX_CURRENT = new LazyConstantProperty(
         Thingymabobs.MOD_ID, "current_max",
         () -> Unit.CURRENT.formatWithPrefixes(Mth.sqrt(CONFIG.getThermal().getPower() / CONFIG.getResistance().get())).string());
     public static final LazyConstantProperty RESISTANCE = new LazyConstantProperty(
         Thingymabobs.MOD_ID, "resistance",
         () -> Unit.RESISTANCE.formatWithPrefixes(CONFIG.getResistance().get()).string());
-        
-
-    public SwitchSPDTComponent() {
-        super(FOOTPRINT);
+	
+    public SmallButtonComponent() {
+        super(FOOTPRINT_H, FOOTPRINT_V);
     }
     @Override
     protected void addProperties(ImmutableCollection.Builder<ComponentProperty<?>> properties) {

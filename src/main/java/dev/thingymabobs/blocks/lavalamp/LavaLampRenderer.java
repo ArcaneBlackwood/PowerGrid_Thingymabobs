@@ -1,4 +1,4 @@
-package dev.thingymabobs.blocks;
+package dev.thingymabobs.blocks.lavalamp;
 
 import dev.thingymabobs.registry.ModModels;
 import com.mojang.blaze3d.vertex.PoseStack;

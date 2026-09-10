@@ -1,4 +1,4 @@
-package dev.thingymabobs.blocks;
+package dev.thingymabobs.blocks.lavalamp;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -15,13 +15,18 @@ import org.patryk3211.powergrid.electricity.light.bulb.GrowthLamp;
 import org.patryk3211.powergrid.electricity.particles.SparkParticleData;
 import org.patryk3211.powergrid.electricity.sim.AbstractElectricWire;
 import org.patryk3211.powergrid.electricity.sim.SwitchedWire;
-import dev.thingymabobs.blocks.LavaLampThermalBehaviour.Properties;
-import dev.thingymabobs.packets.LavaLampGlobS2CPacket;
+
+import dev.thingymabobs.Thingymabobs;
+import dev.thingymabobs.blocks.lavalamp.LavaLampThermalBehaviour.Properties;
+import dev.thingymabobs.config.properties.CProperties;
+import dev.thingymabobs.config.properties.CProperties.ASubProp;
 import dev.thingymabobs.registry.ModAttachments;
 import dev.thingymabobs.registry.ModBlockEntities;
 import dev.thingymabobs.registry.ModPackets;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.tterrag.registrate.util.entry.ItemEntry;
+
+import net.createmod.catnip.config.ConfigBase;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup.Provider;
@@ -76,21 +81,24 @@ public class LavaLampEntity extends ElectricBlockEntity implements ElectricBehav
 		}
     }
 
-	public static final LavaLampThermalBehaviour.Properties PROPERTIES = new Properties()
-		.setLampPower(150f).setLampMass(0.1f).setLampTemp(1450f).setLampOverheat(2000f)
-		.setLavaTemp(75f).setLavaMass(80f).setLavaOverheat(85f)
-		.setInterPercent(0.2f).initialize();
-    protected static final int WAX_PRECISION = 128;
-    protected static final int WAX_TOTAL = 18*WAX_PRECISION;
+    protected static CProperties.Prop CONFIG = null;
+    protected static Config CONFIG_PROPS;
+	protected static LavaLampThermalBehaviour.Properties CONFIG_THERMAL;
     public static final ItemEntry<GrowthLamp> BULB = ModdedItems.GROWTH_LAMP;
-    public static float IDEAL_TEMPERATURE = PROPERTIES.lavaTemp - 15f;
-    public static float RESISTANCE_MIN = 240*240 / (PROPERTIES.lampPower*2);
-    public static float RESISTANCE_MAX = 240*240 / PROPERTIES.lampPower;
-    public static float PARTICLE_RATE = 1f / (20 * 20);
-    public static float PARTICLE_SPEED = 1f / (20f);
-    public static int PARTICLE_MAX_VOLUME = WAX_PRECISION*8;
-    public static float RATED_VOLTAGE = Mth.sqrt(PROPERTIES.lampPower * RESISTANCE_MAX);
-    public static float INSOMNIA_DAYS_ADD = 9;
+    public static float RESISTANCE_MIN;
+    public static float RESISTANCE_MAX;
+    public static void configUpdated(CProperties.Prop prop) {
+        CONFIG = prop;
+        Thingymabobs.LOGGER.info(prop.toString());
+        CONFIG_PROPS = prop.get(Config.class, "llp");
+        CONFIG_THERMAL = prop.get(LavaLampThermalBehaviour.Properties.class, "llt");
+        RESISTANCE_MIN = CONFIG_PROPS.voltage*CONFIG_PROPS.voltage / (CONFIG_THERMAL.lampPower*2);
+        RESISTANCE_MAX = CONFIG_PROPS.voltage*CONFIG_PROPS.voltage / CONFIG_THERMAL.lampPower;
+    }
+
+    protected static final int WAX_PRECISION = 128;
+    public static final int WAX_TOTAL_VOLUME = 18;
+    protected static final int WAX_TOTAL = WAX_TOTAL_VOLUME*WAX_PRECISION;
 
     protected SwitchedWire wire;
     protected int colorBase, colorGlass, colorWax;
@@ -100,19 +108,9 @@ public class LavaLampEntity extends ElectricBlockEntity implements ElectricBehav
     protected ArrayList<Glob> globs = new ArrayList<>(4);
     protected boolean registered = false;
 
-    @Override
-    public void invalidate() {
-        super.invalidate();
-        if (!registered) return;
-        ALL_LOADED_LAMPS.remove(this);
-    }
-    @Override
-    public void onChunkUnloaded() {
-        super.onChunkUnloaded();
-        if (!registered) return;
-        ALL_LOADED_LAMPS.remove(this);
-    }
 
+
+    
     public LavaLampEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.LAVA_LAMP.get(), pos, state);
         //Colors of crafting recipes
@@ -130,7 +128,7 @@ public class LavaLampEntity extends ElectricBlockEntity implements ElectricBehav
     }
     @Override
     public ThermalBehaviour specifyThermalBehaviour() {
-        return new LavaLampThermalBehaviour(this, PROPERTIES);
+        return new LavaLampThermalBehaviour(this, CONFIG_THERMAL);
     }
     @Override
     public void buildCircuit(CircuitBuilder builder) {
@@ -140,6 +138,7 @@ public class LavaLampEntity extends ElectricBlockEntity implements ElectricBehav
             getLampResistance(), builder.terminalNode(0), builder.terminalNode(1),
             LavaLamp.hasFunctionalBulb(blockState.getValue(LavaLamp.STATE)));
     }
+
 
     @Override
     public ItemRequirement getRequiredItems(BlockState state) {
@@ -188,6 +187,8 @@ public class LavaLampEntity extends ElectricBlockEntity implements ElectricBehav
         }
         return -1;
     }
+
+
     public void playInteractBulbSound() {
         if (level == null || level.isClientSide) return;
         level.playSound(null, worldPosition, SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 0.30F, 1.0F);
@@ -196,8 +197,6 @@ public class LavaLampEntity extends ElectricBlockEntity implements ElectricBehav
         if (level == null || level.isClientSide) return;
         level.playSound(null, worldPosition, SoundEvents.DYE_USE, SoundSource.BLOCKS, 0.30F, 1.0F);
     }
-
-
     public void playBlowEffect() {
         if(level == null) return;
         var pos = this.worldPosition.getCenter();
@@ -216,7 +215,7 @@ public class LavaLampEntity extends ElectricBlockEntity implements ElectricBehav
                 if (thermal.isLampOverheated()) {
                     state = LavaLamp.STATE_BLOWN;
                 } else {
-                    float temperaturePercent = thermal.getLampTemperature() / PROPERTIES.lampTemp;
+                    float temperaturePercent = thermal.getLampTemperature() / CONFIG_THERMAL.lampTemp;
                     state = LavaLamp.STATE_OFF;
                     if(temperaturePercent > 0.7f) {
                         state = LavaLamp.STATE_ON_HIGH;
@@ -249,14 +248,12 @@ public class LavaLampEntity extends ElectricBlockEntity implements ElectricBehav
         };
         spawnParticles();
     };
-
     @Override
     public void lazyTick() {
         super.lazyTick();
         if (level.isClientSide) return;
         checkWaxTotals();
     };
-
     public void checkWaxTotals() {
         int waxTotal = waxBottom + waxTop;
         for (Glob glob : globs) waxTotal += glob.volume;
@@ -282,14 +279,14 @@ public class LavaLampEntity extends ElectricBlockEntity implements ElectricBehav
         float currentWax = (waxTop - waxBottom) / WAX_TOTAL; //-1
         float waxDiff = targetWax - currentWax; //2
         float spawnSpeed = Mth.abs(waxDiff) * 0.3f + 0.7f;
-        if (level.random.nextFloat() * spawnSpeed > PARTICLE_RATE) return;
+        if (level.random.nextFloat() * spawnSpeed > CONFIG_PROPS.particleRate) return;
         boolean movingUp = level.random.nextFloat() < waxDiff * 0.25 + 0.5;
 
         float randVolume = level.random.nextFloat();
         randVolume = randVolume*randVolume*randVolume;
-        int volume = Math.min(Mth.floor(PARTICLE_MAX_VOLUME*randVolume), movingUp ? waxBottom : waxTop);
+        int volume = Math.min(Mth.floor(WAX_PRECISION*CONFIG_PROPS.particleMax), movingUp ? waxBottom : waxTop);
         Glob newGlob = Glob.fromVolume(
-            movingUp, PARTICLE_SPEED, volume,
+            movingUp, CONFIG_PROPS.particleSpeed, volume,
             Rotation.getRandom(level.random), level.random.nextFloat() * 2 - 1, level.random.nextFloat() * 2 - 1
         );
         globs.add(newGlob);
@@ -319,12 +316,12 @@ public class LavaLampEntity extends ElectricBlockEntity implements ElectricBehav
 	}
     public float getLampResistance() {
         if (thermalBehaviour == null) return RESISTANCE_MIN;
-        return RESISTANCE_MIN + ((RESISTANCE_MAX - RESISTANCE_MIN) / PROPERTIES.lampOverheat) * ((LavaLampThermalBehaviour)thermalBehaviour).getLampTemperature();
+        return RESISTANCE_MIN + ((RESISTANCE_MAX - RESISTANCE_MIN) / CONFIG_THERMAL.lampOverheat) * ((LavaLampThermalBehaviour)thermalBehaviour).getLampTemperature();
     }
     public float getTargetWaxTop() {
         if (thermalBehaviour == null) return -1;
         float lavaTemp = ((LavaLampThermalBehaviour)thermalBehaviour).getLavaTemperature();
-        return Mth.clamp((lavaTemp - IDEAL_TEMPERATURE) * (2f / PROPERTIES.lavaTemp), -1, 1);
+        return Mth.clamp((lavaTemp - CONFIG_THERMAL.lavaTemp) * CONFIG_PROPS.tempRangeInv, -1, 1);
     }
     public float getEffectRadius() {
         return 16f;
@@ -337,8 +334,9 @@ public class LavaLampEntity extends ElectricBlockEntity implements ElectricBehav
         return 2f - Mth.abs(waxBottom - waxBottom) * 1.5f / WAX_TOTAL;
     }
     public int getInsomniaTimeOffset() {
-        return Mth.floor(getActivityMultiplier() * INSOMNIA_DAYS_ADD * 2f) * 10 * 60 * 24;
+        return Mth.floor(getActivityMultiplier() * CONFIG_PROPS.insomniaDays * 2f) * 10 * 60 * 24;
     }
+
 
     @Override
     protected void write(CompoundTag tag, Provider registries, boolean clientPacket) {
@@ -392,6 +390,19 @@ public class LavaLampEntity extends ElectricBlockEntity implements ElectricBehav
             thermal.setLavaTemperature(buff.readFloat());
         }
     }
+    @Override
+    public void invalidate() {
+        super.invalidate();
+        if (!registered) return;
+        ALL_LOADED_LAMPS.remove(this);
+    }
+    @Override
+    public void onChunkUnloaded() {
+        super.onChunkUnloaded();
+        if (!registered) return;
+        ALL_LOADED_LAMPS.remove(this);
+    }
+
 
     public float getVisibleWax(boolean top) {
         return (float)(top ? waxTop : waxBottom) / WAX_TOTAL;
@@ -425,4 +436,50 @@ public class LavaLampEntity extends ElectricBlockEntity implements ElectricBehav
             return (float)volume / WAX_TOTAL;
         }
     }
+
+	public static class Config extends ASubProp {
+		public ConfigBase.ConfigFloat voltageConf, insomniaDaysConf, tempRangeConf,
+            particleRateConf, particleSpeedConf, particleMaxConf;
+		public float voltage, insomniaDays, tempRange,
+            particleRate, particleSpeed, particleMax;
+        public float tempRangeInv;
+        
+		public Config(float voltage, float insomniaDays, float tempRange,
+            float particleRate, float particleSpeed, float particleMax) { 
+            this.voltage = voltage;
+            this.insomniaDays = insomniaDays;
+            this.tempRange = tempRange;
+            this.particleRate = particleRate;
+            this.particleSpeed = particleSpeed;
+            this.particleMax = particleMax;
+        }
+
+		@Override
+		public Class<?> getType() {
+			return Config.class;
+		}
+		@Override
+		public void onLoad() {
+			voltage = insomniaDaysConf.getF();
+			insomniaDays = insomniaDaysConf.getF();
+			tempRange = tempRangeConf.getF();
+			particleRate = particleRateConf.getF();
+			particleSpeed = particleSpeedConf.getF();
+			particleMax = particleMaxConf.getF();
+            tempRangeInv = 1/tempRange;
+		}
+		@Override
+		public void register(String id, CProperties.Builder builder) {
+			voltageConf = builder.f(voltage, 0f, id+"_voltage");
+			insomniaDaysConf = builder.f(insomniaDays, 0f, id+"_insomia_days_add");
+			tempRangeConf = builder.f(tempRange, 0f, id+"_wax_temperature_range",
+                "Specifies the maximum distance from lava temp to have the wax in its balanced range.  When temperature is right on the limit of this range, the wax will be clamped to either the top or bottom, while zero distance will be perfectly balanced.");
+			particleRateConf = builder.f(particleRate, 0f, 1f, id+"_particle_rate",
+                "Chance to spawn a glob particle every tick");
+			particleSpeedConf = builder.f(particleSpeed, 0f, id+"_particle_speed",
+				"Speed of the glob particles in progress per tick.  Where progress starts at 0 and ends at 1.");
+			particleMaxConf = builder.f(particleMax, 0f, WAX_TOTAL_VOLUME, id+"_particle_max_volume",
+                "Maximum size of a glob particle.");
+		}
+	}
 }

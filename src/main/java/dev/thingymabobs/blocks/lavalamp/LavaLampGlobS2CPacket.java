@@ -1,8 +1,8 @@
-package dev.thingymabobs.packets;
+package dev.thingymabobs.blocks.lavalamp;
 
 import org.patryk3211.powergrid.network.S2CPacket;
 import org.patryk3211.powergrid.utility.ClientSideAccess;
-import dev.thingymabobs.blocks.LavaLampEntity;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;

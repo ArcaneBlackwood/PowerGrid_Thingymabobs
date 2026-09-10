@@ -1,20 +1,25 @@
 {
-  "required": true,
-  "package": "dev.thingymabobs.mixin.unit",
-  "compatibilityLevel": "JAVA_21",
-  "minVersion": "0.8.3",
-  "mixins": [
-    "ThermalBuilderMixin",
-    "PhantomSpawnerMixin",
-    "CircuitBoardBlockEntityMixin",
-    "RedstoneLinkNetworkHandlerMixin",
-    "LinkBehaviourMixin",
-    "SocketEndpointMixin",
-    "SoundBufferMixin",
-    "SoundEngineMixin",
-    "LevelMixin"
-  ],
-  "injectors": {
-    "defaultRequire": 1
-  }
+	"required": true,
+	"package": "dev.thingymabobs.mixin.unit",
+	"compatibilityLevel": "JAVA_21",
+	"minVersion": "0.8.3",
+	"mixins": [
+		"ThermalBuilderMixin",
+		"PhantomSpawnerMixin",
+		"CircuitBoardBlockEntityMixin",
+		"RedstoneLinkNetworkHandlerMixin",
+		"LinkBehaviourMixin",
+		"SocketEndpointMixin",
+		"SoundBufferMixin",
+		"SoundEngineMixin",
+		"LevelMixin"
+	],
+	"client": [
+		"MouseHandlerMixin",
+		"HumanoidModelMixin",
+		"KeyMappingMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
 }

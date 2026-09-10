@@ -10,12 +10,17 @@ import org.patryk3211.powergrid.circuits.schematic.PlacedComponent;
 import org.patryk3211.powergrid.config.ResistanceValues;
 import org.patryk3211.powergrid.config.ThermalValues;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
+
+import dev.thingymabobs.Thingymabobs;
 import net.createmod.catnip.config.ConfigBase;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 
 public final class CProperties extends ConfigBase implements ResistanceValues.Provider, ThermalValues.Provider {
+	public static final String VOLTAGE = "voltage";
+	public static final String POWER = "power";
+
 	public static final CProperties INSTANCE = new CProperties();
 	public static final float TEMP_MAX_DEFAULT = 150f;
 	public static final float OVERHEAT_DEFAULT = 175f;
@@ -202,7 +207,10 @@ public final class CProperties extends ConfigBase implements ResistanceValues.Pr
 		}
 
 		public Prop register(String name, ASubProp prop) {
-			props.put(name, prop);
+			ASubProp prevProp = props.put(name, prop);
+			if (prevProp != null)
+				Thingymabobs.LOGGER.warn("Replacing previous config property in '"+id+"'' with: "+prop.toString());
+			Thingymabobs.LOGGER.info(this.hashCode()+" Registering prop "+name+": "+prop+"\n\t"+toString());
 			return this;
 		}
 		public Prop registerResistance(float resistance) {

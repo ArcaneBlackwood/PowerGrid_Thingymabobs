@@ -13,7 +13,7 @@ import com.mojang.logging.LogUtils;
 import com.simibubi.create.Create;
 
 import dev.architectury.event.events.common.LifecycleEvent;
-import dev.thingymabobs.blocks.LavaLampEntity;
+import dev.thingymabobs.blocks.lavalamp.LavaLampEntity;
 import dev.thingymabobs.config.properties.CProperties;
 import dev.thingymabobs.mixin.RedstoneLinkNetworkHandlerExt;
 import dev.thingymabobs.registry.ModAttachments;
@@ -32,6 +32,7 @@ import dev.thingymabobs.registry.ModSounds;
 import dev.thingymabobs.util.IDirectionSocketElectric;
 import dev.thingymabobs.util.MetricScale;
 import dev.thingymabobs.util.SableUtils;
+import dev.thingymabobs.util.interaction.InteractionHold;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -60,6 +61,7 @@ public final class Thingymabobs {
         LifecycleEvent.SETUP.register(Thingymabobs::setup);
 
         modBus.addListener(ModPackets::registerPayloadHandlers);
+        InteractionHold.register(modBus);
         MetricScale.register(modBus);
         ModComponents.register(modBus);
         ModDataComponents.DATA_COMPONENTS.register(modBus);
@@ -79,6 +81,7 @@ public final class Thingymabobs {
     }
     @OnlyIn(Dist.CLIENT)
     public void registerClient(IEventBus modBus) {
+        InteractionHold.registerClient(modBus);
         ModModels.registerClient();
         ModItems.registerClient(modBus);
         ModBlockEntities.registerClient(modBus);

@@ -1,4 +1,4 @@
-package dev.thingymabobs.blocks;
+package dev.thingymabobs.blocks.lavalamp;
 
 import java.util.List;
 
@@ -79,11 +79,12 @@ public class LavaLamp extends HorizontalElectricBlock implements IBE<LavaLampEnt
 	}
     @Override
     public void appendProperties(ItemStack stack, Player player, List<Component> tooltip) {
-        Voltage.rated(LavaLampEntity.RATED_VOLTAGE, player, tooltip); 
-        Power.rated(LavaLampEntity.PROPERTIES.lampPower, player, tooltip);
+        Voltage.rated(LavaLampEntity.CONFIG_PROPS.voltage, player, tooltip); 
+        Power.rated(LavaLampEntity.CONFIG_THERMAL.lampPower, player, tooltip);
         ModLang.translate("tooltip.temperature.ideal").style(ChatFormatting.GRAY).addTo(tooltip);
         ModLang.builder()
-            .add(Component.nullToEmpty(" ")).add(ModLang.number((double)LavaLampEntity.IDEAL_TEMPERATURE))
+            .add(Component.nullToEmpty(" ")).add(ModLang.numberConstant((double)LavaLampEntity.CONFIG_THERMAL.lavaTemp))
+            .add(Component.nullToEmpty("±")).add(ModLang.numberConstant((double)LavaLampEntity.CONFIG_PROPS.tempRange))
             .add(Component.nullToEmpty(" ")).add(Unit.TEMPERATURE.get()).style(ChatFormatting.BLUE).addTo(tooltip);
     }
 

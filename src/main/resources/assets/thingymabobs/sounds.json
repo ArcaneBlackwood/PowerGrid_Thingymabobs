@@ -14,6 +14,16 @@
       "thingymabobs:battery_replace"
     ]
   },
+  "button_on": {
+    "sounds": [
+      "thingymabobs:button_on"
+    ]
+  },
+  "button_off": {
+    "sounds": [
+      "thingymabobs:button_off"
+    ]
+  },
   "electric_furnace.open": {
     "sounds": [
       "thingymabobs:electric_furnace/open"

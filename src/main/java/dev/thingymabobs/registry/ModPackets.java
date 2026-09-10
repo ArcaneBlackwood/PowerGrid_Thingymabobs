@@ -8,7 +8,9 @@ import org.patryk3211.powergrid.network.CustomPayloadWrapper;
 import org.patryk3211.powergrid.network.PacketSet;
 import org.patryk3211.powergrid.network.S2CPacket;
 import dev.thingymabobs.Thingymabobs;
-import dev.thingymabobs.packets.LavaLampGlobS2CPacket;
+import dev.thingymabobs.blocks.lavalamp.LavaLampGlobS2CPacket;
+import dev.thingymabobs.util.interaction.InteractionPacketC2S;
+import dev.thingymabobs.util.interaction.InteractionPacketS2C;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -18,9 +20,11 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 public final class ModPackets {
-	public static final PacketSet PACKETS = PacketSet.builder(Thingymabobs.MOD_ID, 1)
-            .s2c(LavaLampGlobS2CPacket.class, LavaLampGlobS2CPacket::new)
-            .build();
+	public static final PacketSet PACKETS = PacketSet.builder(Thingymabobs.MOD_ID, 2)
+        .s2c(LavaLampGlobS2CPacket.class, LavaLampGlobS2CPacket::new)
+        .c2s(InteractionPacketC2S.class, InteractionPacketC2S::new)
+        .s2c(InteractionPacketS2C.class, InteractionPacketS2C::new)
+        .build();
 
 
     public static Collection<ServerPlayer> getPlayersTracking(BlockEntity be) {

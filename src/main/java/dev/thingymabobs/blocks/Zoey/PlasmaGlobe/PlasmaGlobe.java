@@ -12,11 +12,10 @@ import org.patryk3211.powergrid.electricity.info.IHaveElectricProperties;
 import org.patryk3211.powergrid.electricity.info.Power;
 import org.patryk3211.powergrid.electricity.info.Voltage;
 import org.patryk3211.powergrid.utility.Unit;
-
 import com.simibubi.create.foundation.block.IBE;
-
 import dev.thingymabobs.registry.ModBlockEntities;
 import dev.thingymabobs.registry.ModLang;
+import dev.thingymabobs.util.interaction.InteractionHold;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -38,7 +37,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-public class PlasmaGlobe extends HorizontalElectricBlock implements IBE<PlasmaGlobeEntity>, ISocketElectric, IHaveElectricProperties {
+public class PlasmaGlobe extends HorizontalElectricBlock implements IBE<PlasmaGlobeEntity>, ISocketElectric, IHaveElectricProperties, InteractionHold.Block {
 	public static final IntegerProperty STATE = IntegerProperty.create("state", 0, 4);
 	public static final int STATE_EMPTY = 0;
 	public static final int STATE_OFF = 1;
@@ -124,19 +123,25 @@ public class PlasmaGlobe extends HorizontalElectricBlock implements IBE<PlasmaGl
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if(!player.getMainHandItem().isEmpty())
             return InteractionResult.PASS;
-        return onBlockEntityUse(level, pos, be ->
-            be.replaceBulb(player, InteractionHand.MAIN_HAND, ItemStack.EMPTY, (float)hitResult.getLocation().y - pos.getY() )
-                ? InteractionResult.SUCCESS
-                : InteractionResult.FAIL);
+        return onBlockEntityUse(level, pos, be -> {
+            if (be.replaceBulb(player, InteractionHand.MAIN_HAND, ItemStack.EMPTY, (float)hitResult.getLocation().y - pos.getY()))
+                return InteractionResult.SUCCESS;
+            return interactTry(state, level, pos, player, hitResult);
+        });
     }
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         if(hand != InteractionHand.MAIN_HAND)
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-        return onBlockEntityUseItemOn(level, pos, be ->
-            be.replaceBulb(player, hand, stack, (float)hitResult.getLocation().y - pos.getY() )
-                ? ItemInteractionResult.SUCCESS
-                : ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION);
+        return onBlockEntityUseItemOn(level, pos, be -> {
+            if (be.replaceBulb(player, hand, stack, (float)hitResult.getLocation().y - pos.getY() ))
+                return ItemInteractionResult.SUCCESS;
+            return interactTry(stack, state, level, pos, player, hand, hitResult);
+        });
+    }
+    @Override
+    public boolean interactTick(BlockState state, InteractionHold interact) {
+        return true;
     }
 
     @Override

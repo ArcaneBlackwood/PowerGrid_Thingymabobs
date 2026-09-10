@@ -11,7 +11,6 @@ import dev.thingymabobs.blocks.switches.MVSwitchSPDTBlock;
 import dev.thingymabobs.blocks.switches.MVSwitchTPSTBlock;
 import dev.thingymabobs.blocks.switches.SwitchBlock;
 import dev.thingymabobs.config.properties.CProperties;
-import dev.thingymabobs.blocks.LavaLamp;
 import dev.thingymabobs.blocks.PowerShunt;
 import dev.thingymabobs.blocks.PowerShuntEntity;
 import dev.thingymabobs.blocks.battery.PoisonousPotatoBattery;
@@ -27,6 +26,10 @@ import dev.thingymabobs.blocks.battery.PoisonousPotatoBatteryEntity;
 import dev.thingymabobs.blocks.electricfurnace.ElectricFurnace;
 import dev.thingymabobs.blocks.electricfurnace.ElectricFurnaceConfig;
 import dev.thingymabobs.blocks.electricfurnace.ElectricFurnaceEntity;
+import dev.thingymabobs.blocks.lavalamp.LavaLamp;
+import dev.thingymabobs.blocks.lavalamp.LavaLampEntity;
+import dev.thingymabobs.blocks.lavalamp.LavaLampThermalBehaviour;
+
 import com.simibubi.create.api.connectivity.ConnectivityHandler;
 import com.simibubi.create.api.contraption.BlockMovementChecks;
 import com.simibubi.create.api.contraption.BlockMovementChecks.CheckResult;
@@ -185,6 +188,15 @@ public final class ModBlocks {
 			.complete(PotatoBatteryBlockEntity::configUpdatedPoison);
 
 		
+		CProperties.register(LAVA_LAMP.getId())
+			.register("llt", new LavaLampThermalBehaviour.Properties()
+				.setLampPower(150f).setInterPercent(0.2f)
+				.setLampMass(0.1f).setLampTemp(1450f).setLampOverheat(2000f)
+				.setLavaTemp(75f).setLavaMass(80f).setLavaOverheat(85f))
+			.register("llp", new LavaLampEntity.Config(
+				240f, 9f, 15f, 
+				1f / (20 * 20), 1f / (20f), 8f))
+			.complete(LavaLampEntity::configUpdated);
 		CProperties.register(POWER_SHUNT.getId())
 			.registerThermal(25f, 1000f, 300f, 500f)
 			.registerInt(PowerShuntEntity.CONFIG_RES_PRECISION, 4)
@@ -203,7 +215,7 @@ public final class ModBlocks {
 
 
 		CProperties.register(PLASMA_GLOBE.getId())
-			.registerFloat("voltage", 240f)
+			.registerFloat(CProperties.VOLTAGE, 240f)
 			.registerThermal(20f, 150f, 45f, 175f)
 			.complete(PlasmaGlobeEntity::configUpdated);
 		

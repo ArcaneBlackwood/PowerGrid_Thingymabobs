@@ -42,7 +42,7 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
         CONFIG = prop;
         float power = prop.getThermal().getPower();
         IDEAL_TEMPERATURE = prop.getThermal().getTemp();
-        RATED_VOLTAGE = prop.getFloat("voltage").get();
+        RATED_VOLTAGE = prop.getFloat(CProperties.VOLTAGE).get();
         RESISTANCE_MIN = RATED_VOLTAGE*RATED_VOLTAGE/(power*2);
         RESISTANCE_MAX = RATED_VOLTAGE*RATED_VOLTAGE/power;
     }
@@ -96,25 +96,18 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
         assert level != null;
         int state = blockState.getValue(PlasmaGlobe.STATE);
         boolean stackEmpty = usedStack == null || usedStack.isEmpty();
-        if(PlasmaGlobe.hasBulb(state) && stackEmpty) {
-            playInteractBulbSound();
-            if(!level.isClientSide) {
-                ((ThermalBehaviour)thermalBehaviour).resetTemperature();
-                if (PlasmaGlobe.hasFunctionalBulb(state)) player.setItemInHand(hand, BULB.asStack());
-            };
-            notifyUpdate();
-            return PlasmaGlobe.STATE_EMPTY;
-        } else if (!stackEmpty && usedStack.is(BULB.get()) && (usedStack.getCount() > 1 || player.isCreative())) {
+        if (stackEmpty) return -1;
+        if (usedStack.is(BULB.get()) && (usedStack.getCount() > 1 || player.isCreative())) {
             playInteractBulbSound();
             notifyUpdate();
             if(!level.isClientSide) {
                 ((ThermalBehaviour)thermalBehaviour).resetTemperature();
                 if (!PlasmaGlobe.hasFunctionalBulb(state) && !player.isCreative()) usedStack.shrink(1);
-                if (!(player.getOffhandItem().getItem() instanceof DyeItem dye)) return PlasmaGlobe.STATE_OFF;
-                colorBase = colorGlass = colorPlasma = dye.getDyeColor().getTextureDiffuseColor();
             };
+            if (!(player.getOffhandItem().getItem() instanceof DyeItem dye)) return PlasmaGlobe.STATE_OFF;
+            colorBase = colorGlass = colorPlasma = dye.getDyeColor().getTextureDiffuseColor();
             return PlasmaGlobe.STATE_OFF;
-        } else if (!stackEmpty && usedStack.getItem() instanceof DyeItem dye) {
+        } else if (usedStack.getItem() instanceof DyeItem dye) {
             playInteractDyeSound();
             int newColor = dye.getDyeColor().getTextureDiffuseColor();
             if (hitY < 6/16f) colorBase = newColor;

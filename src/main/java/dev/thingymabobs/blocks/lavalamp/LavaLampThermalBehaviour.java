@@ -1,7 +1,13 @@
-package dev.thingymabobs.blocks;
+package dev.thingymabobs.blocks.lavalamp;
 
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
+
+import dev.thingymabobs.config.properties.CProperties.ASubProp;
+import dev.thingymabobs.config.properties.CProperties.Builder;
+
 import com.simibubi.create.content.kinetics.fan.AirCurrent;
+
+import net.createmod.catnip.config.ConfigBase;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleTypes;
@@ -288,15 +294,18 @@ public class LavaLampThermalBehaviour extends ThermalBehaviour {
     public void readFromSync(FriendlyByteBuf buffer, boolean useDoubles) {
     }
 
-	public static class Properties {
+	public static class Properties extends ASubProp {
 		//thermal mass ΔE/ΔT
     	// dissipation coefficient * area
 		//conduction = watts / Δdegree
-		public float lampDissipation = Float.NaN, lampMass, lampTemp, lampOverheatDiff = Float.NaN;
+		public float lampDissipation = Float.NaN, lampOverheatDiff = Float.NaN;
 		public float interConduction = Float.NaN;
-		public float lavaDissipation = Float.NaN, lavaMass, lavaTemp, lavaOverheatDiff = Float.NaN;
+		public float lavaDissipation = Float.NaN, lavaOverheatDiff = Float.NaN;
 
-		public float lampPower, lampOverheat, lavaOverheat, interPercent;
+		public ConfigBase.ConfigFloat lampMassConf, lampTempConf, lavaMassConf, lavaTempConf,
+			lampPowerConf, lampOverheatConf, lavaOverheatConf, interPercentConf;
+		public float lampMass, lampTemp, lavaMass, lavaTemp,
+			lampPower, lampOverheat, lavaOverheat, interPercent;
 
 		public Properties() { }
 
@@ -311,20 +320,12 @@ public class LavaLampThermalBehaviour extends ThermalBehaviour {
 			lavaOverheatDiff = 1 / (lavaOverheat - lavaTemp);
 			return this;
 		}
-		public Properties setLampDissipation(float value) {
-			lampDissipation = value;
-			return this;
-		}
 		public Properties setLampMass(float value) {
 			lampMass = value;
 			return this;
 		}
 		public Properties setLampTemp(float value) {
 			lampTemp = value;
-			return this;
-		}
-		public Properties setLavaDissipation(float value) {
-			lavaDissipation = value;
 			return this;
 		}
 		public Properties setLavaMass(float value) {
@@ -350,6 +351,35 @@ public class LavaLampThermalBehaviour extends ThermalBehaviour {
 		public Properties setInterPercent(float value) {
 			interPercent = value;
 			return this;
+		}
+
+		@Override
+		public Class<?> getType() {
+			return Properties.class;
+		}
+		@Override
+		public void onLoad() {
+			lampMass = lampMassConf.getF();
+			lampTemp = lampTempConf.getF();
+			lavaMass = lavaMassConf.getF();
+			lavaTemp = lavaTempConf.getF();
+			lampPower = lampPowerConf.getF();
+			lampOverheat = lampOverheatConf.getF();
+			lavaOverheat = lavaOverheatConf.getF();
+			interPercent = interPercentConf.getF();
+			initialize();
+		}
+		@Override
+		public void register(String id, Builder builder) {
+			lampPowerConf = builder.f(lampPower, 0f, id+"_bulb_power");
+			lampMassConf = builder.f(lampMass, 0f, id+"_bulb_mass");
+			lampTempConf = builder.f(lampTemp, 0f, id+"_bulb_temperature");
+			lampOverheatConf = builder.f(lampOverheat, 0f, id+"_bulb_overheat");
+			interPercentConf = builder.f(interPercent, 0f, 1f, id+"_inter_conduction_percent",
+				"Amount of power to transfer from the bulb to lava instead of the environment." );
+			lavaMassConf = builder.f(lavaMass, 0f, id+"_lava_mass");
+			lavaTempConf = builder.f(lavaTemp, 0f, id+"_lava_temperature");
+			lavaOverheatConf = builder.f(lavaOverheat, 0f, id+"_lava_overheat");
 		}
 	}
 }

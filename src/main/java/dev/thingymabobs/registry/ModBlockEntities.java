@@ -2,14 +2,14 @@ package dev.thingymabobs.registry;
 
 import java.util.function.Supplier;
 import dev.thingymabobs.Thingymabobs;
-import dev.thingymabobs.blocks.LavaLampEntity;
-import dev.thingymabobs.blocks.LavaLampRenderer;
 import dev.thingymabobs.blocks.PowerShuntEntity;
 import dev.thingymabobs.blocks.battery.PotatoBatteryArrayEntity;
 import dev.thingymabobs.blocks.battery.PotatoBatteryBlockEntity;
 import dev.thingymabobs.blocks.battery.PoisonousPotatoBatteryEntity;
 import dev.thingymabobs.blocks.electricfurnace.ElectricFurnaceEntity;
 import dev.thingymabobs.blocks.electricfurnace.ElectricFurnaceRenderer;
+import dev.thingymabobs.blocks.lavalamp.LavaLampEntity;
+import dev.thingymabobs.blocks.lavalamp.LavaLampRenderer;
 import dev.thingymabobs.blocks.switches.SwitchBlockEntity;
 import dev.thingymabobs.registry.capabilities.ICapability;
 import dev.thingymabobs.registry.capabilities.ItemCapability;
