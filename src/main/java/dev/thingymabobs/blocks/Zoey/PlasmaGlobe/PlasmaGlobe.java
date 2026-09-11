@@ -41,9 +41,10 @@ public class PlasmaGlobe extends HorizontalElectricBlock implements IBE<PlasmaGl
 	public static final IntegerProperty STATE = IntegerProperty.create("state", 0, 4);
 	public static final int STATE_EMPTY = 0;
 	public static final int STATE_OFF = 1;
-	public static final int STATE_ON = 2;
-	public static final int STATE_ON_HIGH = 3;
-	public static final int STATE_BLOWN = 4;
+	public static final int STATE_ON_LOW = 2;
+	public static final int STATE_ON = 3;
+	public static final int STATE_ON_HIGH = 4;
+	public static final int STATE_BLOWN = 5;
 
 	public static boolean hasFunctionalTransformer(int state) {
 		return state != STATE_BLOWN && state != STATE_EMPTY;
@@ -58,16 +59,17 @@ public class PlasmaGlobe extends HorizontalElectricBlock implements IBE<PlasmaGl
 	};
 
 	// NEEDS TO BE REDONE
-	private static final TerminalBoundingBox SOCKET_SOUTH = new TerminalBoundingBox(IDecoratedTerminal.SOCKET, 6.5, 0.25, 10.5, 9.5, 3.25, 13.5).withOrigin(8f, 1.5f, 6f);
-    private static final TerminalBoundingBox SOCKET_WEST = SOCKET_SOUTH.rotateAroundY(90);
-    private static final TerminalBoundingBox SOCKET_EAST = SOCKET_SOUTH.rotateAroundY(-90);
-    private static final TerminalBoundingBox SOCKET_NORTH = SOCKET_SOUTH.rotateAroundY(180);
+	private static final TerminalBoundingBox SOCKET_NORTH = new TerminalBoundingBox(IDecoratedTerminal.SOCKET, 6.5, 0.25, 10.5, 9.5, 3.25, 13.5).withOrigin(8f, 1.75f, 12.5f);
+    private static final TerminalBoundingBox SOCKET_SOUTH = SOCKET_NORTH.rotateAroundY(180);
+    private static final TerminalBoundingBox SOCKET_WEST = SOCKET_NORTH.rotateAroundY(-90);
+    private static final TerminalBoundingBox SOCKET_EAST = SOCKET_NORTH.rotateAroundY(90);
 
 	private static final VoxelShape SHAPE = box(3.5, 0, 3.5, 12.5, 10.5, 12.5);
 
 
 	public PlasmaGlobe(Properties settings){
 		super(settings.lightLevel(state -> switch(state.getValue(STATE)) {
+			case STATE_ON_LOW ->4;
             case STATE_ON -> 5;
             case STATE_ON_HIGH -> 6;
             default -> 0;

@@ -11,6 +11,14 @@ Items appear in both a dedicated Thingymabobs tab and the vanilla Redstone Block
 ### Zoeys ideas ❤️ >:3
 
 - [ ] Plasma globe
+- [ ] VFD's (Vacuum fluorescent display) (like nixie tubes)
+- [ ] 7 segment displays
+- [ ] Custom Board Stuffs
+	- [ ] Extended / Custom Sized circuit boards
+	- [ ] Stackable boards (stack smaller boards like ic's ???)
+	- [ ] GPIO Like headers
+	- [ ] Connectors for Racking system
+- [ ] 
 
 ### Arcanes ideas 💙
 

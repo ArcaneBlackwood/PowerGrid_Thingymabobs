@@ -41,6 +41,8 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
 	public static float RESISTANCE_MIN;
     public static float RESISTANCE_MAX;
 	public static float RATED_VOLTAGE;
+	public static float MIN_VOLTAGE;
+	public static float MAX_VOLTAGE;
     public static void configUpdated(CProperties.Prop prop) {
         CONFIG = prop;
         float power = prop.getThermal().getPower();
@@ -48,6 +50,8 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
         RATED_VOLTAGE = prop.getFloat(CProperties.VOLTAGE).get();
         RESISTANCE_MIN = RATED_VOLTAGE*RATED_VOLTAGE/(power*2);
         RESISTANCE_MAX = RATED_VOLTAGE*RATED_VOLTAGE/power;
+		MIN_VOLTAGE = RATED_VOLTAGE * 0.7f;
+		MAX_VOLTAGE = RATED_VOLTAGE * 1.3f;
     }
 
 	public static final DeferredItem<Item> TRANSFORMER = ModItems.TRANSFORMER;
@@ -153,6 +157,19 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
 					state = PlasmaGlobe.STATE_BLOWN;
 				};
 			};
+
+			double voltage = wire.potentialDifference();
+            if(voltage < MIN_VOLTAGE){
+                level.setBlock(worldPosition, blockState.setValue(PlasmaGlobe.STATE, PlasmaGlobe.STATE_OFF), Block.UPDATE_ALL_IMMEDIATE);
+            } if (voltage < RATED_VOLTAGE){
+                level.setBlock(worldPosition, blockState.setValue(PlasmaGlobe.STATE, PlasmaGlobe.STATE_ON_LOW), Block.UPDATE_ALL_IMMEDIATE);
+            } else if(voltage < MAX_VOLTAGE){
+                level.setBlock(worldPosition, blockState.setValue(PlasmaGlobe.STATE, PlasmaGlobe.STATE_ON), Block.UPDATE_ALL_IMMEDIATE);
+            } else{
+                level.setBlock(worldPosition, blockState.setValue(PlasmaGlobe.STATE, PlasmaGlobe.STATE_ON_HIGH), Block.UPDATE_ALL_IMMEDIATE);
+            };
+
+
 			boolean functionalTransformer = PlasmaGlobe.hasFunctionalTransformer(state);
 			if (oldState != state) {
 				wire.setState(functionalTransformer);
