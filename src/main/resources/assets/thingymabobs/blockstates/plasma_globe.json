@@ -1,7 +1,19 @@
 {
 	"variants": {
-		"": {
+		"facing=north": {
 			"model": "thingymabobs:block/plasma_globe/plasmaglobe"
+		},
+		"facing=east": {
+			"model": "thingymabobs:block/plasma_globe/plasmaglobe",
+			"y": 90
+		},
+		"facing=south": {
+			"model": "thingymabobs:block/plasma_globe/plasmaglobe",
+			"y": 180
+		},
+		"facing=west": {
+			"model": "thingymabobs:block/plasma_globe/plasmaglobe",
+			"y": -90
 		}
 	}
 }

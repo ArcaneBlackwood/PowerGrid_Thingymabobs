@@ -38,7 +38,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class PlasmaGlobe extends HorizontalElectricBlock implements IBE<PlasmaGlobeEntity>, ISocketElectric, IHaveElectricProperties, InteractionHold.Capable {
-	public static final IntegerProperty STATE = IntegerProperty.create("state", 0, 4);
+	public static final IntegerProperty STATE = IntegerProperty.create("state", 0, 5);
 	public static final int STATE_EMPTY = 0;
 	public static final int STATE_OFF = 1;
 	public static final int STATE_ON_LOW = 2;
