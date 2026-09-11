@@ -40,20 +40,24 @@ neoForge {
         client {
             client()
             //logLevel = org.slf4j.event.Level.DEBUG
+            loggingConfigFile = file('log4j2.xml')
             
             //systemProperty 'mixin.debug.verbose', 'true'
             //systemProperty 'mixin.debug.export', 'true'
             //systemProperty 'mixin.env.disableRefMap', 'true'
+            
             programArgument '--username'
             programArgument 'Dev'
         }
         client2 {
             client()
+            loggingConfigFile = file('log4j2.xml')
             programArgument '--username'
             programArgument 'DevTwo'
         }
         server {
             server()
+            loggingConfigFile = file('log4j2.xml')
             programArgument '--nogui'
         }
         data {
