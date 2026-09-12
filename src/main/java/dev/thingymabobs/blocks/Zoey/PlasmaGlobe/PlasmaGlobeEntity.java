@@ -1,7 +1,7 @@
 package dev.thingymabobs.blocks.Zoey.PlasmaGlobe;
 
 import org.jetbrains.annotations.Nullable;
-import org.patryk3211.powergrid.collections.ModdedItems;
+
 import org.patryk3211.powergrid.collections.ModdedSoundEvents;
 import org.patryk3211.powergrid.electricity.base.ElectricBehaviour;
 import org.patryk3211.powergrid.electricity.base.ElectricBlockEntity;
@@ -9,11 +9,13 @@ import org.patryk3211.powergrid.electricity.base.ThermalBehaviour;
 import org.patryk3211.powergrid.electricity.particles.SparkParticleData;
 import org.patryk3211.powergrid.electricity.sim.AbstractElectricWire;
 import org.patryk3211.powergrid.electricity.sim.SwitchedWire;
+
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
-import com.tterrag.registrate.util.entry.ItemEntry;
+
 import dev.thingymabobs.config.properties.CProperties;
 import dev.thingymabobs.registry.ModBlockEntities;
 import dev.thingymabobs.registry.ModItems;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup.Provider;
@@ -28,12 +30,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+
 import net.neoforged.neoforge.registries.DeferredItem;
 
 public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBehaviour.SyncAppender {
 	
 	protected SwitchedWire wire;
 	protected int colorBase, colorGlass, colorPlasma;
+	protected int state;
 
 	protected static CProperties.Prop CONFIG = null;
 	public static float IDEAL_TEMPERATURE;
@@ -57,6 +61,7 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
 
 	public PlasmaGlobeEntity(BlockPos pos, BlockState state){
 		super(ModBlockEntities.PLASMA_GLOBE.get(), pos, state);
+		this.state = state.getValue(PlasmaGlobe.STATE);
 		setLazyTickRate(100);
 	};
 
@@ -81,7 +86,7 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
 	};
 
 
-	// BULB SEGMENT
+	// TRANSFORMER SEGMENT
 	@Override
 	public ItemRequirement getRequiredItems(BlockState state) {
 		super.getRequiredItems(state);
@@ -90,37 +95,36 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
 		return ItemRequirement.NONE;
 	};
 
+
+	// Consider Reworking ?? (seems dumb and in-efficient ~w~) (why boolean, and set state twice ????? why get int and overwrite???)
 	public boolean replaceTransformer(Player player, InteractionHand hand, ItemStack usedStack, float hitY){
 		assert level != null;
-		BlockState blockState = getBlockState();
-		int newState = replaceTransformerInternal(player,hand,usedStack,hitY,blockState);
-		if(newState != -1){ updateState(newState);};
-		return newState != -1;
+		state = replaceTransformerInternal(player,hand,usedStack,hitY,getBlockState());
+		return state != -1;
 	};
 
 	private int replaceTransformerInternal(Player player, InteractionHand hand, ItemStack usedStack, float hitY, BlockState blockState) {
-		assert level != null;
-		int state = blockState.getValue(PlasmaGlobe.STATE);
-		boolean stackEmpty = usedStack == null || usedStack.isEmpty();
-		if (stackEmpty) return -1;
-		if (usedStack.is(TRANSFORMER.get()) && (usedStack.getCount() > 1 || player.isCreative())) {
-			playInteractTransformerSound();
-			notifyUpdate();
-			if(!level.isClientSide) {
-				((ThermalBehaviour)thermalBehaviour).resetTemperature();
-				if (!PlasmaGlobe.hasFunctionalTransformer(state) && !player.isCreative()) usedStack.shrink(1);
+		meep : {
+			if(usedStack == null || usedStack.isEmpty()){ break meep;};
+			if(usedStack.is(TRANSFORMER.get()) && (usedStack.getCount() > 1 || player.isCreative())){
+				playInteractTransformerSound();
+				if(!level.isClientSide) {
+					((ThermalBehaviour)thermalBehaviour).resetTemperature();
+					if (!PlasmaGlobe.hasFunctionalTransformer(state) && !player.isCreative()){ 
+						usedStack.shrink(1);
+					};
+				};
+				//notifyUpdate();
+				return PlasmaGlobe.STATE_OFF;
+			}else if(usedStack.getItem() instanceof DyeItem dye) { // Fix heights for dye'ing
+				playInteractDyeSound();
+				int newColor = dye.getDyeColor().getTextureDiffuseColor();
+				if (hitY < 6/16f) colorBase = newColor;
+				else if (hitY < 11/16f) colorPlasma = newColor;
+				else colorGlass = newColor;
+				//notifyUpdate();
+				return state;
 			};
-			if (!(player.getOffhandItem().getItem() instanceof DyeItem dye)) return PlasmaGlobe.STATE_OFF;
-			colorBase = colorGlass = colorPlasma = dye.getDyeColor().getTextureDiffuseColor();
-			return PlasmaGlobe.STATE_OFF;
-		} else if (usedStack.getItem() instanceof DyeItem dye) {
-			playInteractDyeSound();
-			int newColor = dye.getDyeColor().getTextureDiffuseColor();
-			if (hitY < 6/16f) colorBase = newColor;
-			else if (hitY < 11/16f) colorPlasma = newColor;
-			else colorGlass = newColor;
-			notifyUpdate();
-			return state;
 		};
 		return -1;
 	};
@@ -146,11 +150,11 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
 		};
 	};
 
-	protected void updateState(int newState) {
+	protected void updateState() {
 		BlockState blockState = getBlockState();
 		if(!level.isClientSide) {
 			ThermalBehaviour thermal = (ThermalBehaviour)thermalBehaviour;
-			int oldState = blockState.getValue(PlasmaGlobe.STATE), state = newState == -1 ? oldState : newState;
+			int oldState = blockState.getValue(PlasmaGlobe.STATE);
 			boolean functionalTransformer = PlasmaGlobe.hasFunctionalTransformer(state);
 
 			meep : {
@@ -163,7 +167,7 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
 				double voltage = wire.potentialDifference();
 				if(voltage < MIN_VOLTAGE){
 					state = PlasmaGlobe.STATE_OFF;
-				}if (voltage < RATED_VOLTAGE){
+				}else if(voltage < RATED_VOLTAGE){
 					state = PlasmaGlobe.STATE_ON_LOW;
 				}else if(voltage < MAX_VOLTAGE){
 					state = PlasmaGlobe.STATE_ON;
@@ -187,7 +191,7 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
 	@Override
 	public void tick() {
 		super.tick();
-		updateState(-1);
+		updateState();
 		updateParticles(1/20f);
 		if (level.isClientSide) { return; };
 		spawnParticles();
