@@ -199,8 +199,12 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
 		super.tick();
 		updateState();
 		if (!level.isClientSide) { return; };
-		updateParticles(1/20f);
-		spawnParticles();
+		if (PlasmaGlobe.isPowered(state)) {
+			updateParticles(1/20f);
+			spawnParticles();
+		} else {
+			ClearTendrils();
+		};
 	};
 
 	@Override
@@ -215,13 +219,17 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
 	private final List<PlasmaTendril> tendrils = new ArrayList<>(); // All active tendrils
 	public static final double ElectrodePoint = 7 / 16.0; // the center bulb
 	public static final double DistToGlass = 3.5 / 16.0; // dist up from electrode to glass
-	public static final int MaxTendrils = 5; // Count of max tendrils allowed at once
+	public static final int MaxTendrils = 100; // Count of max tendrils allowed at once
 	// ^ maybe make config able??
 
-	// Particles (Implimented later)
 	@OnlyIn(Dist.CLIENT)
 	public void updateParticles(float deltaTime) {
 		tendrils.removeIf(PlasmaTendril::Step);
+	};
+
+	@OnlyIn(Dist.CLIENT)
+	public void ClearTendrils(){
+		tendrils.clear();
 	};
 
 	@OnlyIn(Dist.CLIENT)

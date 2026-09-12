@@ -55,7 +55,7 @@ public class PlasmaGlobe extends HorizontalElectricBlock implements IBE<PlasmaGl
 	};
 
 	public static boolean isPowered(int state) {
-		return state == STATE_ON || state == STATE_ON_HIGH;
+		return state == STATE_ON || state == STATE_ON_HIGH || state == STATE_ON_LOW;
 	};
 
 	// NEEDS TO BE REDONE
