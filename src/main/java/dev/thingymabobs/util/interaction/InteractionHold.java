@@ -1,11 +1,7 @@
 package dev.thingymabobs.util.interaction;
 
-import java.util.stream.Stream;
-
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
-
-import com.mojang.datafixers.util.Pair;
 import com.simibubi.create.AllItems;
 import dev.thingymabobs.util.SableUtils;
 import net.minecraft.client.Minecraft;
@@ -25,49 +21,39 @@ import net.neoforged.api.distmarker.OnlyIn;
 public class InteractionHold extends InteractionHandler {
 	public static String KEY = "hold";
 
-	public InteractionHold(Player player, BlockPos pos) {
+	public InteractionHold(Player player, InteractLocation pos) {
 		super(player, pos);
 	}
 
 	@Override
 	protected void onStart(@Nullable Player player) {
-		BlockState state = world.getBlockState(pos);
-		if (state == null) return;
-		var blockBase = state.getBlock();
-		if (!(blockBase instanceof Capable block)) return;
-		block.interactOnStart(state, this, player, getPlayerCount());
+		if (!(location.getBlock() instanceof Capable block)) return;
+		block.interactOnStart(location.getBlockState(), this, player, getPlayerCount());
 	}
 	@Override
 	protected void onStop(@Nullable Player player) {
-		BlockState state = world.getBlockState(pos);
-		if (state == null) return;
-		var blockBase = state.getBlock();
-		if (!(blockBase instanceof Capable block)) return;
-		block.interactOnStop(state, this, player, getPlayerCount());
+		if (!(location.getBlock() instanceof Capable block)) return;
+		block.interactOnStop(location.getBlockState(), this, player, getPlayerCount());
 	}
 	@Override
 	protected boolean tick() {
-		BlockState state = world.getBlockState(pos);
-		if (state == null || !(state.getBlock() instanceof Capable block)) return false;
+		if (!(location.getBlock() instanceof Capable block)) return false;
+		if (location.isClient() && tickClient(block)) return false;
 
-		if (world.isClientSide && tickClient(world, block))
-			return false;
-
-
-		return block.interactTick(state, this);
+		return block.interactTick(location.getBlockState(), this);
 	}
 	@OnlyIn(Dist.CLIENT)
-	protected boolean tickClient(Level world, Capable block) {
+	protected boolean tickClient(Capable block) {
 		Minecraft mc = Minecraft.getInstance();
 		Player player = mc.player;
 		if (!(mc.hitResult instanceof BlockHitResult hit)) return true;
-		if (!hit.getBlockPos().equals(pos)) return true;
+		if (!hit.getBlockPos().equals(location.pos)) return true;
         if (!mc.gameRenderer.getMainCamera().isDetached()) {
             player.swingTime = 0;
             player.swinging = true;
             player.swingingArm = InteractionHand.MAIN_HAND;
         }
-		return !block.interactIsValid(player, pos);
+		return !block.interactIsValid(player, location.pos);
 	}
 
 	@Override
@@ -87,14 +73,15 @@ public class InteractionHold extends InteractionHandler {
 
 		@OnlyIn(Dist.CLIENT)
 		default public void interactStart(BlockPos pos) {
-			setActiveLocal(new InteractionHold(Minecraft.getInstance().player, pos));
+			Minecraft mc = Minecraft.getInstance();
+			setActiveLocal(new InteractionHold(mc.player, new InteractLocation(mc.level, pos)));
 		}
 		@OnlyIn(Dist.CLIENT)
 		default public void interactionStop() {
 			InteractionHandler.clearActiveLocal();
 		}
-		default public void interactStart(Player player, BlockPos pos) {
-			InteractionHandler.setActive(player, InteractionHold::new, pos);
+		default public void interactStart(Player player, InteractLocation location) {
+			InteractionHandler.setActive(player, location, InteractionHold::new);
 		}
 		default public void interactionStop(Player player) {
 			InteractionHandler.clearActive(player);
@@ -123,12 +110,6 @@ public class InteractionHold extends InteractionHandler {
 			if (level.isClientSide && player.isLocalPlayer())
 				interactStart(pos);
 			return InteractionResult.SUCCESS;
-		}
-		static public BlockHitResult getInteractHit(InteractionHold interact, Player player) {
-			return interact.getBlockHit(player);
-		}
-		static public Stream<Pair<Player, BlockHitResult>> getInteractHits(InteractionHold interact) {
-			return interact.getBlockHits();
 		}
 	}
 }
