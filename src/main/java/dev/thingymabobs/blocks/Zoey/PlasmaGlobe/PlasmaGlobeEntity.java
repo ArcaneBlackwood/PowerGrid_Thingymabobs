@@ -31,6 +31,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.registries.DeferredItem;
 
 public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBehaviour.SyncAppender {
@@ -217,10 +219,12 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
 	// ^ maybe make config able??
 
 	// Particles (Implimented later)
+	@OnlyIn(Dist.CLIENT)
 	public void updateParticles(float deltaTime) {
 		tendrils.removeIf(PlasmaTendril::Step);
 	};
 
+	@OnlyIn(Dist.CLIENT)
 	public void spawnParticles() {
 		if(tendrils.size() >= MaxTendrils){
 			return;

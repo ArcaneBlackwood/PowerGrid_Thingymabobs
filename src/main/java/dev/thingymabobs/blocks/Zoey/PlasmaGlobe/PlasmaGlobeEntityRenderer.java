@@ -7,9 +7,12 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import org.joml.Vector3f;
 
+@OnlyIn(Dist.CLIENT)
 public class PlasmaGlobeEntityRenderer implements BlockEntityRenderer<PlasmaGlobeEntity> {
 
 	private static final Vector3f ELECTRODE_POINT = new Vector3f(0f, 0f, 0f);
