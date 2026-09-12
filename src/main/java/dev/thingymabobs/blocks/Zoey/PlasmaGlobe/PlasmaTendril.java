@@ -44,6 +44,7 @@ public class PlasmaTendril {
         this.age = 0;
     };
 
+	///TODO: Suggestion, avoid division by changing age to float and range from 0-1.  And create a new float speed thats set to 1f/lifetime.  Since the longer the lifetime, the slower it takes to complete.
 	// True if needs destruction, else just steps
 	public boolean Step() {
 		if (age >= lifetime) { return true; } else { age++; };

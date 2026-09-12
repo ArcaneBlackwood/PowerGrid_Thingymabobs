@@ -10,9 +10,6 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 
 import org.joml.Vector3f;
 
-import dev.thingymabobs.blocks.Zoey.PlasmaGlobe.PlasmaTendril;
-import dev.thingymabobs.blocks.Zoey.PlasmaGlobe.PlasmaGlobeEntity;
-
 public class PlasmaGlobeEntityRenderer implements BlockEntityRenderer<PlasmaGlobeEntity> {
 
 	private static final Vector3f ELECTRODE_POINT = new Vector3f(0f, 0f, 0f);

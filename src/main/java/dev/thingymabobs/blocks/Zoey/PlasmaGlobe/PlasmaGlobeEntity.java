@@ -18,9 +18,6 @@ import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import dev.thingymabobs.config.properties.CProperties;
 import dev.thingymabobs.registry.ModBlockEntities;
 import dev.thingymabobs.registry.ModItems;
-
-import dev.thingymabobs.blocks.Zoey.PlasmaGlobe.PlasmaTendril;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup.Provider;
@@ -34,7 +31,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.registries.DeferredItem;
 
 public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBehaviour.SyncAppender {
