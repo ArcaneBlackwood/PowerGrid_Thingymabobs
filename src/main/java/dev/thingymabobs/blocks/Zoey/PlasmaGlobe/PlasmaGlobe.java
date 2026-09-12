@@ -81,34 +81,39 @@ public class PlasmaGlobe extends HorizontalElectricBlock implements IBE<PlasmaGl
 	@Override
     public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
         return SHAPE;
-    }
+    };
+
     @Override
 	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
 		super.createBlockStateDefinition(builder);
 		builder.add(STATE);
-	}
+	};
+
     @Override
     public void appendProperties(ItemStack stack, Player player, List<Component> tooltip) {
-        Voltage.rated(PlasmaGlobeEntity.RATED_VOLTAGE, player, tooltip); 
+        Voltage.rated(PlasmaGlobeEntity.RATED_VOLTAGE, player, tooltip);
         Power.rated(150, player, tooltip);
         ModLang.translate("tooltip.temperature.ideal").style(ChatFormatting.GRAY).addTo(tooltip);
         ModLang.builder()
             .add(Component.nullToEmpty(" ")).add(ModLang.number((double)PlasmaGlobeEntity.IDEAL_TEMPERATURE))
             .add(Component.nullToEmpty(" ")).add(Unit.TEMPERATURE.get()).style(ChatFormatting.BLUE).addTo(tooltip);
-    }
+    };
+
 
 	@Override
 	public Class<PlasmaGlobeEntity> getBlockEntityClass() {
 		return PlasmaGlobeEntity.class;
-	}
+	};
+
 	@Override
 	public BlockEntityType<? extends PlasmaGlobeEntity> getBlockEntityType() {
 		return ModBlockEntities.PLASMA_GLOBE.get();
-	}
+	};
+
     @Override
-    public RenderShape getRenderShape(BlockState state) {
+    public RenderShape getRenderShape(BlockState state){
         return RenderShape.MODEL;
-    }
+    };
 
     @Override
     public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
@@ -117,34 +122,36 @@ public class PlasmaGlobe extends HorizontalElectricBlock implements IBE<PlasmaGl
         if (level.isClientSide() && state.getBlock() != oldState.getBlock() || !state.equals(oldState)) {
             if (state.getValue(STATE) == STATE_BLOWN && oldState.getValue(STATE) != STATE_BLOWN) {
                 getBlockEntity(level, pos).playBlowEffect();
-            }
-        }
-    }
+            };
+        };
+    };
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if(!player.getMainHandItem().isEmpty())
             return InteractionResult.PASS;
         return onBlockEntityUse(level, pos, be -> {
-            if (be.replaceTransformer(player, InteractionHand.MAIN_HAND, ItemStack.EMPTY, (float)hitResult.getLocation().y - pos.getY()))
+            if (be.replaceTransformer(player, ItemStack.EMPTY, (float)hitResult.getLocation().y - pos.getY()))
                 return InteractionResult.SUCCESS;
             return interactTry(state, level, pos, player, hitResult);
         });
-    }
+    };
+
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         if(hand != InteractionHand.MAIN_HAND)
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         return onBlockEntityUseItemOn(level, pos, be -> {
-            if (be.replaceTransformer(player, hand, stack, (float)hitResult.getLocation().y - pos.getY() ))
+            if (be.replaceTransformer(player, stack, (float)hitResult.getLocation().y - pos.getY() ))
                 return ItemInteractionResult.SUCCESS;
             return interactTry(stack, state, level, pos, player, hand, hitResult);
         });
-    }
+    };
+
     @Override
     public boolean interactTick(BlockState state, InteractionHold interact) {
         return true;
-    }
+    };
 
     @Override
     public List<ItemStack> getDrops(BlockState state, LootParams.Builder builder) {
@@ -152,7 +159,7 @@ public class PlasmaGlobe extends HorizontalElectricBlock implements IBE<PlasmaGl
         if (state.getValue(STATE) != STATE_EMPTY)
 			stacks.add(ModdedItems.GROWTH_LAMP.asStack(1));
         return stacks;
-    }
+    };
 
 	@Override
 	public ITerminalPlacement socket(BlockState state) {
@@ -163,5 +170,5 @@ public class PlasmaGlobe extends HorizontalElectricBlock implements IBE<PlasmaGl
 			case WEST -> SOCKET_WEST;
 			default -> null;
 		};
-	}
+	};
 };
