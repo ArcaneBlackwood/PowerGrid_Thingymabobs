@@ -26,7 +26,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
@@ -201,8 +200,8 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
 	public void tick() {
 		super.tick();
 		updateState();
+		if (!level.isClientSide) { return; };
 		updateParticles(1/20f);
-		if (level.isClientSide) { return; };
 		spawnParticles();
 	};
 
@@ -216,16 +215,26 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
 
 
 	private final List<PlasmaTendril> tendrils = new ArrayList<>(); // All active tendrils
-	public static final double ElectrodePoint = 4.5 / 16.0; // the center bulb
-	public static final double DistToGlass = 3.0 / 16.0; // dist up from electrode to glass
+	public static final double ElectrodePoint = 7 / 16.0; // the center bulb
+	public static final double DistToGlass = 3.5 / 16.0; // dist up from electrode to glass
 	public static final int MaxTendrils = 5; // Count of max tendrils allowed at once
 	// ^ maybe make config able??
 
 	// Particles (Implimented later)
 	public void updateParticles(float deltaTime) {
+		tendrils.removeIf(PlasmaTendril::Step);
 	};
 
 	public void spawnParticles() {
+		if(tendrils.size() >= MaxTendrils){
+			return;
+		} else {
+			tendrils.add(new PlasmaTendril());
+		};
+	};
+
+	public List<PlasmaTendril> getTendrils() {
+		return tendrils;
 	};
 
 

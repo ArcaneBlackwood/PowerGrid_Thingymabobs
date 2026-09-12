@@ -22,6 +22,7 @@ import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsE
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import dev.thingymabobs.blocks.Zoey.PlasmaGlobe.PlasmaGlobeEntity;
+import dev.thingymabobs.blocks.Zoey.PlasmaGlobe.PlasmaGlobeEntityRenderer;
 
 public final class ModBlockEntities {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES =
@@ -102,6 +103,7 @@ public final class ModBlockEntities {
 	private static void registerClientExtensions(RegisterClientExtensionsEvent event) {
 		BlockEntityRenderers.register(LAVA_LAMP.get(), LavaLampRenderer::new);
 		BlockEntityRenderers.register(ELECTRIC_FURNACE.get(), ElectricFurnaceRenderer::new);
+		BlockEntityRenderers.register(PLASMA_GLOBE.get(), PlasmaGlobeEntityRenderer::new);
 	}
 
 }
