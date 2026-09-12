@@ -11,19 +11,19 @@ public class InteractionPacketC2S implements C2SPacket {
 	InteractLocation location;
 	String key;
 
-    public InteractionPacketC2S(InteractionHandler handler) {
+	public InteractionPacketC2S(InteractionHandler handler) {
 		key = handler.getKey();
 		location = handler.location;
 		Thingymabobs.LOGGER.info("  Client Write key "+key);
-    }
+	}
 	public InteractionPacketC2S() {
 		key = null;
 		location = null;
 		Thingymabobs.LOGGER.info("  Client Write null");
-    }
+	}
 
-    public InteractionPacketC2S(FriendlyByteBuf buf) {
-        int keySize = buf.readByte();
+	public InteractionPacketC2S(FriendlyByteBuf buf) {
+		int keySize = buf.readByte();
 		if (keySize < 0) {
 			key = null;
 			Thingymabobs.LOGGER.info("  Server read null ");
@@ -37,7 +37,7 @@ public class InteractionPacketC2S implements C2SPacket {
 			return;
 		}
 		location = type.reader().read(buf);
-    }
+	}
 
 	@Override
 	public void write(FriendlyByteBuf buf) {

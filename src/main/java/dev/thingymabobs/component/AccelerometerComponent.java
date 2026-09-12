@@ -14,6 +14,8 @@ import org.patryk3211.powergrid.circuits.thermal.ThermalBuilder.IEmitter;
 import org.patryk3211.powergrid.electricity.sim.node.VoltageSourceCoupling;
 import org.patryk3211.powergrid.utility.Unit;
 import dev.thingymabobs.Thingymabobs;
+import dev.thingymabobs.component.base.AVertMirrorComponent;
+import dev.thingymabobs.component.base.CouplingWireProxy;
 import dev.thingymabobs.component.properties.DynamicFloatProperty;
 import dev.thingymabobs.component.properties.LazyConstantProperty;
 import dev.thingymabobs.component.trancievers.DirectionalRecieverComponent;
@@ -27,12 +29,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
 public class AccelerometerComponent extends AVertMirrorComponent {
-    protected static final ComponentFootprint FOOTPRINT_H = new ComponentFootprint.Builder(
+	protected static final ComponentFootprint FOOTPRINT_H = new ComponentFootprint.Builder(
 			5,3, "component." + Thingymabobs.MOD_ID + ".accelerometer", null)
 		.addPad(4, 0, 0, "Signal +", "S+")
 		.addPad(4, 2, 1, "Signal -", "S-")
 		.withItem().withOutline().withArrow(Orientation.LEFT).build();
-    protected static final ComponentFootprint FOOTPRINT_V = new ComponentFootprint.Builder(
+	protected static final ComponentFootprint FOOTPRINT_V = new ComponentFootprint.Builder(
 			4,3, "component." + Thingymabobs.MOD_ID + ".accelerometer", null)
 		.addPad(2, 0, 0, "Signal +", "S+")
 		.addPad(2, 2, 1, "Signal -", "S-")
@@ -40,26 +42,26 @@ public class AccelerometerComponent extends AVertMirrorComponent {
 		
 	public static final String CONFIG_SENSITIVITY = "sensitivity";
 	public static final String CONFIG_FALLOFF = "falloff_smoothing";
-    protected static CProperties.Prop CONFIG = null;
+	protected static CProperties.Prop CONFIG = null;
 	public static float VOLTAGE;
 	protected static final TMath.SoftMax SOFT_MAX = new TMath.SoftMax();
-    public static void configUpdated(CProperties.Prop prop) {
-        CONFIG = prop;
+	public static void configUpdated(CProperties.Prop prop) {
+		CONFIG = prop;
 		VOLTAGE = Mth.sqrt(prop.getThermal().getPower() * prop.getResistance().get());
 		SOFT_MAX.setSmooth(prop.getFloat(CONFIG_FALLOFF).get());
 		SENSITIVITY.markDirty();
-        VOLTAGE_PROP.markDirty();
-        POWER_PROP.markDirty();
-    }
+		VOLTAGE_PROP.markDirty();
+		POWER_PROP.markDirty();
+	}
 		
 	public static final DynamicFloatProperty SENSITIVITY = new DynamicFloatProperty( //v / m/ss
 		Thingymabobs.MOD_ID, "gyroscope.sensitivity", () -> CONFIG.getFloat(CONFIG_SENSITIVITY)).useMetrics();
-    public static final LazyConstantProperty VOLTAGE_PROP = new LazyConstantProperty(
-        Thingymabobs.MOD_ID, "accelerometer.voltage_max",
-        () -> Unit.POWER.formatWithPrefixes(VOLTAGE).string());
-    public static final LazyConstantProperty POWER_PROP = new LazyConstantProperty(
-        Thingymabobs.MOD_ID, "accelerometer.power",
-        () -> Unit.POWER.formatWithPrefixes(CONFIG.getThermal().getPower()).string());
+	public static final LazyConstantProperty VOLTAGE_PROP = new LazyConstantProperty(
+		Thingymabobs.MOD_ID, "accelerometer.voltage_max",
+		() -> Unit.POWER.formatWithPrefixes(VOLTAGE).string());
+	public static final LazyConstantProperty POWER_PROP = new LazyConstantProperty(
+		Thingymabobs.MOD_ID, "accelerometer.power",
+		() -> Unit.POWER.formatWithPrefixes(CONFIG.getThermal().getPower()).string());
 
 
 
@@ -73,11 +75,11 @@ public class AccelerometerComponent extends AVertMirrorComponent {
 	}
 	@Override
 	public void bake(@NotNull PlacedComponent placed, @NotNull ComponentCircuitBuilder builder, @NotNull IEmitter thermals) {
-        VoltageSourceCoupling source = builder.addInternalNode(
+		VoltageSourceCoupling source = builder.addInternalNode(
 			VoltageSourceCoupling.class, builder.terminalNode(0), builder.terminalNode(1), CONFIG.getResistance().get());
-        source.setVoltage(0);
-        source.setResistance(CONFIG.getResistance().get());
-        placed.customData = source;
+		source.setVoltage(0);
+		source.setResistance(CONFIG.getResistance().get());
+		placed.customData = source;
 		CONFIG.getThermal().apply(thermals)
 			.addHeatSource(new CouplingWireProxy(source));
 	}
@@ -85,11 +87,11 @@ public class AccelerometerComponent extends AVertMirrorComponent {
 
 	@Override
 	public boolean tick(@NotNull PlacedComponent placed) {
-        if (!(placed.customData instanceof VoltageSourceCoupling source)) return true;
+		if (!(placed.customData instanceof VoltageSourceCoupling source)) return true;
 		float accel = tickMotion(placed);
-        if (source == null || !source.isConverged()) return true;
-        double current = source.getCurrent();
-        if (!Double.isFinite(current)) return true;
+		if (source == null || !source.isConverged()) return true;
+		double current = source.getCurrent();
+		if (!Double.isFinite(current)) return true;
 		//Thingymabobs.LOGGER.info("Accel: "+accel+", soft: "+SOFT_MAX.compute(accel));
 		source.setVoltage(SOFT_MAX.compute(accel * placed.get(SENSITIVITY), VOLTAGE));
 
@@ -111,15 +113,15 @@ public class AccelerometerComponent extends AVertMirrorComponent {
 	}
 
 	@Override
-    public @NotNull ResourceLocation getModelId(@NotNull PlacedComponent component) {
-        return component.get(VERTICAL) ? Thingymabobs.asResource("accelerometer_vertical")
+	public @NotNull ResourceLocation getModelId(@NotNull PlacedComponent component) {
+		return component.get(VERTICAL) ? Thingymabobs.asResource("accelerometer_vertical")
 			: Thingymabobs.asResource("accelerometer");
-    }
-    @Override
-    public @NotNull Collection<ResourceLocation> requestedModels() {
-        return List.of(
+	}
+	@Override
+	public @NotNull Collection<ResourceLocation> requestedModels() {
+		return List.of(
 			Thingymabobs.asResource("accelerometer_vertical"),
 			Thingymabobs.asResource("accelerometer")
-        );
-    }
+		);
+	}
 }

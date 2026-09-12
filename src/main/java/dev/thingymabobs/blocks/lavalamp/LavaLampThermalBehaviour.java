@@ -26,51 +26,51 @@ import java.util.Map;
 import java.util.function.Function;
 
 public class LavaLampThermalBehaviour extends ThermalBehaviour {
-    //public static final BehaviourType<LavaLampThermalBehaviour> TYPE = new BehaviourType<>("lava_lamp_thermal");
+	//public static final BehaviourType<LavaLampThermalBehaviour> TYPE = new BehaviourType<>("lava_lamp_thermal");
 	public static float DELTA_TIME = 1 / 20F;
-    public static final int OVERHEAT_TICKS = 2;
+	public static final int OVERHEAT_TICKS = 2;
 
-    private float lampTemperature, lavaTemperature;
-    private float prevLampTemperature, prevLavaTemperature;
-    private int lampOverheatTicks = 0, lavaOverheatTicks = 0;
+	private float lampTemperature, lavaTemperature;
+	private float prevLampTemperature, prevLavaTemperature;
+	private int lampOverheatTicks = 0, lavaOverheatTicks = 0;
 	private Runnable lampOverheatCallback;
-    private float cachedAmbientTemperature = -2048f;
+	private float cachedAmbientTemperature = -2048f;
 
 	public Properties properties;
 
 
-    private final Map<AirCurrent, Float> coolingAir = new HashMap<>();
-    private float totalCoolingFactorMultiplier;
+	private final Map<AirCurrent, Float> coolingAir = new HashMap<>();
+	private float totalCoolingFactorMultiplier;
 
-    private IParticleGenerator particleGenerator = null;
+	private IParticleGenerator particleGenerator = null;
 
 	public float lavaConduction, lavaDissipation, lavaOverheat;
 	
 	public LavaLampThermalBehaviour(SmartBlockEntity be, Properties properties) {
-        super(be, 0, 0, 0);
-        this.lampTemperature = cachedAmbientTemperature;
-        this.lavaTemperature = cachedAmbientTemperature;
-        this.totalCoolingFactorMultiplier = 1.0f;
+		super(be, 0, 0, 0);
+		this.lampTemperature = cachedAmbientTemperature;
+		this.lavaTemperature = cachedAmbientTemperature;
+		this.totalCoolingFactorMultiplier = 1.0f;
 		this.properties = properties;
 	}
 
-    @Override
-    public LavaLampThermalBehaviour particleGenerator(IParticleGenerator generator) {
-        this.particleGenerator = generator;
-        return this;
-    }
-
-    @Override
-    public void resetTemperature() {
-        this.lampTemperature = cachedAmbientTemperature;
-		this.lavaTemperature = cachedAmbientTemperature;
-    }
-	public void resetLampTemperature() {
-        this.lampTemperature = cachedAmbientTemperature;
+	@Override
+	public LavaLampThermalBehaviour particleGenerator(IParticleGenerator generator) {
+		this.particleGenerator = generator;
+		return this;
 	}
 
-    @Override
-    public void addCoolingMultiplier(AirCurrent current, float value) {
+	@Override
+	public void resetTemperature() {
+		this.lampTemperature = cachedAmbientTemperature;
+		this.lavaTemperature = cachedAmbientTemperature;
+	}
+	public void resetLampTemperature() {
+		this.lampTemperature = cachedAmbientTemperature;
+	}
+
+	@Override
+	public void addCoolingMultiplier(AirCurrent current, float value) {
 		var currentValue = coolingAir.get(current);
 		if (currentValue != null) {
 			totalCoolingFactorMultiplier -= currentValue;
@@ -79,37 +79,37 @@ public class LavaLampThermalBehaviour extends ThermalBehaviour {
 		}
 		coolingAir.put(current, value);
 		totalCoolingFactorMultiplier += value;
-    }
+	}
 
-    @Override
-    public void removeCoolingMultiplier(AirCurrent current) {
-        var currentValue = coolingAir.remove(current);
+	@Override
+	public void removeCoolingMultiplier(AirCurrent current) {
+		var currentValue = coolingAir.remove(current);
 		if (currentValue != null)
 			totalCoolingFactorMultiplier -= currentValue;
-    }
+	}
 
 	public void setLampOverheatCallback(Runnable callback) {
 		this.lampOverheatCallback = callback;
 	}
 
-    @Override
-    public void tick() {
-        if(cachedAmbientTemperature < ThermalBehaviour.ABSOLUTE_ZERO) {
-            cachedAmbientTemperature = ThermalBehaviour.getAmbientTemperature(getWorld(), getPos());
-            return;
-        }
-        if(lampTemperature < ThermalBehaviour.ABSOLUTE_ZERO)
-            lampTemperature = cachedAmbientTemperature;
-        if(lavaTemperature < ThermalBehaviour.ABSOLUTE_ZERO)
-            lavaTemperature = cachedAmbientTemperature;
+	@Override
+	public void tick() {
+		if(cachedAmbientTemperature < ThermalBehaviour.ABSOLUTE_ZERO) {
+			cachedAmbientTemperature = ThermalBehaviour.getAmbientTemperature(getWorld(), getPos());
+			return;
+		}
+		if(lampTemperature < ThermalBehaviour.ABSOLUTE_ZERO)
+			lampTemperature = cachedAmbientTemperature;
+		if(lavaTemperature < ThermalBehaviour.ABSOLUTE_ZERO)
+			lavaTemperature = cachedAmbientTemperature;
 
-        var world = getWorld();
-        if(!world.isClientSide || blockEntity.isVirtual()) tickServer();
-        else tickClient();
-    }
+		var world = getWorld();
+		if(!world.isClientSide || blockEntity.isVirtual()) tickServer();
+		else tickClient();
+	}
 	public void tickServer() {
-        var world = getWorld();
-        var pos = getPos();
+		var world = getWorld();
+		var pos = getPos();
 
 		var iter = coolingAir.entrySet().iterator();
 		while(iter.hasNext()) {
@@ -176,8 +176,8 @@ public class LavaLampThermalBehaviour extends ThermalBehaviour {
 	}
 
 	public void tickClient() {
-        var world = getWorld();
-        var pos = getPos();
+		var world = getWorld();
+		var pos = getPos();
 		if(lampTemperature >= properties.lampTemp) {
 			var random = getWorld().getRandom();
 			float chance = (lampTemperature - properties.lampOverheat) * properties.lampOverheatDiff;
@@ -212,91 +212,91 @@ public class LavaLampThermalBehaviour extends ThermalBehaviour {
 		}
 	}
 
-    public static void explode(Level world, BlockPos pos, BlockState state, float power) {
-        if(ThermalBehaviour.shouldExplode()) {
-            var source = new MachineOverloadDamageSource(ModdedDamageTypes.OVERLOADED_MACHINE.holder(world), state.getBlock());
-            // This block must be broken first to allow for damage to propagate.
-            world.destroyBlock(pos, false);
-            world.explode(null, source, null, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, power, false, Level.ExplosionInteraction.BLOCK);
-        } else {
-            // Break block without exploding.
-            world.destroyBlock(pos, false);
-        }
-    }
+	public static void explode(Level world, BlockPos pos, BlockState state, float power) {
+		if(ThermalBehaviour.shouldExplode()) {
+			var source = new MachineOverloadDamageSource(ModdedDamageTypes.OVERLOADED_MACHINE.holder(world), state.getBlock());
+			// This block must be broken first to allow for damage to propagate.
+			world.destroyBlock(pos, false);
+			world.explode(null, source, null, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, power, false, Level.ExplosionInteraction.BLOCK);
+		} else {
+			// Break block without exploding.
+			world.destroyBlock(pos, false);
+		}
+	}
 
-    @Override
-    public boolean isOverheated() {
-        return lampTemperature >= properties.lampOverheat || lavaTemperature >= properties.lavaOverheat;
-    }
-    public boolean isLampOverheated() {
-        return lampTemperature >= properties.lampOverheat;
-    }
-    public boolean isLavaOverheated() {
-        return lavaTemperature >= properties.lavaOverheat;
-    }
+	@Override
+	public boolean isOverheated() {
+		return lampTemperature >= properties.lampOverheat || lavaTemperature >= properties.lavaOverheat;
+	}
+	public boolean isLampOverheated() {
+		return lampTemperature >= properties.lampOverheat;
+	}
+	public boolean isLavaOverheated() {
+		return lavaTemperature >= properties.lavaOverheat;
+	}
 
-    public void applyLampPower(@Nullable AbstractElectricWire wire) {
-        if(wire == null)
-            return;
-        if(wire.isConverged()) {
-            var network = wire.getNetwork();
-            if(network != null) {
-                if(wire.getNode1() != null && network.isLeaf(wire.getNode1()))
-                    return;
-                if(wire.getNode2() != null && network.isLeaf(wire.getNode2()))
-                    return;
-            }
+	public void applyLampPower(@Nullable AbstractElectricWire wire) {
+		if(wire == null)
+			return;
+		if(wire.isConverged()) {
+			var network = wire.getNetwork();
+			if(network != null) {
+				if(wire.getNode1() != null && network.isLeaf(wire.getNode1()))
+					return;
+				if(wire.getNode2() != null && network.isLeaf(wire.getNode2()))
+					return;
+			}
 			double power = wire.power();
 			if(!Double.isFinite(power)) return;
 			lampTemperature += (float) (power * DELTA_TIME / properties.lampMass);
-        }
-    }
+		}
+	}
 
-    @Override
-    public void read(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
-        lampTemperature = nbt.getFloat("LampTemperature");
-        lavaTemperature = nbt.getFloat("LavaTemperature");
-    }
+	@Override
+	public void read(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
+		lampTemperature = nbt.getFloat("LampTemperature");
+		lavaTemperature = nbt.getFloat("LavaTemperature");
+	}
 
-    @Override
-    public void write(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
-        nbt.putFloat("LampTemperature", lampTemperature);
-        nbt.putFloat("LavaTemperature", lavaTemperature);
-    }
+	@Override
+	public void write(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
+		nbt.putFloat("LampTemperature", lampTemperature);
+		nbt.putFloat("LavaTemperature", lavaTemperature);
+	}
 
-    //@Override
-    //spublic BehaviourType<?> getType() {
-    //    return TYPE;
-    //}
+	//@Override
+	//spublic BehaviourType<?> getType() {
+	//	return TYPE;
+	//}
 
-    @Override
-    public float getTemperature() {
-        return lavaTemperature;
-    }
-    public float getLampTemperature() {
-        return Math.max(lampTemperature, 10);
-    }
-    public float getLavaTemperature() {
-        return lavaTemperature;
-    }
-    public void setLampTemperature(float value) {
-        lampTemperature = value;
-    }
-    public void setLavaTemperature(float value) {
-        lavaTemperature = value;
-    }
+	@Override
+	public float getTemperature() {
+		return lavaTemperature;
+	}
+	public float getLampTemperature() {
+		return Math.max(lampTemperature, 10);
+	}
+	public float getLavaTemperature() {
+		return lavaTemperature;
+	}
+	public void setLampTemperature(float value) {
+		lampTemperature = value;
+	}
+	public void setLavaTemperature(float value) {
+		lavaTemperature = value;
+	}
 
-    @Override
-    public void writeToSync(FriendlyByteBuf buffer, boolean useDoubles, Function<OwnedFloatingNode, TransmissionLine> lineLookup) {
-    }
+	@Override
+	public void writeToSync(FriendlyByteBuf buffer, boolean useDoubles, Function<OwnedFloatingNode, TransmissionLine> lineLookup) {
+	}
 
-    @Override
-    public void readFromSync(FriendlyByteBuf buffer, boolean useDoubles) {
-    }
+	@Override
+	public void readFromSync(FriendlyByteBuf buffer, boolean useDoubles) {
+	}
 
 	public static class Properties extends ASubProp {
 		//thermal mass ΔE/ΔT
-    	// dissipation coefficient * area
+		// dissipation coefficient * area
 		//conduction = watts / Δdegree
 		public float lampDissipation = Float.NaN, lampOverheatDiff = Float.NaN;
 		public float interConduction = Float.NaN;

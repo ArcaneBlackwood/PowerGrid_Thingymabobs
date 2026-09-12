@@ -1,4 +1,4 @@
-package dev.thingymabobs.component;
+package dev.thingymabobs.component.base;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -17,36 +17,36 @@ public abstract class AVertMirrorComponent extends MirrorableComponent {
    protected final ComponentFootprint verticalFootprint;
 
    public AVertMirrorComponent(ComponentFootprint vertical, ComponentFootprint horizontal) {
-      super(horizontal);
-      this.verticalFootprint = vertical;
+	  super(horizontal);
+	  this.verticalFootprint = vertical;
    }
 
    protected void addProperties(ImmutableCollection.Builder<ComponentProperty<?>> properties) {
-      super.addProperties(properties);
-      properties.add(VERTICAL);
+	  super.addProperties(properties);
+	  properties.add(VERTICAL);
    }
 
    public ComponentFootprint footprint(@Nullable PlacedComponent placed) {
-      return placed != null && (Boolean)placed.get(VERTICAL) ? this.verticalFootprint.rotated((Orientation)placed.get(ORIENTATION)) : super.footprint(placed);
+	  return placed != null && (Boolean)placed.get(VERTICAL) ? this.verticalFootprint.rotated((Orientation)placed.get(ORIENTATION)) : super.footprint(placed);
    }
 
    public boolean rotate(@NotNull PlacedComponent placed, boolean counterClockwise) {
-      if (!counterClockwise) {
-         if (!(Boolean)placed.get(VERTICAL)) {
-            placed.set(VERTICAL, true);
-            return true;
-         }
+	  if (!counterClockwise) {
+		 if (!(Boolean)placed.get(VERTICAL)) {
+			placed.set(VERTICAL, true);
+			return true;
+		 }
 
-         placed.set(VERTICAL, false);
-      } else {
-         if ((Boolean)placed.get(VERTICAL)) {
-            placed.set(VERTICAL, false);
-            return true;
-         }
+		 placed.set(VERTICAL, false);
+	  } else {
+		 if ((Boolean)placed.get(VERTICAL)) {
+			placed.set(VERTICAL, false);
+			return true;
+		 }
 
-         placed.set(VERTICAL, true);
-      }
+		 placed.set(VERTICAL, true);
+	  }
 
-      return super.rotate(placed, counterClockwise);
+	  return super.rotate(placed, counterClockwise);
    }
 }

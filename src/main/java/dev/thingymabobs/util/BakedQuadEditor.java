@@ -4,9 +4,11 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormatElement;
-
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
+@OnlyIn(Dist.CLIENT)
 public class BakedQuadEditor {
 	public int[] vertices;
 	public VertexFormat format;
@@ -22,7 +24,7 @@ public class BakedQuadEditor {
 	}
 	public BakedQuad compile() {
 		return new BakedQuad(vertices, base.getTintIndex(),
-    		base.getDirection(), base.getSprite(), base.isShade());
+			base.getDirection(), base.getSprite(), base.isShade());
 	}
 
 	public Vector3f getPosition(int index) {

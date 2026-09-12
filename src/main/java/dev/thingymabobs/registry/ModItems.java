@@ -29,11 +29,11 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public final class ModItems {
 	public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Thingymabobs.MOD_ID);
 	public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS =
-                DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Thingymabobs.MOD_ID);
+				DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Thingymabobs.MOD_ID);
 
 	private static final ResourceKey<CreativeModeTab> POWERGRID_TAB = ResourceKey.create(
-                Registries.CREATIVE_MODE_TAB,
-                ResourceLocation.fromNamespaceAndPath("powergrid", "base")
+				Registries.CREATIVE_MODE_TAB,
+				ResourceLocation.fromNamespaceAndPath("powergrid", "base")
 	);
 
 	public static final DeferredItem<Item> TRANSFORMER =
@@ -50,6 +50,8 @@ public final class ModItems {
 		ITEMS.registerSimpleItem("small_resistor", new Item.Properties());
 	public static final DeferredItem<Item> SMALL_LIGHT_BULB =
 		ITEMS.registerSimpleItem("small_bulb", new Item.Properties());
+	public static final DeferredItem<Item> SMALL_BUTTON =
+		ITEMS.registerSimpleItem("small_button", new Item.Properties());
 	public static final DeferredItem<Item> TALL_CONNECTOR =
 		ITEMS.registerSimpleItem("tall_connector", new Item.Properties());
 	public static final DeferredItem<Item> BUZZER =
@@ -128,7 +130,7 @@ public final class ModItems {
 	
 	public static final DeferredItem<?>[] ALL_ITEMS = {
 		TRANSFORMER, DRY_CELL, DIP_SWITCH, BUZZER, VARIABLE_BUZZER, SHUNT, TRANSMITTER, RECIEVER, DIRECTIONAL_RECIEVER, DISTANCE_RECIEVER, ACCELEROMETER, GYROSCOPE,
-		CERAMIC_CAPACITOR, SMALL_DIODE, SMALL_RESISTOR, SMALL_LIGHT_BULB, TALL_CONNECTOR,
+		CERAMIC_CAPACITOR, SMALL_DIODE, SMALL_RESISTOR, SMALL_LIGHT_BULB, SMALL_BUTTON, TALL_CONNECTOR,
 		LV_SWITCH_DPDT, LV_SWITCH_SPDT, LV_SWITCH_TPST, LV_SWITCH_DPST,
 		MV_SWITCH_DPDT, MV_SWITCH_SPDT, MV_SWITCH_TPST, MV_SWITCH_DPST,
 		POISONOUS_POTATO_BATTERY, POTATO_BATTERY_ARRAY, POISONOUS_POTATO_BATTERY_ARRAY, POTATO_BATTERY_BLOCK, POISONOUS_POTATO_BATTERY_BLOCK,
@@ -154,8 +156,8 @@ public final class ModItems {
 
 	private ModItems() { }
 	public static void register(IEventBus modBus) {
-        ITEMS.register(modBus);
-        CREATIVE_TABS.register(modBus);
+		ITEMS.register(modBus);
+		CREATIVE_TABS.register(modBus);
 	}
 
 	@OnlyIn(Dist.CLIENT)
@@ -164,7 +166,7 @@ public final class ModItems {
 	@OnlyIn(Dist.CLIENT)
 	public static void registerClient(IEventBus modBus) {
 		TooltipModifier.REGISTRY.registerProvider(tooltipProvider = new TooltipProvider());
-        modBus.addListener(ModItems::registerClientExtensions);
+		modBus.addListener(ModItems::registerClientExtensions);
 	}
 	@OnlyIn(Dist.CLIENT)
 	private static void registerClientExtensions(RegisterClientExtensionsEvent event) {
@@ -185,7 +187,7 @@ public final class ModItems {
 		RegisterClientExtensionsEvent event, CustomRenderedItemModelRenderer renderer, Item... items
 	) {
 		for (int i = 1; i < items.length; i++)
-                        CustomRenderedItems.register(items[i]);
+			CustomRenderedItems.register(items[i]);
 		event.registerItem(
 			SimpleCustomRenderer.create(items[0], renderer),
 			items

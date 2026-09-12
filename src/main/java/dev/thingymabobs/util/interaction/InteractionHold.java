@@ -4,7 +4,6 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
 import com.simibubi.create.AllItems;
 import dev.thingymabobs.util.SableUtils;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -44,15 +43,15 @@ public class InteractionHold extends InteractionHandler {
 	}
 	@OnlyIn(Dist.CLIENT)
 	protected boolean tickClient(Capable block) {
-		Minecraft mc = Minecraft.getInstance();
+		var mc = net.minecraft.client.Minecraft.getInstance();
 		Player player = mc.player;
 		if (!(mc.hitResult instanceof BlockHitResult hit)) return true;
 		if (!hit.getBlockPos().equals(location.pos)) return true;
-        if (!mc.gameRenderer.getMainCamera().isDetached()) {
-            player.swingTime = 0;
-            player.swinging = true;
-            player.swingingArm = InteractionHand.MAIN_HAND;
-        }
+		if (!mc.gameRenderer.getMainCamera().isDetached()) {
+			player.swingTime = 0;
+			player.swinging = true;
+			player.swingingArm = InteractionHand.MAIN_HAND;
+		}
 		return !block.interactIsValid(player, location.pos);
 	}
 
@@ -73,7 +72,7 @@ public class InteractionHold extends InteractionHandler {
 
 		@OnlyIn(Dist.CLIENT)
 		default public void interactStart(BlockPos pos) {
-			Minecraft mc = Minecraft.getInstance();
+			var mc = net.minecraft.client.Minecraft.getInstance();
 			setActiveLocal(new InteractionHold(mc.player, new InteractLocation(mc.level, pos)));
 		}
 		@OnlyIn(Dist.CLIENT)
@@ -91,12 +90,12 @@ public class InteractionHold extends InteractionHandler {
 			if (AllItems.WRENCH.isIn(player.getMainHandItem()))
 				return false;
 
-        	double reach = player.blockInteractionRange() + 1f;
-        	Vec3 eyePosition = player.getEyePosition();
+			double reach = player.blockInteractionRange() + 1f;
+			Vec3 eyePosition = player.getEyePosition();
 			double distance = SableUtils.getGlobalPos(player.level(), pos, vec)
 				.distanceSquared(eyePosition.x, eyePosition.y, eyePosition.z);
 			if (distance > reach * reach)
-           		return true;
+		   		return true;
 			return true;
 		}
 		default public ItemInteractionResult interactTry(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {

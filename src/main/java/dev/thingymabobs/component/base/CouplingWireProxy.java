@@ -1,4 +1,4 @@
-package dev.thingymabobs.component;
+package dev.thingymabobs.component.base;
 
 import java.util.Collection;
 import java.util.List;

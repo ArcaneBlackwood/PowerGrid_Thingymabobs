@@ -110,7 +110,7 @@ public final class ModBlocks {
 	
 
 	public static void register(IEventBus modBus) {
-        ModBlocks.BLOCKS.register(modBus);
+		ModBlocks.BLOCKS.register(modBus);
 
 		CProperties.register(LV_SWITCH_DPDT.getId())
 			.registerResistance(0.15f)
@@ -220,12 +220,12 @@ public final class ModBlocks {
 			.complete(PlasmaGlobeEntity::configUpdated);
 		
 
-        BlockMovementChecks.registerAttachedCheck((BlockState state, Level world, BlockPos pos, Direction direction) -> {
+		BlockMovementChecks.registerAttachedCheck((BlockState state, Level world, BlockPos pos, Direction direction) -> {
 			var block = state.getBlock();
-            if (!(block instanceof PotatoBatteryBlock) && !(block instanceof PoisonousPotatoBatteryBlock))
-                return CheckResult.PASS;
-            return ConnectivityHandler.isConnected(world, pos, pos.relative(direction)) ? CheckResult.SUCCESS : CheckResult.PASS;
-        });
+			if (!(block instanceof PotatoBatteryBlock) && !(block instanceof PoisonousPotatoBatteryBlock))
+				return CheckResult.PASS;
+			return ConnectivityHandler.isConnected(world, pos, pos.relative(direction)) ? CheckResult.SUCCESS : CheckResult.PASS;
+		});
 	}
 
 	public static void postRegister() {

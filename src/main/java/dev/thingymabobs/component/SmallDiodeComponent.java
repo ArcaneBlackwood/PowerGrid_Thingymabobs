@@ -18,73 +18,73 @@ import org.patryk3211.powergrid.circuits.components.VerticallyOrientableComponen
 import org.patryk3211.powergrid.utility.Unit;
 
 public class SmallDiodeComponent extends VerticallyOrientableComponent {
-    public static final float K = 1.380649e-23f;
-    public static final float Q = 1.602176634e-19f;
-    private static final ComponentFootprint FOOTPRINT = new ComponentFootprint.Builder(
-            3,1, "component." + Thingymabobs.MOD_ID + ".small_diode", null)
-        .addPad(0, 0, 0, "Cathode -", "C-")
-        .addPad(2, 0, 1, "Anode +", "A+")
-        .withItem().withOutline().build();
-    private static final ComponentFootprint VERTICAL_FOOTPRINT = new ComponentFootprint.Builder(
-            2,1, "component." + Thingymabobs.MOD_ID + ".small_diode", null)
-        .addPad(0, 0, 0, "+Cathode", "+C")
-        .addPad(1, 0, 1, "-Anode", "-A")
-        .withItem().withOutline().build();
-    
-    protected static CProperties.Prop CONFIG = null;
-    protected static Config CONFIG_DIODE = null;
-    public static void configUpdated(CProperties.Prop prop) {
-        CONFIG = prop;
-        CONFIG_DIODE = prop.get(Config.class, Config.KEY);
-        FORWARD_VOLTAGE.markDirty();
-        BREAKDOWN_VOLTAGE.markDirty();
-        RESISTANCE.markDirty();
-        REVERSE_LEAKAGE.markDirty();
-    }
+	public static final float K = 1.380649e-23f;
+	public static final float Q = 1.602176634e-19f;
+	private static final ComponentFootprint FOOTPRINT = new ComponentFootprint.Builder(
+			3,1, "component." + Thingymabobs.MOD_ID + ".small_diode", null)
+		.addPad(0, 0, 0, "Cathode -", "C-")
+		.addPad(2, 0, 1, "Anode +", "A+")
+		.withItem().withOutline().build();
+	private static final ComponentFootprint VERTICAL_FOOTPRINT = new ComponentFootprint.Builder(
+			2,1, "component." + Thingymabobs.MOD_ID + ".small_diode", null)
+		.addPad(0, 0, 0, "+Cathode", "+C")
+		.addPad(1, 0, 1, "-Anode", "-A")
+		.withItem().withOutline().build();
+	
+	protected static CProperties.Prop CONFIG = null;
+	protected static Config CONFIG_DIODE = null;
+	public static void configUpdated(CProperties.Prop prop) {
+		CONFIG = prop;
+		CONFIG_DIODE = prop.get(Config.class, Config.KEY);
+		FORWARD_VOLTAGE.markDirty();
+		BREAKDOWN_VOLTAGE.markDirty();
+		RESISTANCE.markDirty();
+		REVERSE_LEAKAGE.markDirty();
+	}
 
-    public static final LazyConstantProperty FORWARD_VOLTAGE = new LazyConstantProperty(
-        Thingymabobs.MOD_ID, "forward_voltage",
-        () -> Unit.VOLTAGE.formatWithPrefixes(CONFIG_DIODE.getForwardVoltage(0, CONFIG.getResistance().get(), 22)).string());
-    public static final LazyConstantProperty BREAKDOWN_VOLTAGE = new LazyConstantProperty(
-        Thingymabobs.MOD_ID, "breakdown_voltage",
-        () -> Unit.VOLTAGE.formatWithPrefixes(CONFIG_DIODE.getBreakdown()).string());
-    public static final LazyConstantProperty RESISTANCE = new LazyConstantProperty(
-        Thingymabobs.MOD_ID, "resistance",
-        () -> Unit.RESISTANCE.formatWithPrefixes(CONFIG.getResistance().get()).string());
-    public static final LazyConstantProperty REVERSE_LEAKAGE = new LazyConstantProperty(
-        Thingymabobs.MOD_ID, "reverse_leakage",
-        () -> Unit.CURRENT.formatWithPrefixes(CONFIG_DIODE.getReverseLeakage(22)).string());
-    public static final LazyConstantProperty POWER = new LazyConstantProperty(
-        Thingymabobs.MOD_ID, "power",
-        () -> Unit.POWER.formatWithPrefixes(CONFIG.getThermal().getPower()).string());
+	public static final LazyConstantProperty FORWARD_VOLTAGE = new LazyConstantProperty(
+		Thingymabobs.MOD_ID, "forward_voltage",
+		() -> Unit.VOLTAGE.formatWithPrefixes(CONFIG_DIODE.getForwardVoltage(0, CONFIG.getResistance().get(), 22)).string());
+	public static final LazyConstantProperty BREAKDOWN_VOLTAGE = new LazyConstantProperty(
+		Thingymabobs.MOD_ID, "breakdown_voltage",
+		() -> Unit.VOLTAGE.formatWithPrefixes(CONFIG_DIODE.getBreakdown()).string());
+	public static final LazyConstantProperty RESISTANCE = new LazyConstantProperty(
+		Thingymabobs.MOD_ID, "resistance",
+		() -> Unit.RESISTANCE.formatWithPrefixes(CONFIG.getResistance().get()).string());
+	public static final LazyConstantProperty REVERSE_LEAKAGE = new LazyConstantProperty(
+		Thingymabobs.MOD_ID, "reverse_leakage",
+		() -> Unit.CURRENT.formatWithPrefixes(CONFIG_DIODE.getReverseLeakage(22)).string());
+	public static final LazyConstantProperty POWER = new LazyConstantProperty(
+		Thingymabobs.MOD_ID, "power",
+		() -> Unit.POWER.formatWithPrefixes(CONFIG.getThermal().getPower()).string());
 
 
-    public SmallDiodeComponent() {
-        super(FOOTPRINT, VERTICAL_FOOTPRINT);
-    }
-    @Override
-    protected void addProperties(ImmutableCollection.Builder<ComponentProperty<?>> properties) {
-        super.addProperties(properties);
-        properties.add(FORWARD_VOLTAGE, BREAKDOWN_VOLTAGE, RESISTANCE,
-            REVERSE_LEAKAGE, POWER);
-    }
+	public SmallDiodeComponent() {
+		super(FOOTPRINT, VERTICAL_FOOTPRINT);
+	}
+	@Override
+	protected void addProperties(ImmutableCollection.Builder<ComponentProperty<?>> properties) {
+		super.addProperties(properties);
+		properties.add(FORWARD_VOLTAGE, BREAKDOWN_VOLTAGE, RESISTANCE,
+			REVERSE_LEAKAGE, POWER);
+	}
 
-    @Override
-    public void bake(@NotNull PlacedComponent placed, @NotNull ComponentCircuitBuilder builder, ThermalBuilder.@NotNull IEmitter thermals) {
-        var pnJunctionWire = CONFIG_DIODE.createJunction(
-            CONFIG.getResistance().get(), builder.terminalNode(1), builder.terminalNode(0));
-        builder.add(pnJunctionWire);
-        CONFIG.getThermal().apply(thermals)
-            .withTemperatureCallback(pnJunctionWire::setTemperatureCelsius)
-            .addHeatSource(pnJunctionWire);
-    }
-    
+	@Override
+	public void bake(@NotNull PlacedComponent placed, @NotNull ComponentCircuitBuilder builder, ThermalBuilder.@NotNull IEmitter thermals) {
+		var pnJunctionWire = CONFIG_DIODE.createJunction(
+			CONFIG.getResistance().get(), builder.terminalNode(1), builder.terminalNode(0));
+		builder.add(pnJunctionWire);
+		CONFIG.getThermal().apply(thermals)
+			.withTemperatureCallback(pnJunctionWire::setTemperatureCelsius)
+			.addHeatSource(pnJunctionWire);
+	}
+	
 	public static class Config extends ASubProp {
-        public static final String KEY = "do";
+		public static final String KEY = "do";
 		public ConfigBase.ConfigFloat idealityFactor = null,
-            breakdownVoltage = null, breakdownSaturationCurrent = null, reverseSaturationCurrent = null;
+			breakdownVoltage = null, breakdownSaturationCurrent = null, reverseSaturationCurrent = null;
 		public float idealityFactorDef,
-            breakdownVoltageDef, breakdownSaturationCurrentDef, reverseSaturationCurrentDef;
+			breakdownVoltageDef, breakdownSaturationCurrentDef, reverseSaturationCurrentDef;
 
 		public Config(float idealityFactor,
 			float breakdownVoltage, float breakdownSaturationCurrent, float reverseSaturationCurrent) {
@@ -101,33 +101,33 @@ public class SmallDiodeComponent extends VerticallyOrientableComponent {
 		public float getBreakdown() {
 			return breakdownVoltage.getF();
 		}
-        public float getForwardVoltage(float current, float resistance, float temperature) {
-            float temperatureK = temperature + 273.15f;
-            float referenceTemperature = 295.15f;
-            float thermalVoltage = K * temperatureK / Q;
+		public float getForwardVoltage(float current, float resistance, float temperature) {
+			float temperatureK = temperature + 273.15f;
+			float referenceTemperature = 295.15f;
+			float thermalVoltage = K * temperatureK / Q;
 
-            float temperatureRatio = temperatureK / referenceTemperature;
-            float idealityFactor = this.idealityFactor.getF();
-            float saturationCurrent = (float)(reverseSaturationCurrent.getF()
-                * Math.pow(temperatureRatio, 3.0f / idealityFactor)
-                * Math.exp(-(Q * 1.12f / K / temperatureK / idealityFactor)
-                    * (1.0f - temperatureRatio)));
+			float temperatureRatio = temperatureK / referenceTemperature;
+			float idealityFactor = this.idealityFactor.getF();
+			float saturationCurrent = (float)(reverseSaturationCurrent.getF()
+				* Math.pow(temperatureRatio, 3.0f / idealityFactor)
+				* Math.exp(-(Q * 1.12f / K / temperatureK / idealityFactor)
+					* (1.0f - temperatureRatio)));
 
-            return idealityFactor * thermalVoltage
-                * (float)Math.log1p(current / saturationCurrent)
-                + current * resistance;
-        }
-        public float getReverseLeakage(float temperature) {
-            float temperatureK = temperature + 273.15f;
-            float referenceTemperature = 295.15f;
-            float temperatureRatio = temperatureK / referenceTemperature;
-            float idealityFactor = this.idealityFactor.getF();
+			return idealityFactor * thermalVoltage
+				* (float)Math.log1p(current / saturationCurrent)
+				+ current * resistance;
+		}
+		public float getReverseLeakage(float temperature) {
+			float temperatureK = temperature + 273.15f;
+			float referenceTemperature = 295.15f;
+			float temperatureRatio = temperatureK / referenceTemperature;
+			float idealityFactor = this.idealityFactor.getF();
 
-            return (float)(reverseSaturationCurrent.getF()
-                * Math.pow(temperatureRatio, 3.0f / idealityFactor)
-                * Math.exp(-(Q * 1.12f / K / temperatureK / idealityFactor)
-                    * (1.0f - temperatureRatio)));
-        }
+			return (float)(reverseSaturationCurrent.getF()
+				* Math.pow(temperatureRatio, 3.0f / idealityFactor)
+				* Math.exp(-(Q * 1.12f / K / temperatureK / idealityFactor)
+					* (1.0f - temperatureRatio)));
+		}
 		@Override
 		public void register(String id, CProperties.Builder builder) {
 			idealityFactor = builder.f(idealityFactorDef, 0f, id+"_idealityFactor");
@@ -136,10 +136,10 @@ public class SmallDiodeComponent extends VerticallyOrientableComponent {
 			reverseSaturationCurrent = builder.f(reverseSaturationCurrentDef, 0f, id+"_reverse_saturation_current");
 		}
 		public PNJunctionWire createJunction(float resistance, IElectricNode node1, IElectricNode node2) {
-            return new PNJunctionWire(
-                reverseSaturationCurrent.get(), resistance, 22,
-                idealityFactor.get(), breakdownVoltage.get(), breakdownSaturationCurrent.get(),
-                node1, node2);
+			return new PNJunctionWire(
+				reverseSaturationCurrent.get(), resistance, 22,
+				idealityFactor.get(), breakdownVoltage.get(), breakdownSaturationCurrent.get(),
+				node1, node2);
 		}
 	}
 }

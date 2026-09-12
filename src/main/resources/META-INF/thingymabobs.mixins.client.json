@@ -1,0 +1,16 @@
+{
+	"required": true,
+	"package": "dev.thingymabobs.mixin.unit.client",
+	"compatibilityLevel": "JAVA_21",
+	"minVersion": "0.8.3",
+	"client": [
+		"MouseHandlerMixin",
+		"HumanoidModelMixin",
+		"SoundBufferMixin",
+		"SoundEngineMixin",
+		"KeyMappingMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

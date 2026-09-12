@@ -4,38 +4,37 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.api.distmarker.Dist;
-import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.sounds.SoundSource;
 import org.patryk3211.powergrid.circuits.schematic.PlacedComponent;
-import dev.thingymabobs.component.ABuzzerComponent;
+import dev.thingymabobs.component.base.ABuzzerComponent;
 import dev.thingymabobs.registry.ModSounds;
 
 @OnlyIn(Dist.CLIENT)
-public class BuzzerSoundInstance extends AbstractTickableSoundInstance {
+public class BuzzerSoundInstance extends net.minecraft.client.resources.sounds.AbstractTickableSoundInstance {
 	private final PlacedComponent placed;
 	private int lastVolumeTicks = 1;
 
-    public BuzzerSoundInstance(PlacedComponent placed) {
-        super(ModSounds.BUZZER.get(), SoundSource.BLOCKS, placed.getWorld().random);
-        this.placed = placed;
-        var pos = placed.getPos().getCenter();
-        this.x = pos.x;// + placed.x / 16.0f;
-        this.y = pos.y;
-        this.z = pos.z;// + placed.y / 16.0f;
-        this.attenuation = Attenuation.LINEAR;
-        this.looping = true;
-        this.delay = 0;
-        this.volume = 0.0F;
+	public BuzzerSoundInstance(PlacedComponent placed) {
+		super(ModSounds.BUZZER.get(), SoundSource.BLOCKS, placed.getWorld().random);
+		this.placed = placed;
+		var pos = placed.getPos().getCenter();
+		this.x = pos.x;// + placed.x / 16.0f;
+		this.y = pos.y;
+		this.z = pos.z;// + placed.y / 16.0f;
+		this.attenuation = Attenuation.LINEAR;
+		this.looping = true;
+		this.delay = 0;
+		this.volume = 0.0F;
 		if(placed.component instanceof ABuzzerComponent buzzer)
 			buzzer.hasAudioSource = true;
-    }
+	}
 
-    public boolean canStartSilent() {
-        return true;
-    }
+	public boolean canStartSilent() {
+		return true;
+	}
 
-    @Override
-    public void tick() {
+	@Override
+	public void tick() {
 		Level world = placed.getWorld();
 		if(placed.component instanceof ABuzzerComponent buzzer) {
 			BlockEntity blockEntity = world.getBlockEntity(placed.getPos());
@@ -53,5 +52,5 @@ public class BuzzerSoundInstance extends AbstractTickableSoundInstance {
 			}
 			if (isStopped()) buzzer.hasAudioSource = false;
 		}
-    }
+	}
 }

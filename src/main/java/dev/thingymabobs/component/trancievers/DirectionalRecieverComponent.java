@@ -23,11 +23,11 @@ public class DirectionalRecieverComponent extends AVertTrancieverComponent {
 	public DirectionalRecieverComponent() {
 		super();
 	}
-    @Override
-    protected void addProperties(ImmutableCollection.Builder<ComponentProperty<?>> properties) {
+	@Override
+	protected void addProperties(ImmutableCollection.Builder<ComponentProperty<?>> properties) {
 		properties.add(LABEL, PROP_RECIEVE_RESISTANCE_MIN, PROP_RECIEVE_RESISTANCE_MAX);
 		super.addProperties(properties);
-    }
+	}
 	@Override
 	protected boolean isTransmitter() {
 		return false;

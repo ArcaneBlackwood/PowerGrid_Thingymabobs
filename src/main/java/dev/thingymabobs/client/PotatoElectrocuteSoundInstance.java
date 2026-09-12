@@ -1,37 +1,36 @@
 package dev.thingymabobs.client;
 
-import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.sounds.SoundSource;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.api.distmarker.Dist;
 import dev.thingymabobs.registry.ModSounds;
 
 @OnlyIn(Dist.CLIENT)
-public class PotatoElectrocuteSoundInstance extends AbstractTickableSoundInstance {
+public class PotatoElectrocuteSoundInstance extends net.minecraft.client.resources.sounds.AbstractTickableSoundInstance {
 	private final ISoundSource block;
 	private int lastVolumeTicks = 1;
 
-    public PotatoElectrocuteSoundInstance(ISoundSource block) {
-        super(ModSounds.POTATO_ELECTROCUTE.get(), SoundSource.BLOCKS, block.getRandom());
-        this.block = block;
-        var pos = block.getPosition();
-        this.x = pos.x;
-        this.y = pos.y;
-        this.z = pos.z;
-        this.attenuation = Attenuation.LINEAR;
-        this.looping = true;
-        this.delay = 0;
-        this.volume = 0.0F;
+	public PotatoElectrocuteSoundInstance(ISoundSource block) {
+		super(ModSounds.POTATO_ELECTROCUTE.get(), SoundSource.BLOCKS, block.getRandom());
+		this.block = block;
+		var pos = block.getPosition();
+		this.x = pos.x;
+		this.y = pos.y;
+		this.z = pos.z;
+		this.attenuation = Attenuation.LINEAR;
+		this.looping = true;
+		this.delay = 0;
+		this.volume = 0.0F;
 		this.pitch = 1.0f;
 		block.getVolume();
-    }
+	}
 
 	public boolean canStartSilent() {
-        return true;
-    }
+		return true;
+	}
 
-    @Override
-    public void tick() {
+	@Override
+	public void tick() {
 		if (block == null) {
 			stop();
 			return;
@@ -47,5 +46,5 @@ public class PotatoElectrocuteSoundInstance extends AbstractTickableSoundInstanc
 				lastVolumeTicks = 200;
 		}
 		if (isStopped()) block.onStop();
-    }
+	}
 }

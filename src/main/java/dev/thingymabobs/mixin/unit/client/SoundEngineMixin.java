@@ -1,4 +1,4 @@
-package dev.thingymabobs.mixin.unit;
+package dev.thingymabobs.mixin.unit.client;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -18,11 +18,11 @@ public abstract class SoundEngineMixin implements SoundEngineExt {
 	@Shadow
    	private SoundBufferLibrary soundBuffers;
 	@Shadow
-    private Map<SoundInstance, ChannelAccess.ChannelHandle> instanceToChannel;
-    @Shadow
-    protected abstract float calculateVolume(SoundInstance soundInstance);
-    @Shadow
-    protected abstract float calculatePitch(SoundInstance soundInstance);
+	private Map<SoundInstance, ChannelAccess.ChannelHandle> instanceToChannel;
+	@Shadow
+	protected abstract float calculateVolume(SoundInstance soundInstance);
+	@Shadow
+	protected abstract float calculatePitch(SoundInstance soundInstance);
 
 
 	@Override
@@ -31,28 +31,28 @@ public abstract class SoundEngineMixin implements SoundEngineExt {
 	}
 
 
-    @Override
-    public void refreshSound(SoundInstance soundInstance) {
-        ChannelAccess.ChannelHandle channel =
+	@Override
+	public void refreshSound(SoundInstance soundInstance) {
+		ChannelAccess.ChannelHandle channel =
 			this.instanceToChannel.get(soundInstance);
 
-        if (channel == null) {
-            return;
-        }
+		if (channel == null) {
+			return;
+		}
 
-        float volume = this.calculateVolume(soundInstance);
-        float pitch = this.calculatePitch(soundInstance);
+		float volume = this.calculateVolume(soundInstance);
+		float pitch = this.calculatePitch(soundInstance);
 
-        Vec3 position = new Vec3(
+		Vec3 position = new Vec3(
 			soundInstance.getX(),
 			soundInstance.getY(),
 			soundInstance.getZ()
-        );
+		);
 
-        channel.execute(source -> {
-            source.setVolume(volume);
-            source.setPitch(pitch);
-            source.setSelfPosition(position);
-        });
-    }
+		channel.execute(source -> {
+			source.setVolume(volume);
+			source.setPitch(pitch);
+			source.setSelfPosition(position);
+		});
+	}
 }

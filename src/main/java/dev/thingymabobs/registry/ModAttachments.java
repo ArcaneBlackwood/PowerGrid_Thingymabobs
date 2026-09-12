@@ -12,7 +12,7 @@ import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 public final class ModAttachments {
 	public static final DeferredRegister<AttachmentType<?>> ATTACHMENTS =
-    DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, Thingymabobs.MOD_ID);
+	DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, Thingymabobs.MOD_ID);
 
 	public static final Supplier<AttachmentType<PhantomSleepReduction>> PHANTOM_SLEEP_REDUCTION =
 		ATTACHMENTS.register("phantom_sleep_reduction", () ->

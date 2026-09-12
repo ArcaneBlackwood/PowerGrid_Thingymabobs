@@ -1,17 +1,17 @@
 {
   "values": [
-    "thingymabobs:lv_switch_dpdt",
-    "thingymabobs:lv_switch_spdt",
-    "thingymabobs:lv_switch_tpst",
-    "thingymabobs:lv_switch_dpst",
-    "thingymabobs:mv_switch_dpdt",
-    "thingymabobs:mv_switch_spdt",
-    "thingymabobs:mv_switch_tpst",
-    "thingymabobs:mv_switch_dpst",
-    "thingymabobs:potato_battery_array",
-    "thingymabobs:poisonous_potato_battery_array",
-    "thingymabobs:potato_battery_block",
-    "thingymabobs:poisonous_potato_battery_block",
-    "thingymabobs:power_shunt"
+	"thingymabobs:lv_switch_dpdt",
+	"thingymabobs:lv_switch_spdt",
+	"thingymabobs:lv_switch_tpst",
+	"thingymabobs:lv_switch_dpst",
+	"thingymabobs:mv_switch_dpdt",
+	"thingymabobs:mv_switch_spdt",
+	"thingymabobs:mv_switch_tpst",
+	"thingymabobs:mv_switch_dpst",
+	"thingymabobs:potato_battery_array",
+	"thingymabobs:poisonous_potato_battery_array",
+	"thingymabobs:potato_battery_block",
+	"thingymabobs:poisonous_potato_battery_block",
+	"thingymabobs:power_shunt"
   ]
 }

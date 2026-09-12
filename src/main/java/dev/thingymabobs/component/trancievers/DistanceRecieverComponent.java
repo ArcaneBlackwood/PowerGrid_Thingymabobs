@@ -16,18 +16,18 @@ import net.minecraft.util.Mth;
 
 public class DistanceRecieverComponent extends ATrancieverComponent {
 	public static final float MAX_DIST = 128;
-    public static final FloatProperty PROP_RECIEVE_DISTANCE =
+	public static final FloatProperty PROP_RECIEVE_DISTANCE =
 		new FloatProperty(Thingymabobs.MOD_ID, "tranciever.recieve_distance_max", 32, 0, MAX_DIST);
 
 
 	public DistanceRecieverComponent() {
 		super();
 	}
-    @Override
-    protected void addProperties(ImmutableCollection.Builder<ComponentProperty<?>> properties) {
+	@Override
+	protected void addProperties(ImmutableCollection.Builder<ComponentProperty<?>> properties) {
 		properties.add(LABEL, PROP_RECIEVE_RESISTANCE_MIN, PROP_RECIEVE_RESISTANCE_MAX, PROP_RECIEVE_DISTANCE);
 		super.addProperties(properties);
-    }
+	}
 	@Override
 	protected boolean isTransmitter() {
 		return false;

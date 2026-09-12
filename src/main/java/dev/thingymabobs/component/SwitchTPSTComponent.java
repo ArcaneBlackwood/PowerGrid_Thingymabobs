@@ -31,100 +31,100 @@ import java.util.Collection;
 import java.util.List;
 
 public class SwitchTPSTComponent extends OrientableComponent implements IInteractableComponent, IGoggleLabel {
-    private static final ComponentFootprint FOOTPRINT = new ComponentFootprint.Builder(
-            5,3, "component." + Thingymabobs.MOD_ID + ".switch_tpst", null)
-        .addPad(0, 0, 0, "Common", "C")
-        .addPad(2, 0, 1, "Common", "C")
-        .addPad(4, 0, 2, "Common", "C")
-        .addPad(0, 2, 3, "Normally Open", "NO")
-        .addPad(2, 2, 4, "Normally Open", "NO")
-        .addPad(4, 2, 5, "Normally Open", "NO")
-        .withItem().withOutline().build();
-    
-    protected static CProperties.Prop CONFIG = null;
-    public static void configUpdated(CProperties.Prop prop) {
-        CONFIG = prop;
-        MAX_CURRENT.markDirty();
-        RESISTANCE.markDirty();
-    }
+	private static final ComponentFootprint FOOTPRINT = new ComponentFootprint.Builder(
+			5,3, "component." + Thingymabobs.MOD_ID + ".switch_tpst", null)
+		.addPad(0, 0, 0, "Common", "C")
+		.addPad(2, 0, 1, "Common", "C")
+		.addPad(4, 0, 2, "Common", "C")
+		.addPad(0, 2, 3, "Normally Open", "NO")
+		.addPad(2, 2, 4, "Normally Open", "NO")
+		.addPad(4, 2, 5, "Normally Open", "NO")
+		.withItem().withOutline().build();
+	
+	protected static CProperties.Prop CONFIG = null;
+	public static void configUpdated(CProperties.Prop prop) {
+		CONFIG = prop;
+		MAX_CURRENT.markDirty();
+		RESISTANCE.markDirty();
+	}
 
-    public static final BooleanProperty STATE = SwitchComponent.STATE;
-    public static final LazyConstantProperty MAX_CURRENT = new LazyConstantProperty(
-        Thingymabobs.MOD_ID, "current_max",
-        () -> Unit.CURRENT.formatWithPrefixes(Mth.sqrt(CONFIG.getThermal().getPower() / CONFIG.getResistance().get())).string());
-    public static final LazyConstantProperty RESISTANCE = new LazyConstantProperty(
-        Thingymabobs.MOD_ID, "resistance",
-        () -> Unit.RESISTANCE.formatWithPrefixes(CONFIG.getResistance().get()).string());
-        
+	public static final BooleanProperty STATE = SwitchComponent.STATE;
+	public static final LazyConstantProperty MAX_CURRENT = new LazyConstantProperty(
+		Thingymabobs.MOD_ID, "current_max",
+		() -> Unit.CURRENT.formatWithPrefixes(Mth.sqrt(CONFIG.getThermal().getPower() / CONFIG.getResistance().get())).string());
+	public static final LazyConstantProperty RESISTANCE = new LazyConstantProperty(
+		Thingymabobs.MOD_ID, "resistance",
+		() -> Unit.RESISTANCE.formatWithPrefixes(CONFIG.getResistance().get()).string());
+		
 
-    public SwitchTPSTComponent() {
-        super(FOOTPRINT);
-    }
-    @Override
-    protected void addProperties(ImmutableCollection.Builder<ComponentProperty<?>> properties) {
-        super.addProperties(properties);
-        properties.add(LABEL, STATE, MAX_CURRENT, RESISTANCE);
-    }
-    @Override
-    public void bake(@NotNull PlacedComponent placed, @NotNull ComponentCircuitBuilder builder, @NotNull ThermalBuilder.IEmitter thermals) {
-        float resistance = CONFIG.getResistance().get();
-        var wireNO1 = builder.connectSwitch(resistance, builder.terminalNode(0), builder.terminalNode(3), placed.get(STATE));
-        var wireNO2 = builder.connectSwitch(resistance, builder.terminalNode(1), builder.terminalNode(4), placed.get(STATE));
-        var wireNO3 = builder.connectSwitch(resistance, builder.terminalNode(2), builder.terminalNode(5), placed.get(STATE));
-        placed.add(wireNO1);
-        placed.add(wireNO2);
-        placed.add(wireNO3);
-        CONFIG.getThermal().apply(thermals)
-            .addHeatSource(wireNO1).addHeatSource(wireNO2).addHeatSource(wireNO3);
-    }
-    @Override
-    public VoxelShape getShape(@NotNull PlacedComponent placed) {
-        return IInteractableComponent.extrudedFootprint(placed, 2 / 16f);
-    }
+	public SwitchTPSTComponent() {
+		super(FOOTPRINT);
+	}
+	@Override
+	protected void addProperties(ImmutableCollection.Builder<ComponentProperty<?>> properties) {
+		super.addProperties(properties);
+		properties.add(LABEL, STATE, MAX_CURRENT, RESISTANCE);
+	}
+	@Override
+	public void bake(@NotNull PlacedComponent placed, @NotNull ComponentCircuitBuilder builder, @NotNull ThermalBuilder.IEmitter thermals) {
+		float resistance = CONFIG.getResistance().get();
+		var wireNO1 = builder.connectSwitch(resistance, builder.terminalNode(0), builder.terminalNode(3), placed.get(STATE));
+		var wireNO2 = builder.connectSwitch(resistance, builder.terminalNode(1), builder.terminalNode(4), placed.get(STATE));
+		var wireNO3 = builder.connectSwitch(resistance, builder.terminalNode(2), builder.terminalNode(5), placed.get(STATE));
+		placed.add(wireNO1);
+		placed.add(wireNO2);
+		placed.add(wireNO3);
+		CONFIG.getThermal().apply(thermals)
+			.addHeatSource(wireNO1).addHeatSource(wireNO2).addHeatSource(wireNO3);
+	}
+	@Override
+	public VoxelShape getShape(@NotNull PlacedComponent placed) {
+		return IInteractableComponent.extrudedFootprint(placed, 2 / 16f);
+	}
 
 
-    @Override
-    public InteractionResult use(CircuitBoardBlockEntity be, PlacedComponent placed, Player player) {
-        var newState = !placed.get(STATE);
-        placed.set(STATE, newState);
+	@Override
+	public InteractionResult use(CircuitBoardBlockEntity be, PlacedComponent placed, Player player) {
+		var newState = !placed.get(STATE);
+		placed.set(STATE, newState);
 
-        if(be.getLevel().isClientSide) {
-            Component.modelChanged(be.getBlockPos());
-        } else {
-            if(newState) {
-                ModdedSoundEvents.MICROSWITCH_ON.playOnServer(be.getLevel(), be.getBlockPos());
-            } else {
-                ModdedSoundEvents.MICROSWITCH_OFF.playOnServer(be.getLevel(), be.getBlockPos());
-            }
-            placed.notifyClients(STATE);
-            stateUpdated(placed);
-        }
-        be.setChanged();
-        return InteractionResult.SUCCESS;
-    }
+		if(be.getLevel().isClientSide) {
+			Component.modelChanged(be.getBlockPos());
+		} else {
+			if(newState) {
+				ModdedSoundEvents.MICROSWITCH_ON.playOnServer(be.getLevel(), be.getBlockPos());
+			} else {
+				ModdedSoundEvents.MICROSWITCH_OFF.playOnServer(be.getLevel(), be.getBlockPos());
+			}
+			placed.notifyClients(STATE);
+			stateUpdated(placed);
+		}
+		be.setChanged();
+		return InteractionResult.SUCCESS;
+	}
 
-    @Override
-    public void stateUpdated(@NotNull PlacedComponent placed) {
-        super.stateUpdated(placed);
-        if(placed.wires.isEmpty())
-            return;
-        ((SwitchedWire) placed.wires.get(0)).setState(placed.get(STATE));
-        ((SwitchedWire) placed.wires.get(1)).setState(placed.get(STATE));
-        ((SwitchedWire) placed.wires.get(2)).setState(placed.get(STATE));
-        placed.onClientWorld(() -> world -> modelChanged(placed.getPos()));
-    }
+	@Override
+	public void stateUpdated(@NotNull PlacedComponent placed) {
+		super.stateUpdated(placed);
+		if(placed.wires.isEmpty())
+			return;
+		((SwitchedWire) placed.wires.get(0)).setState(placed.get(STATE));
+		((SwitchedWire) placed.wires.get(1)).setState(placed.get(STATE));
+		((SwitchedWire) placed.wires.get(2)).setState(placed.get(STATE));
+		placed.onClientWorld(() -> world -> modelChanged(placed.getPos()));
+	}
 
-    @Override
-    public @NotNull ResourceLocation getModelId(@NotNull PlacedComponent component) {
-        return component.get(STATE)
-                ? Thingymabobs.asResource("switch_long_on")
-                : Thingymabobs.asResource("switch_long");
-    }
-    @Override
-    public @NotNull Collection<ResourceLocation> requestedModels() {
-        return List.of(
-                Thingymabobs.asResource("switch_long"),
-                Thingymabobs.asResource("switch_long_on")
-        );
-    }
+	@Override
+	public @NotNull ResourceLocation getModelId(@NotNull PlacedComponent component) {
+		return component.get(STATE)
+				? Thingymabobs.asResource("switches/switch_long_on")
+				: Thingymabobs.asResource("switches/switch_long");
+	}
+	@Override
+	public @NotNull Collection<ResourceLocation> requestedModels() {
+		return List.of(
+				Thingymabobs.asResource("switches/switch_long"),
+				Thingymabobs.asResource("switches/switch_long_on")
+		);
+	}
 }

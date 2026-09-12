@@ -10,7 +10,6 @@ import dev.thingymabobs.client.PotatoElectrocuteSoundInstance;
 import dev.thingymabobs.config.properties.CProperties;
 import dev.thingymabobs.registry.ModBlockEntities;
 import dev.thingymabobs.registry.ModLang;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.sounds.SoundEvents;
@@ -33,16 +32,16 @@ public class PotatoBatteryBlockEntity extends MultiBlockBatteryEntity implements
 	public boolean hasAudioSource = false;
 	protected boolean isPoison;
 
-    protected static CProperties.Prop CONFIG_POTATO = null, CONFIG_POISON = null;
+	protected static CProperties.Prop CONFIG_POTATO = null, CONFIG_POISON = null;
 	protected static BatterySpec SPEC_POTATO, SPEC_POISON;
-    public static void configUpdatedPotato(CProperties.Prop prop) {
-        CONFIG_POTATO = prop;
+	public static void configUpdatedPotato(CProperties.Prop prop) {
+		CONFIG_POTATO = prop;
 		SPEC_POTATO = prop.getBattery();
-    }
-    public static void configUpdatedPoison(CProperties.Prop prop) {
-        CONFIG_POISON = prop;
+	}
+	public static void configUpdatedPoison(CProperties.Prop prop) {
+		CONFIG_POISON = prop;
 		SPEC_POISON = prop.getBattery();
-    }
+	}
 	protected CProperties.Prop getConfig() {
 		return isPoison ? CONFIG_POISON : CONFIG_POTATO;
 	}
@@ -57,50 +56,50 @@ public class PotatoBatteryBlockEntity extends MultiBlockBatteryEntity implements
 			rechargePower = 0f;
 		}
 	}
-    @Override
-    public void initialize() {
-        super.initialize();
+	@Override
+	public void initialize() {
+		super.initialize();
 		electricBehaviour.setSyncAppender(this);
-    }
-    @Override
-    public @Nullable ThermalBehaviour specifyThermalBehaviour() {
-        var b = getConfig().getThermal().createBehaviour(this);
-        if(b != null)
-            b.behaviourFlags(ThermalBehaviour.OVERHEAT_PARTICLES);
-        return b;
-    }
+	}
+	@Override
+	public @Nullable ThermalBehaviour specifyThermalBehaviour() {
+		var b = getConfig().getThermal().createBehaviour(this);
+		if(b != null)
+			b.behaviourFlags(ThermalBehaviour.OVERHEAT_PARTICLES);
+		return b;
+	}
 
 
-    @Override
-    public float calculatePower() {
-        // No recharging, but has passive recharge
+	@Override
+	public float calculatePower() {
+		// No recharging, but has passive recharge
 		if (isController())
 			return Math.max(super.calculatePower(), 0) - rechargePower;
-        var controller = getControllerBE();
+		var controller = getControllerBE();
 		if (controller == null) return 0;
-        return controller.calculatePower();
-    }
+		return controller.calculatePower();
+	}
 	public void resetState() {
 		setEnergy(getCapacity());
 		updateParameters();
-        level.setBlockAndUpdate(worldPosition, getBlockState().setValue(PotatoBatteryBlock.BAKED, false));
+		level.setBlockAndUpdate(worldPosition, getBlockState().setValue(PotatoBatteryBlock.BAKED, false));
 
 		if (level.isClientSide) return;
 		thermalBehaviour.resetTemperature();
-        notifyUpdate();
+		notifyUpdate();
 	}
 	public void resetState(double energy) {
 		setEnergy(energy);
 		updateParameters();
-        level.setBlockAndUpdate(worldPosition, getBlockState().setValue(PotatoBatteryBlock.BAKED, false));
+		level.setBlockAndUpdate(worldPosition, getBlockState().setValue(PotatoBatteryBlock.BAKED, false));
 
 		if (level.isClientSide) return;
 		thermalBehaviour.resetTemperature();
-        notifyUpdate();
+		notifyUpdate();
 	}
 
 	public float getVolume() {
-        hasAudioSource = true;
+		hasAudioSource = true;
 		return isController() ? electrocuteVolume : 0;
 	}
 	@Override
@@ -111,18 +110,18 @@ public class PotatoBatteryBlockEntity extends MultiBlockBatteryEntity implements
 	public float getPitch() {
 		return 1;
 	}
-    @Override
+	@Override
 	public void onStop() {
-        hasAudioSource = false;
-    }
+		hasAudioSource = false;
+	}
 	@Override
 	public RandomSource getRandom() {
 		return level.random;
 	}
-    public boolean use(Player player, InteractionHand hand, ItemStack stack, BlockHitResult hit) {
+	public boolean use(Player player, InteractionHand hand, ItemStack stack, BlockHitResult hit) {
 		if(!(getControllerBE() instanceof PotatoBatteryBlockEntity be)) return false;
-        BlockState state = getBlockState();
-        IPotatoBattery block = (IPotatoBattery)state.getBlock();
+		BlockState state = getBlockState();
+		IPotatoBattery block = (IPotatoBattery)state.getBlock();
 		int maxPotatos = be.getSize()*24;
 		double usage = be.getEnergy() / be.getCapacity();
 		boolean baked = state.getValue(APotatoBatteryArray.BAKED).booleanValue();
@@ -167,12 +166,12 @@ public class PotatoBatteryBlockEntity extends MultiBlockBatteryEntity implements
 				true
 		);
 		return false;
-    }
-    @OnlyIn(Dist.CLIENT)
-    private void playRemoveEffect() {
-        if (level == null) return;
-        level.playSound(null, getBlockPos(), SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 0.30F, 1.0F);
-    }
+	}
+	@OnlyIn(Dist.CLIENT)
+	private void playRemoveEffect() {
+		if (level == null) return;
+		level.playSound(null, getBlockPos(), SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 0.30F, 1.0F);
+	}
 
 	
 	@Override
@@ -180,44 +179,44 @@ public class PotatoBatteryBlockEntity extends MultiBlockBatteryEntity implements
 		super.tick();
 		if (level.isClientSide && isController()) tickClient();
 	}
-    @OnlyIn(Dist.CLIENT)
-    private void tickClient() {
+	@OnlyIn(Dist.CLIENT)
+	private void tickClient() {
 		if (!hasAudioSource && electrocuteVolume > 0.01) {
-            Minecraft.getInstance().getSoundManager().play(new PotatoElectrocuteSoundInstance(this));
+			net.minecraft.client.Minecraft.getInstance().getSoundManager().play(new PotatoElectrocuteSoundInstance(this));
 		}
-    }
-    @Override
-    public void electricalTick() {
+	}
+	@Override
+	public void electricalTick() {
 		if (!isController() || sourceCoupling == null) {
 			electrocuteVolume = 0;
-            super.electricalTick();
+			super.electricalTick();
 			return;
 		}
 		electrocuteVolume = Math.clamp((Math.abs(super.calculatePower()) / (thermalBehaviour.maxPower() * this.getSize()) - 0.5f) * 2f, 0, 1);
-        if(getBlockState().getValue(APotatoBatteryArray.BAKED)) {
-            sourceCoupling.setVoltage(0);
-            sourceCoupling.setResistance(1e+6f);
-            energy = 0;
-            return;
-        } else {
-            super.electricalTick();
+		if(getBlockState().getValue(APotatoBatteryArray.BAKED)) {
+			sourceCoupling.setVoltage(0);
+			sourceCoupling.setResistance(1e+6f);
+			energy = 0;
+			return;
+		} else {
+			super.electricalTick();
 			if(thermalBehaviour != null && thermalBehaviour.isOverheated() && !level.isClientSide) {
 				level.setBlockAndUpdate(worldPosition, getBlockState().setValue(APotatoBatteryArray.BAKED, true));
 				notifyUpdate();
 			}
-        }
-    }
+		}
+	}
 
-    @Override
-    public void writeToSync(FriendlyByteBuf buffer) {
-        buffer.writeInt(checksumBasic(this.getSize()));
-        buffer.writeFloat(electrocuteVolume);
-    }
-    @Override
-    public void readFromSync(FriendlyByteBuf buffer) {
-        if (buffer.readInt() != checksumBasic(this.getSize())) return;
-        electrocuteVolume = buffer.readFloat();
-    }
+	@Override
+	public void writeToSync(FriendlyByteBuf buffer) {
+		buffer.writeInt(checksumBasic(this.getSize()));
+		buffer.writeFloat(electrocuteVolume);
+	}
+	@Override
+	public void readFromSync(FriendlyByteBuf buffer) {
+		if (buffer.readInt() != checksumBasic(this.getSize())) return;
+		electrocuteVolume = buffer.readFloat();
+	}
 	public static int checksumBasic(int value) {
 		int b = value & 0xFF;
 		int a = Integer.reverse(b) >>> 24;

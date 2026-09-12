@@ -13,7 +13,7 @@ import net.minecraft.network.FriendlyByteBuf;
 @Mixin(CircuitBoardBlockEntity.class)
 public class CircuitBoardBlockEntityMixin {
 	@Shadow
-    private BakedCircuit baked;
+	private BakedCircuit baked;
 	
 	@Inject(
 		method = "writeToSync",
@@ -25,10 +25,10 @@ public class CircuitBoardBlockEntityMixin {
 		CallbackInfo cir
 	) {
 		if (baked == null) return;
-        for (var placed : baked.tickedComponents) {
-            if (!(placed.component instanceof ISynchronizedComponent sync)) continue;
+		for (var placed : baked.tickedComponents) {
+			if (!(placed.component instanceof ISynchronizedComponent sync)) continue;
 			sync.writeToSync(placed, buffer);
-        }
+		}
 	}
 	@Inject(
 		method = "readFromSync",
@@ -39,9 +39,9 @@ public class CircuitBoardBlockEntityMixin {
 		CallbackInfo cir
 	) {
 		if (baked == null) return;
-        for (var placed : baked.tickedComponents) {
-            if (!(placed.component instanceof ISynchronizedComponent sync)) continue;
+		for (var placed : baked.tickedComponents) {
+			if (!(placed.component instanceof ISynchronizedComponent sync)) continue;
 			sync.readFromSync(placed, buffer);
-        }
+		}
 	}
 }

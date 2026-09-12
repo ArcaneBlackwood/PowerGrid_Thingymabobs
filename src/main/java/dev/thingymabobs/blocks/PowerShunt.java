@@ -52,21 +52,21 @@ public class PowerShunt extends SurfaceElectricBlock implements IBE<PowerShuntEn
 		setTerminalCollection(surfaceTerminals(this, TERMINALS, SHAPE1, SHAPE2));
 	}
 
-    @Override
-    public PartialModel getModel(ItemStack stack) {
-        return stack.has(ModDataComponents.BLOWN.get()) ? ModModels.SHUNT_MODEL_BLOWN : ModModels.SHUNT_MODEL;
-    }
+	@Override
+	public PartialModel getModel(ItemStack stack) {
+		return stack.has(ModDataComponents.BLOWN.get()) ? ModModels.SHUNT_MODEL_BLOWN : ModModels.SHUNT_MODEL;
+	}
 
-    @Override
+	@Override
 	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
 		super.createBlockStateDefinition(builder);
 		builder.add(BLOWN);
 	}
 
-    @Override
-    public void appendProperties(ItemStack stack, Player player, List<Component> tooltip) {
-        Power.max(stack, player, tooltip);
-    }
+	@Override
+	public void appendProperties(ItemStack stack, Player player, List<Component> tooltip) {
+		Power.max(stack, player, tooltip);
+	}
 
 	@Override
 	public Class<PowerShuntEntity> getBlockEntityClass() {
@@ -77,58 +77,58 @@ public class PowerShunt extends SurfaceElectricBlock implements IBE<PowerShuntEn
 	public BlockEntityType<? extends PowerShuntEntity> getBlockEntityType() {
 		return ModBlockEntities.POWER_SHUNT.get();
 	}
-    
+	
 	@Override
 	public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
 		return InteractionResult.PASS;
 	}
 
 	
-    @Override
-    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-        return onBlockEntityUseItemOn(level, pos, be -> {
-            boolean hasItems = stack.is(AllItems.BRASS_SHEET) && stack.getCount() >= 1;
-            if (hasItems || (player.isShiftKeyDown() && player.isCreative())) {
-                if(!player.isCreative() || !player.isShiftKeyDown()) {
-                    stack.shrink(1);
-                }
-                be.resetState();
-                if(player.isCreative() && player.isShiftKeyDown())
-                    return ItemInteractionResult.CONSUME;
-                else
-                    return ItemInteractionResult.SUCCESS;
-            }
-            return ItemInteractionResult.FAIL;
-        });
-    }
+	@Override
+	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+		return onBlockEntityUseItemOn(level, pos, be -> {
+			boolean hasItems = stack.is(AllItems.BRASS_SHEET) && stack.getCount() >= 1;
+			if (hasItems || (player.isShiftKeyDown() && player.isCreative())) {
+				if(!player.isCreative() || !player.isShiftKeyDown()) {
+					stack.shrink(1);
+				}
+				be.resetState();
+				if(player.isCreative() && player.isShiftKeyDown())
+					return ItemInteractionResult.CONSUME;
+				else
+					return ItemInteractionResult.SUCCESS;
+			}
+			return ItemInteractionResult.FAIL;
+		});
+	}
 
-    @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
-        return onBlockEntityUse(level, pos, be -> {
-            if (player.isShiftKeyDown() && player.isCreative()) {
-                be.resetState();
-                return InteractionResult.SUCCESS;
-            }
-            return InteractionResult.FAIL;
-        });
-    }
+	@Override
+	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+		return onBlockEntityUse(level, pos, be -> {
+			if (player.isShiftKeyDown() && player.isCreative()) {
+				be.resetState();
+				return InteractionResult.SUCCESS;
+			}
+			return InteractionResult.FAIL;
+		});
+	}
 
-    @Override
-    public List<ItemStack> getDrops(BlockState state, LootParams.Builder builder) {
-        var stacks = super.getDrops(state, builder);
-        for(var stack : stacks) {
-            if(stack.is(this.asItem())) {
-                if (state.getValue(BLOWN).booleanValue())
-                    stack.set(ModDataComponents.BLOWN.get(), Unit.INSTANCE);
-            }
-        }
-        return stacks;
-    }
+	@Override
+	public List<ItemStack> getDrops(BlockState state, LootParams.Builder builder) {
+		var stacks = super.getDrops(state, builder);
+		for(var stack : stacks) {
+			if(stack.is(this.asItem())) {
+				if (state.getValue(BLOWN).booleanValue())
+					stack.set(ModDataComponents.BLOWN.get(), Unit.INSTANCE);
+			}
+		}
+		return stacks;
+	}
 	@Override
 	public @Nullable BlockState getStateForPlacement(@NotNull BlockPlaceContext ctx) {
 		var state = super.getStateForPlacement(ctx);
 		if(state == null) return null;
-        state = state.setValue(BLOWN, ctx.getItemInHand().has(ModDataComponents.BLOWN.get()));
+		state = state.setValue(BLOWN, ctx.getItemInHand().has(ModDataComponents.BLOWN.get()));
 		return state.cycle(ALONG_FIRST_AXIS);
 	}
 }

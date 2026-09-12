@@ -1,18 +1,18 @@
 {
   "type": "thingymabobs:electric_furnace",
   "input": [
-    {
-      "item": "thingymabobs:small_diode"
-    }
+	{
+	  "item": "thingymabobs:small_diode"
+	}
   ],
   "result": [
-    {
-      "amount": 250,
-      "id": "thingymabobs:small_resistor"
-    }
+	{
+	  "amount": 250,
+	  "id": "thingymabobs:small_resistor"
+	}
   ],
   "temps": {
-    "minTemp": 100.0,
-    "maxTemp": 500.0
+	"minTemp": 100.0,
+	"maxTemp": 500.0
   }
 }

@@ -24,87 +24,87 @@ import org.patryk3211.powergrid.utility.Lang;
 import java.util.List;
 
 public class PowerShuntEntity extends ElectricBlockEntity {
-    public static final String CONFIG_RES_PRECISION = "resistance_precision";
-    public static final String CONFIG_RES_STEPS = "resistance_precision";
-    protected PowerShuntValueBehaviour value;
-    protected SwitchedWire wire;
+	public static final String CONFIG_RES_PRECISION = "resistance_precision";
+	public static final String CONFIG_RES_STEPS = "resistance_precision";
+	protected PowerShuntValueBehaviour value;
+	protected SwitchedWire wire;
 
-    protected static CProperties.Prop CONFIG = null;
-    public static void configUpdated(CProperties.Prop prop) {
-        CONFIG = prop;
-    }
-    protected static int getPrecision() {
-        return CONFIG.getInt(CONFIG_RES_PRECISION).get();
-    }
-    protected static int getSteps() {
-        return CONFIG.getInt(CONFIG_RES_STEPS).get();
-    }
+	protected static CProperties.Prop CONFIG = null;
+	public static void configUpdated(CProperties.Prop prop) {
+		CONFIG = prop;
+	}
+	protected static int getPrecision() {
+		return CONFIG.getInt(CONFIG_RES_PRECISION).get();
+	}
+	protected static int getSteps() {
+		return CONFIG.getInt(CONFIG_RES_STEPS).get();
+	}
 
-    public PowerShuntEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.POWER_SHUNT.get(), pos, state);
-    }
+	public PowerShuntEntity(BlockPos pos, BlockState state) {
+		super(ModBlockEntities.POWER_SHUNT.get(), pos, state);
+	}
 
-    protected PowerShuntValueBehaviour makeScroll() {
-        return new PowerShuntValueBehaviour(Lang.translateDirect("devices.resistor.resistance"),
+	protected PowerShuntValueBehaviour makeScroll() {
+		return new PowerShuntValueBehaviour(Lang.translateDirect("devices.resistor.resistance"),
 			this, new ResistorBoxTransform(), getPrecision(), getSteps());
-    }
+	}
 
-    @Override
-    public @Nullable ThermalBehaviour specifyThermalBehaviour() {
-        return ThermalBehaviour.fromConfig(this, 200f).behaviourFlags(ThermalBehaviour.OVERHEAT_PARTICLES);
-    }
+	@Override
+	public @Nullable ThermalBehaviour specifyThermalBehaviour() {
+		return ThermalBehaviour.fromConfig(this, 200f).behaviourFlags(ThermalBehaviour.OVERHEAT_PARTICLES);
+	}
 
-    @Override
-    public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
-        super.addBehaviours(behaviours);
-        value = makeScroll();
-        value.withResistanceCallback(R -> wire.setResistance(R));
-        behaviours.add(value);
-        wire.setResistance(value.getResistance());
-    }
+	@Override
+	public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
+		super.addBehaviours(behaviours);
+		value = makeScroll();
+		value.withResistanceCallback(R -> wire.setResistance(R));
+		behaviours.add(value);
+		wire.setResistance(value.getResistance());
+	}
 
-    @Override
-    public void buildCircuit(CircuitBuilder builder) {
-        builder.setTerminalCount(2);
-        BlockState state = getBlockState();
-        wire = builder.connectSwitch(0.1f, builder.terminalNode(0), builder.terminalNode(1),
-            !state.getValue(PowerShunt.BLOWN));
-    }
+	@Override
+	public void buildCircuit(CircuitBuilder builder) {
+		builder.setTerminalCount(2);
+		BlockState state = getBlockState();
+		wire = builder.connectSwitch(0.1f, builder.terminalNode(0), builder.terminalNode(1),
+			!state.getValue(PowerShunt.BLOWN));
+	}
 
 
-    @Override
-    public ItemRequirement getRequiredItems(BlockState state) {
+	@Override
+	public ItemRequirement getRequiredItems(BlockState state) {
 		super.getRequiredItems(state);
-        if(state.getValue(PowerShunt.BLOWN))
-            return new ItemRequirement(ItemRequirement.ItemUseType.CONSUME, AllItems.BRASS_SHEET.asStack());
-        return ItemRequirement.NONE;
-    }
+		if(state.getValue(PowerShunt.BLOWN))
+			return new ItemRequirement(ItemRequirement.ItemUseType.CONSUME, AllItems.BRASS_SHEET.asStack());
+		return ItemRequirement.NONE;
+	}
 
 
-    @OnlyIn(Dist.CLIENT)
-    public void playBlowEffect() {
-        if(level == null)
-            return;
-        var pos = this.worldPosition.getCenter();
-        var facing = getBlockState().getValue(FuseHolderBlock.FACING);
-        SparkParticleData.explodeParticles(level, (float) pos.x, (float) pos.y, (float) pos.z, facing.getOpposite(), 5);
-        ModdedSoundEvents.FUSE_POPS.playAt(level, pos, 1.0f, 1.0f, false);
-    }
-    @OnlyIn(Dist.CLIENT)
-    public void playResetEffect() {
-        ModdedSoundEvents.FUSE_INSTALL.playOnServer(level, worldPosition);
-    }
+	@OnlyIn(Dist.CLIENT)
+	public void playBlowEffect() {
+		if(level == null)
+			return;
+		var pos = this.worldPosition.getCenter();
+		var facing = getBlockState().getValue(FuseHolderBlock.FACING);
+		SparkParticleData.explodeParticles(level, (float) pos.x, (float) pos.y, (float) pos.z, facing.getOpposite(), 5);
+		ModdedSoundEvents.FUSE_POPS.playAt(level, pos, 1.0f, 1.0f, false);
+	}
+	@OnlyIn(Dist.CLIENT)
+	public void playResetEffect() {
+		ModdedSoundEvents.FUSE_INSTALL.playOnServer(level, worldPosition);
+	}
 
 
 	public void resetState() {
-        BlockState state = getBlockState();
+		BlockState state = getBlockState();
 		if(state.getValue(PowerShunt.BLOWN) && !level.isClientSide) playResetEffect();
-        level.setBlockAndUpdate(worldPosition, state.setValue(PowerShunt.BLOWN, false));
+		level.setBlockAndUpdate(worldPosition, state.setValue(PowerShunt.BLOWN, false));
 		wire.setState(true);
 
 		if (level.isClientSide) return;
 		thermalBehaviour.resetTemperature();
-        notifyUpdate();
+		notifyUpdate();
 	}
 	public void blowState() {
 		wire.setState(false);
@@ -117,40 +117,40 @@ public class PowerShuntEntity extends ElectricBlockEntity {
 		notifyUpdate();
 	}
 
-    @Override
-    public void electricalTick() {
-        applyPower(wire);
-        BlockState state = getBlockState();
-        if(!state.getValue(PowerShunt.BLOWN) && thermalBehaviour.isOverheated()) {
+	@Override
+	public void electricalTick() {
+		applyPower(wire);
+		BlockState state = getBlockState();
+		if(!state.getValue(PowerShunt.BLOWN) && thermalBehaviour.isOverheated()) {
 			blowState();
-        }
-    }
+		}
+	}
 
-    public void setValue(double value) {
-        wire.setResistance(value);
-    }
+	public void setValue(double value) {
+		wire.setResistance(value);
+	}
 
-    public double getValue() {
-        return wire.getResistance();
-    }
+	public double getValue() {
+		return wire.getResistance();
+	}
 
-    @Override
-    protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
-        super.write(tag, registries, clientPacket);
-        tag.putBoolean("Blown", getBlockState().getValue(PowerShunt.BLOWN));
-    }
-    @Override
-    protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
-        super.read(tag, registries, clientPacket);
-        wire.setResistance(value.getResistance());
-        BlockState state = getBlockState();
-        boolean prevBlown = state.getValue(PowerShunt.BLOWN);
-        boolean blown = tag.getBoolean("Blown");
-        if (clientPacket && blown && !prevBlown)
-            playBlowEffect();
-        if (clientPacket && !blown && prevBlown)
-            playResetEffect();
-        wire.setState(!blown);
+	@Override
+	protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+		super.write(tag, registries, clientPacket);
+		tag.putBoolean("Blown", getBlockState().getValue(PowerShunt.BLOWN));
+	}
+	@Override
+	protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+		super.read(tag, registries, clientPacket);
+		wire.setResistance(value.getResistance());
+		BlockState state = getBlockState();
+		boolean prevBlown = state.getValue(PowerShunt.BLOWN);
+		boolean blown = tag.getBoolean("Blown");
+		if (clientPacket && blown && !prevBlown)
+			playBlowEffect();
+		if (clientPacket && !blown && prevBlown)
+			playResetEffect();
+		wire.setState(!blown);
 		level.setBlockAndUpdate(worldPosition, state.setValue(PowerShunt.BLOWN, blown));
-    }
+	}
 }

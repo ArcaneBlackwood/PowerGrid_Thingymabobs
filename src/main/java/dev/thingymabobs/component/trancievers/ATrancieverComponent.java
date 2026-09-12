@@ -34,8 +34,6 @@ import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 import net.createmod.catnip.config.ConfigBase;
 import net.createmod.catnip.render.CachedBuffers;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -46,25 +44,27 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 public abstract class ATrancieverComponent extends MirrorableComponent implements IRenderedComponent, IComponentGoggleInformation, IInteractableComponent, ISynchronizedComponent {
-    public static final ComponentFootprint FOOTPRINT = new ComponentFootprint.Builder(
+	public static final ComponentFootprint FOOTPRINT = new ComponentFootprint.Builder(
 				7,3, "component." + Thingymabobs.MOD_ID + ".tranciever", null)
-            .addPad(5, 0, 0, "Power -", "-")
-            .addPad(5, 2, 1, "Power +", "+")
-            .addPad(2, 0, 2, "Signal", "S")
-            .addPad(2, 2, 3, "Signal", "S")
-            .withItem().withOutline().build();
-    public static final ComponentFootprint FOOTPRINT_DIRECTIONAL = new ComponentFootprint.Builder(
+			.addPad(5, 0, 0, "Power -", "-")
+			.addPad(5, 2, 1, "Power +", "+")
+			.addPad(2, 0, 2, "Signal", "S")
+			.addPad(2, 2, 3, "Signal", "S")
+			.withItem().withOutline().build();
+	public static final ComponentFootprint FOOTPRINT_DIRECTIONAL = new ComponentFootprint.Builder(
 				7,3, "component." + Thingymabobs.MOD_ID + ".tranciever", null)
-            .addPad(5, 0, 0, "Power -", "-")
-            .addPad(5, 2, 1, "Power +", "+")
-            .addPad(2, 0, 2, "Signal", "S")
-            .addPad(2, 2, 3, "Signal", "S")
+			.addPad(5, 0, 0, "Power -", "-")
+			.addPad(5, 2, 1, "Power +", "+")
+			.addPad(2, 0, 2, "Signal", "S")
+			.addPad(2, 2, 3, "Signal", "S")
 			.withArrow()
-            .withItem().withOutline().build();
-    
-    protected static CProperties.Prop CONFIG = null;
+			.withItem().withOutline().build();
+	
+	protected static CProperties.Prop CONFIG = null;
 	protected static Config CONFIG_TRANS;
 	public static float POWER_WATTS;
 	public static float POWER_WATTS_MIN;
@@ -73,8 +73,8 @@ public abstract class ATrancieverComponent extends MirrorableComponent implement
 	public static float TRANSMIT_RESISTANCE;
 
 	public static float POWER_RESISTANCE, POWER_CURRENT, TRANSMIT_CURRENT_FULL;
-    public static void configUpdated(CProperties.Prop prop) {
-        CONFIG = prop;
+	public static void configUpdated(CProperties.Prop prop) {
+		CONFIG = prop;
 		CONFIG_TRANS = prop.get(Config.class, Config.KEY);
 		POWER_WATTS = CONFIG.getThermal().getPower();
 		POWER_WATTS_MIN = CONFIG_TRANS.powerMin.getF();
@@ -93,7 +93,7 @@ public abstract class ATrancieverComponent extends MirrorableComponent implement
 		PROP_TRANSMIT_RESISTANCE.markDirty();
 		PROP_RECIEVE_RESISTANCE_MIN.markDirty();
 		PROP_RECIEVE_RESISTANCE_MAX.markDirty();
-    }
+	}
 	
 
 	public static final float SLOT_SIZE = 2.5f/16f;
@@ -126,49 +126,49 @@ public abstract class ATrancieverComponent extends MirrorableComponent implement
 	private static final Supplier<Float> RES_MIN_PROVIDER = () -> CONFIG_TRANS.resMin.getF();
 	private static final Supplier<Float> RES_MAX_PROVIDER = () -> CONFIG_TRANS.resMax.getF();
 	//Signal = 15
-    public static final DynamicFloatProperty PROP_RECIEVE_RESISTANCE_MIN = new DynamicFloatProperty(
+	public static final DynamicFloatProperty PROP_RECIEVE_RESISTANCE_MIN = new DynamicFloatProperty(
 		Thingymabobs.MOD_ID, "tranciever.recieve_resistance_min",
 		() -> CONFIG_TRANS.resMinDefault.getF(), RES_MIN_PROVIDER, RES_MAX_PROVIDER).useMetrics();
 	//Signal = 0
-    public static final DynamicFloatProperty PROP_RECIEVE_RESISTANCE_MAX = new DynamicFloatProperty(
+	public static final DynamicFloatProperty PROP_RECIEVE_RESISTANCE_MAX = new DynamicFloatProperty(
 		Thingymabobs.MOD_ID, "tranciever.recieve_resistance_max",
 		() -> CONFIG_TRANS.resMaxDefault.getF(), RES_MIN_PROVIDER, RES_MAX_PROVIDER).useMetrics();
 
 
 
-    public ATrancieverComponent() {
-        super(FOOTPRINT, FOOTPRINT.mirroredY());
-    }
-    protected ATrancieverComponent(ComponentFootprint footprint) {
-        super(footprint, footprint.mirroredY());
-    }
-    @Override
-    protected void addProperties(ImmutableCollection.Builder<ComponentProperty<?>> properties) {
+	public ATrancieverComponent() {
+		super(FOOTPRINT, FOOTPRINT.mirroredY());
+	}
+	protected ATrancieverComponent(ComponentFootprint footprint) {
+		super(footprint, footprint.mirroredY());
+	}
+	@Override
+	protected void addProperties(ImmutableCollection.Builder<ComponentProperty<?>> properties) {
 		super.addProperties(properties);
 		properties.add(PROP_SLOT1, PROP_SLOT2, PROP_POWER_VOLTAGE, PROP_POWER_MIN, PROP_TOTAL_POWER_MAX);
-    }
+	}
 	@Override
 	public VoxelShape getShape(@NotNull PlacedComponent placed) {
-        return IInteractableComponent.extrudedFootprint(placed, 3.0F / 16.0F);
+		return IInteractableComponent.extrudedFootprint(placed, 3.0F / 16.0F);
 	}
-    @Override
-    public void bake(@NotNull PlacedComponent placed, @NotNull ComponentCircuitBuilder builder, ThermalBuilder.@NotNull IEmitter thermals) {
+	@Override
+	public void bake(@NotNull PlacedComponent placed, @NotNull ComponentCircuitBuilder builder, ThermalBuilder.@NotNull IEmitter thermals) {
 		ServerState state = new ServerState();
 		placed.customData = state;
-        state.powerWire = new CleanupElectricWire(POWER_RESISTANCE, builder.terminalNode(1), builder.terminalNode(0));
-        state.signalWire = new ElectricWire(getSignalResistance(placed, 0), builder.terminalNode(2), builder.terminalNode(3));
-        builder.add(state.powerWire);
-        builder.add(state.signalWire);
-        ThermalBuilder thermal = CONFIG.getThermal().apply(thermals)
+		state.powerWire = new CleanupElectricWire(POWER_RESISTANCE, builder.terminalNode(1), builder.terminalNode(0));
+		state.signalWire = new ElectricWire(getSignalResistance(placed, 0), builder.terminalNode(2), builder.terminalNode(3));
+		builder.add(state.powerWire);
+		builder.add(state.signalWire);
+		ThermalBuilder thermal = CONFIG.getThermal().apply(thermals)
 			.addHeatSource(state.powerWire)
 			.addHeatSource(state.signalWire);
 		((ThermalBuilderExt)thermal).withBuildCallback(
-            (thermalUnit) -> {
+			(thermalUnit) -> {
 				Thermal t = CONFIG.getThermal();
-                state.overheatPercent = (thermalUnit.getTemperature() - t.getTemp())
+				state.overheatPercent = (thermalUnit.getTemperature() - t.getTemp())
 					/ (t.getOverheat() - t.getTemp());
-            });
-    }
+			});
+	}
 	protected boolean setupLink(PlacedComponent placed, State state) {
 		Level world = placed.getWorld();
 		if (world == null) return false;
@@ -214,16 +214,16 @@ public abstract class ATrancieverComponent extends MirrorableComponent implement
 	public boolean isPowered(ServerState state) {
 		return state.powerWire.current() >= POWER_CURRENT;
 	}
-    /** Replace the installed pack with a fresh Thingymabobs dry-cell item. */
-    @Override
-    public InteractionResult use(CircuitBoardBlockEntity be, PlacedComponent placed, Player player) {
+	/** Replace the installed pack with a fresh Thingymabobs dry-cell item. */
+	@Override
+	public InteractionResult use(CircuitBoardBlockEntity be, PlacedComponent placed, Player player) {
 		if (placed.customData == null || !(placed.customData instanceof State state)) return InteractionResult.PASS;
 		if (state.link == null) return InteractionResult.PASS;
 
 		if (state.link.interact(placed, player)) return InteractionResult.SUCCESS;
 
-        return InteractionResult.PASS;
-    }
+		return InteractionResult.PASS;
+	}
 	public void setTransmission(ServerState state, float signalValue) {
 		if (state.link == null) return;
 		state.link.setTransmission(Math.round(signalValue
@@ -243,27 +243,28 @@ public abstract class ATrancieverComponent extends MirrorableComponent implement
 	}
 
 	
-    @Override
-    public void render(CircuitBoardBlockEntity be, PlacedComponent placed, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource, int light, int overlay) {
-        if(placed.customData == null || !(placed.customData instanceof RenderState data)) return;
+	@Override
+	@OnlyIn(Dist.CLIENT)
+	public void render(CircuitBoardBlockEntity be, PlacedComponent placed, float partialTicks, PoseStack poseStack, net.minecraft.client.renderer.MultiBufferSource bufferSource, int light, int overlay) {
+		if(placed.customData == null || !(placed.customData instanceof RenderState data)) return;
 		if (data.signalValue < 1 && data.link == null) return;
 
 		poseStack.pushPose();
 		rotateY(poseStack, FOOTPRINT.getWidth(), FOOTPRINT.getHeight(), placed.get(ORIENTATION));
 
-        if(data.signalValue > 0) {
+		if(data.signalValue > 0) {
 			int intensity = Mth.floor(data.signalValue * 16 + 15);
 			CachedBuffers.partial(getRenderModel(placed), be.getBlockState())
 				.disableDiffuse()
 				.color(intensity, intensity, intensity, 255)
-				.light(LightTexture.FULL_BRIGHT)
+				.light(net.minecraft.client.renderer.LightTexture.FULL_BRIGHT)
 				.renderInto(poseStack, bufferSource.getBuffer(RenderTypes.additive()));
 		}
 
 		if (data.link != null) data.link.render(placed, partialTicks, poseStack, bufferSource, light, overlay);
 
 		poseStack.popPose();
-    }
+	}
 	public static void rotateY(PoseStack poseStack, int width, int height, Orientation rotation) {
 		float centerX = width/32f, centerZ = height/32f;
 		switch (rotation) {
@@ -280,8 +281,8 @@ public abstract class ATrancieverComponent extends MirrorableComponent implement
 		poseStack.mulPose(Axis.YP.rotationDegrees(rotation.ordinal() * 90));
 		poseStack.translate(-centerX, 0, -centerZ);
 	}
-    @Override
-    public boolean addToGoggleTooltip(PlacedComponent placed, List<Component> tooltip, boolean isPlayerSneaking) {
+	@Override
+	public boolean addToGoggleTooltip(PlacedComponent placed, List<Component> tooltip, boolean isPlayerSneaking) {
 		if (placed.has(LABEL)) {
 			var label = placed.get(LABEL);
 			if(label.isEmpty()) {
@@ -292,7 +293,7 @@ public abstract class ATrancieverComponent extends MirrorableComponent implement
 		} else {
 			ModLang.translate(isTransmitter() ? "gui.tranciever.info_transmitter" : "gui.tranciever.info_reciever").forGoggles(tooltip);
 		}
-        if(placed.customData == null || !(placed.customData instanceof RenderState data)) return false;
+		if(placed.customData == null || !(placed.customData instanceof RenderState data)) return false;
 
 		if (data.signalValue < 0.5f) {
 			ModLang.translate("gui.tranciever.no_power")
@@ -303,20 +304,20 @@ public abstract class ATrancieverComponent extends MirrorableComponent implement
 				.style(data.signalValue > 0 ? ChatFormatting.GREEN : ChatFormatting.GOLD)
 				.forGoggles(tooltip);
 		}
-        return true;
-    }
+		return true;
+	}
 
 	
 	@Override
 	public void writeToSync(PlacedComponent placed, FriendlyByteBuf buffer) {
-        if(placed.customData == null || !(placed.customData instanceof ServerState data)) return;
+		if(placed.customData == null || !(placed.customData instanceof ServerState data)) return;
 		if (data.link == null) return;
 		buffer.writeByte(isPowered(data) ? Math.round(data.link.getRecieved() * 8f) : -1);
 		data.link.save(placed);
 	}
 	@Override
 	public void readFromSync(PlacedComponent placed, FriendlyByteBuf buffer) {
-        if(placed.customData == null || !(placed.customData instanceof RenderState data)) return;
+		if(placed.customData == null || !(placed.customData instanceof RenderState data)) return;
 		if (data.link == null) return;
 		data.signalValue = buffer.readByte();
 		if (data.signalValue > 0) data.signalValue = data.signalValue / 8f;

@@ -25,13 +25,10 @@ import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxRenderer;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform;
 import com.simibubi.create.foundation.gui.AllIcons;
 import com.simibubi.create.infrastructure.config.AllConfigs;
-
 import dev.thingymabobs.mixin.LinkBehaviourExt;
 import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.data.Iterate;
 import net.createmod.catnip.math.VecHelper;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup.Provider;
@@ -67,7 +64,6 @@ public class LinkComponentBehaviour {
 			blockEntity.attachBehaviourLate(multi);
 		}
 
-		blockEntity.attachBehaviourLate(multi);
 		Pair<ValueBoxTransform, ValueBoxTransform> slots = Pair.of(null, null);
 		if (isTransmitter)
 			link = LinkBehaviour.transmitter(blockEntity, slots, () -> Math.round(value));
@@ -76,7 +72,7 @@ public class LinkComponentBehaviour {
 			LinkBehaviourExt linkExt = (LinkBehaviourExt)link;
 			linkExt.setRecieveCallback((float value) -> this.value = value);
 		}
-		multi.addBehaviour(placed.x + placed.y * 128, link);
+		multi.addBehaviour(placed.x + placed.y * Short.MAX_VALUE, link);
 	}
 	public void save(PlacedComponent placed) {
 		if (link == null || link.blockEntity == null || link.blockEntity.isRemoved()) return;
@@ -108,15 +104,18 @@ public class LinkComponentBehaviour {
 		link = null;
 	}
 
+
+
+
 	protected static Matrix4f ROTATE_XN90 = new Matrix4f(
 		1,  0,  0,  0,
 		0,  0, 1,  0,
 		0,  -1,  0,  0,
 		0,  0,  0,  1);
-	public void render(PlacedComponent placed, float partialTicks, PoseStack ms, MultiBufferSource buffer, int light, int overlay) {
+	public void render(PlacedComponent placed, float partialTicks, PoseStack ms, net.minecraft.client.renderer.MultiBufferSource buffer, int light, int overlay) {
 		if (link == null) return;
 
-		Entity cameraEntity = Minecraft.getInstance().cameraEntity;
+		Entity cameraEntity = net.minecraft.client.Minecraft.getInstance().cameraEntity;
 		float max = AllConfigs.client().filterItemRenderDistance.getF();
 		{
 			CircuitBoardBlockEntity circuitBoard = (placed.getWorld().getBlockEntity(placed.getPos(), ModdedBlockEntities.CIRCUIT_BOARD.get())).orElse(null);
@@ -129,7 +128,7 @@ public class LinkComponentBehaviour {
 		{
 			Level world = placed.getWorld();
 			BlockPos pos = placed.getPos();
-			HitResult hit = Minecraft.getInstance().hitResult;
+			HitResult hit = net.minecraft.client.Minecraft.getInstance().hitResult;
 			if (hit != null && hit instanceof BlockHitResult result && result.getBlockPos().equals(pos))
 				hitLocalPos = transformHitPosLocal(placed, world, pos, hit);
 		}
@@ -163,13 +162,15 @@ public class LinkComponentBehaviour {
 			ms.popPose();
 		}
 	}
+
+
 	public boolean interact(PlacedComponent placed, Player player) {
 		Level world = placed.getWorld();
 		boolean isClient = world.isClientSide();
 		if (link == null && !isClient) return false;
 
 		BlockPos pos = placed.getPos();
-		HitResult hit = world.isClientSide() ? Minecraft.getInstance().hitResult : player.pick(20.0, 0.0f, false);
+		HitResult hit = world.isClientSide() ? net.minecraft.client.Minecraft.getInstance().hitResult : player.pick(20.0, 0.0f, false);
 		if (hit == null || !(hit instanceof BlockHitResult result)) return false;
 		if (!result.getBlockPos().equals(pos) ) return false; //Double check
 
@@ -239,6 +240,8 @@ public class LinkComponentBehaviour {
 		this.value = value;
 		link.notifySignalChange();
 	}
+
+
 
 
 	public static class MultiBehaviour<K extends Object> extends BlockEntityBehaviour {

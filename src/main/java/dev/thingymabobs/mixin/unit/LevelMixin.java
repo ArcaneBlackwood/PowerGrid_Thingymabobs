@@ -11,7 +11,7 @@ import net.minecraft.world.level.Level;
 
 @Mixin(Level.class)
 public abstract class LevelMixin {
-    @Inject(at = @At("HEAD"), method = "tickBlockEntities", require = 1)
+	@Inject(at = @At("HEAD"), method = "tickBlockEntities", require = 1)
 	private void thingymabobs$tickBlockEntities(CallbackInfo ci) {
 		if (SableUtils.isLoaded) SableUtils.tick();
 	}

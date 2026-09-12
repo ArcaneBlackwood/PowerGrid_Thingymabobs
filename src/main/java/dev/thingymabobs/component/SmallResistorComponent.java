@@ -16,43 +16,43 @@ import org.patryk3211.powergrid.utility.Unit;
 import org.patryk3211.powergrid.circuits.components.VerticallyOrientableComponent;
 
 public class SmallResistorComponent extends VerticallyOrientableComponent {
-    private static final ComponentFootprint FOOTPRINT = new ComponentFootprint.Builder(
-            3,1, "component." + Thingymabobs.MOD_ID + ".small_resistor", null)
-        .addPad(0, 0, 0)
-        .addPad(2, 0, 1)
-        .withItem().withOutline().build();
-    private static final ComponentFootprint VERTICAL_FOOTPRINT = new ComponentFootprint.Builder(
-            2,1, "component." + Thingymabobs.MOD_ID + ".small_resistor", null)
-        .addPad(0, 0, 0)
-        .addPad(1, 0, 1)
-        .withItem().withOutline().build();
+	private static final ComponentFootprint FOOTPRINT = new ComponentFootprint.Builder(
+			3,1, "component." + Thingymabobs.MOD_ID + ".small_resistor", null)
+		.addPad(0, 0, 0)
+		.addPad(2, 0, 1)
+		.withItem().withOutline().build();
+	private static final ComponentFootprint VERTICAL_FOOTPRINT = new ComponentFootprint.Builder(
+			2,1, "component." + Thingymabobs.MOD_ID + ".small_resistor", null)
+		.addPad(0, 0, 0)
+		.addPad(1, 0, 1)
+		.withItem().withOutline().build();
 
-    protected static CProperties.Prop CONFIG = null;
-    public static void configUpdated(CProperties.Prop prop) {
-        CONFIG = prop;
-        RESISTANCE.markDirty();
-        POWER.markDirty();
-    }
+	protected static CProperties.Prop CONFIG = null;
+	public static void configUpdated(CProperties.Prop prop) {
+		CONFIG = prop;
+		RESISTANCE.markDirty();
+		POWER.markDirty();
+	}
 
-    public static final DynamicFloatProperty RESISTANCE = new DynamicFloatProperty(
-        Thingymabobs.MOD_ID, "resistor_value", () -> CONFIG.getFloat("resistance")).useMetrics();
-    public static final LazyConstantProperty POWER = new LazyConstantProperty(
-        Thingymabobs.MOD_ID, "power",
-        () -> Unit.POWER.formatWithPrefixes(CONFIG.getThermal().getPower()).string());
+	public static final DynamicFloatProperty RESISTANCE = new DynamicFloatProperty(
+		Thingymabobs.MOD_ID, "resistor_value", () -> CONFIG.getFloat("resistance")).useMetrics();
+	public static final LazyConstantProperty POWER = new LazyConstantProperty(
+		Thingymabobs.MOD_ID, "power",
+		() -> Unit.POWER.formatWithPrefixes(CONFIG.getThermal().getPower()).string());
 
 
-    public SmallResistorComponent() {
-        super(FOOTPRINT, VERTICAL_FOOTPRINT);
-    }
-    @Override
-    protected void addProperties(ImmutableCollection.Builder<ComponentProperty<?>> properties) {
-        super.addProperties(properties);
-        properties.add(RESISTANCE, POWER);
-    }
-    @Override
-    public void bake(@NotNull PlacedComponent placed, @NotNull ComponentCircuitBuilder builder, ThermalBuilder.@NotNull IEmitter thermals) {
-        var wire = builder.connect(placed.get(RESISTANCE), builder.terminalNode(0), builder.terminalNode(1));
-        CONFIG.getThermal().apply(thermals)
-                .addHeatSource(wire);
-    }
+	public SmallResistorComponent() {
+		super(FOOTPRINT, VERTICAL_FOOTPRINT);
+	}
+	@Override
+	protected void addProperties(ImmutableCollection.Builder<ComponentProperty<?>> properties) {
+		super.addProperties(properties);
+		properties.add(RESISTANCE, POWER);
+	}
+	@Override
+	public void bake(@NotNull PlacedComponent placed, @NotNull ComponentCircuitBuilder builder, ThermalBuilder.@NotNull IEmitter thermals) {
+		var wire = builder.connect(placed.get(RESISTANCE), builder.terminalNode(0), builder.terminalNode(1));
+		CONFIG.getThermal().apply(thermals)
+				.addHeatSource(wire);
+	}
 }

@@ -17,7 +17,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
+@OnlyIn(Dist.CLIENT)
 public class ElectricFurnaceScreen extends AbstractSimiContainerScreen<ElectricFurnaceMenu> {
 	public static final ResourceLocation SPRITE_SHEET = Thingymabobs.texture("gui/electric_furnace");
 
@@ -29,7 +32,7 @@ public class ElectricFurnaceScreen extends AbstractSimiContainerScreen<ElectricF
 	private static Component TITLE = ModLang.translateDirect("gui.electric_furnace.title");
 	@Override
 	protected void renderBg(GuiGraphics gui, float partialTick, int mouseX, int mouseY) {
-        gui.drawCenteredString(font, TITLE, leftPos + 97, topPos + 4, 0x404040);
+		gui.drawCenteredString(font, TITLE, leftPos + 97, topPos + 4, 0x404040);
 		gui.blit(SPRITE_SHEET, leftPos, topPos, 0, 0, imageWidth, imageHeight);
 		{
 			int height = Mth.floor(menu.getTempNorm() * 72);

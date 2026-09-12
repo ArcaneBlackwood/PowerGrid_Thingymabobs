@@ -73,7 +73,7 @@ public class ElectricFurnace extends HorizontalElectricBlock implements IBE<Elec
 			}).rotateAroundY(Rotation.values()[face]);
 		}
 	}
-    
+	
 	private static final VoxelShape[] SHAPE = new VoxelShape[4];
 	private static final AABB[] SHAPE_BUTTON = new AABB[4];
 	static {
@@ -97,24 +97,24 @@ public class ElectricFurnace extends HorizontalElectricBlock implements IBE<Elec
 			.setValue(ROTATION, 0)
 			.setValue(BUTTON, false));
 	}
-    @Override
-    public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
-        return SHAPE[state.getValue(HORIZONTAL_FACING).get2DDataValue()];
-    }
-    public static AABB getButtonShape(BlockState state) {
-        return SHAPE_BUTTON[state.getValue(HORIZONTAL_FACING).get2DDataValue()];
-    }
-    @Override
+	@Override
+	public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
+		return SHAPE[state.getValue(HORIZONTAL_FACING).get2DDataValue()];
+	}
+	public static AABB getButtonShape(BlockState state) {
+		return SHAPE_BUTTON[state.getValue(HORIZONTAL_FACING).get2DDataValue()];
+	}
+	@Override
 	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
 		super.createBlockStateDefinition(builder);
 		builder.add(BLOWN, ROTATION, BUTTON);
 	}
-    @Override
-    public void appendProperties(ItemStack stack, Player player, List<Component> tooltip) {
-        ModLang.translate("tooltip.temperature.max").style(ChatFormatting.GRAY).addTo(tooltip);
-        ModLang.builder()
-            .add(Component.nullToEmpty(" ")).add(ModLang.number(ElectricFurnaceEntity.THERMAL.getOverheat()))
-            .add(Component.nullToEmpty(" ")).add(org.patryk3211.powergrid.utility.Unit.TEMPERATURE.get())
+	@Override
+	public void appendProperties(ItemStack stack, Player player, List<Component> tooltip) {
+		ModLang.translate("tooltip.temperature.max").style(ChatFormatting.GRAY).addTo(tooltip);
+		ModLang.builder()
+			.add(Component.nullToEmpty(" ")).add(ModLang.number(ElectricFurnaceEntity.THERMAL.getOverheat()))
+			.add(Component.nullToEmpty(" ")).add(org.patryk3211.powergrid.utility.Unit.TEMPERATURE.get())
 			.style(ChatFormatting.DARK_BLUE).addTo(tooltip);
 		Power.max(ElectricFurnaceEntity.BLOW_POWER, player, tooltip);
 		if (stack.getItem() instanceof BlockItem blockItem) {
@@ -130,7 +130,7 @@ public class ElectricFurnace extends HorizontalElectricBlock implements IBE<Elec
 				.add(Component.nullToEmpty(" ")).add(org.patryk3211.powergrid.utility.Unit.VOLTAGE.get())
 				.style(ChatFormatting.DARK_AQUA).addTo(tooltip);
 		}
-    }
+	}
 	@Override
 	protected RenderShape getRenderShape(BlockState p_60550_) {
 		return RenderShape.MODEL;
@@ -173,53 +173,53 @@ public class ElectricFurnace extends HorizontalElectricBlock implements IBE<Elec
 	public BlockEntityType<? extends ElectricFurnaceEntity> getBlockEntityType() {
 		return ModBlockEntities.ELECTRIC_FURNACE.get();
 	}
-    
+	
 
-    @Override
-    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-        return onBlockEntityUseItemOn(level, pos, be -> {
+	@Override
+	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+		return onBlockEntityUseItemOn(level, pos, be -> {
 			return be.useItemOn(player, hitResult, hand, stack) ? ItemInteractionResult.SUCCESS : ItemInteractionResult.FAIL;
-        });
-    }
-    @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
-        return onBlockEntityUse(level, pos, be -> {
-            return be.useItemOn(player, hitResult, InteractionHand.MAIN_HAND, ItemStack.EMPTY) ? InteractionResult.SUCCESS : InteractionResult.FAIL;
-        });
-    }
+		});
+	}
+	@Override
+	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+		return onBlockEntityUse(level, pos, be -> {
+			return be.useItemOn(player, hitResult, InteractionHand.MAIN_HAND, ItemStack.EMPTY) ? InteractionResult.SUCCESS : InteractionResult.FAIL;
+		});
+	}
 
 
-    @Override
-    public List<ItemStack> getDrops(BlockState state, LootParams.Builder builder) {
-        var stacks = super.getDrops(state, builder);
-        for(var stack : stacks) {
-            if(stack.is(this.asItem())) {
-                if (state.getValue(BLOWN).booleanValue())
-                    stack.set(ModDataComponents.BLOWN.get(), Unit.INSTANCE);
-            }
-        }
-        return stacks;
-    }
+	@Override
+	public List<ItemStack> getDrops(BlockState state, LootParams.Builder builder) {
+		var stacks = super.getDrops(state, builder);
+		for(var stack : stacks) {
+			if(stack.is(this.asItem())) {
+				if (state.getValue(BLOWN).booleanValue())
+					stack.set(ModDataComponents.BLOWN.get(), Unit.INSTANCE);
+			}
+		}
+		return stacks;
+	}
 	@Override
 	public @Nullable BlockState getStateForPlacement(@NotNull BlockPlaceContext ctx) {
 		var state = super.getStateForPlacement(ctx);
 		if(state == null) return null;
-        state = state.setValue(BLOWN, ctx.getItemInHand().has(ModDataComponents.BLOWN.get()));
+		state = state.setValue(BLOWN, ctx.getItemInHand().has(ModDataComponents.BLOWN.get()));
 		return state;
 	}
 	
-    @Override
-    public BlockState getRotatedBlockState(BlockState state, Direction targetedFace) {
-        if (targetedFace.getAxis() == Axis.Y)
+	@Override
+	public BlockState getRotatedBlockState(BlockState state, Direction targetedFace) {
+		if (targetedFace.getAxis() == Axis.Y)
 			return rotate(state, Rotation.CLOCKWISE_90);
 		Direction facing = state.getValue(HORIZONTAL_FACING);
 		if (targetedFace.getAxis() == facing.getAxis())
 			return state.setValue(ROTATION, (state.getValue(ROTATION) + 1) % 3) ;
 		return mirror(state, targetedFace.getAxis() == Axis.Z ? Mirror.FRONT_BACK : Mirror.LEFT_RIGHT);
-    }
-    public BlockState mirror(BlockState state, Mirror mirrorIn) {
+	}
+	public BlockState mirror(BlockState state, Mirror mirrorIn) {
 		int rotation = state.getValue(ROTATION);
 		return super.mirror(state, mirrorIn)
 			.setValue(ROTATION, rotation == 1 ? 1 : 2 - rotation);
-    }
+	}
 }

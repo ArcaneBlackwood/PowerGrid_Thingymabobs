@@ -2,7 +2,6 @@ package dev.thingymabobs.blocks.lavalamp;
 
 import org.patryk3211.powergrid.network.S2CPacket;
 import org.patryk3211.powergrid.utility.ClientSideAccess;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -21,22 +20,22 @@ public class LavaLampGlobS2CPacket implements S2CPacket {
 	Rotation rotation;
 	float x, z;
 
-    public LavaLampGlobS2CPacket(LavaLampEntity be, LavaLampEntity.Glob glob) {
+	public LavaLampGlobS2CPacket(LavaLampEntity be, LavaLampEntity.Glob glob) {
 		pos = be.getBlockPos();
 		waxTop = be.getVisibleWaxRaw(true);
 		waxBottom = be.getVisibleWaxRaw(false);
 		
-        movingUp = glob.movingUp;
+		movingUp = glob.movingUp;
 		speed = glob.speed;
 		size = glob.size;
 		volume = glob.volume;
 		rotation = glob.rotation;
 		x = glob.x;
 		z = glob.z;
-    }
+	}
 
-    public LavaLampGlobS2CPacket(FriendlyByteBuf buf) {
-        pos = buf.readBlockPos();
+	public LavaLampGlobS2CPacket(FriendlyByteBuf buf) {
+		pos = buf.readBlockPos();
 		waxTop = buf.readInt();
 		waxBottom = buf.readInt();
 		movingUp = buf.readBoolean();
@@ -45,10 +44,10 @@ public class LavaLampGlobS2CPacket implements S2CPacket {
 		rotation = buf.readEnum(Rotation.class);
 		x = buf.readFloat();
 		z = buf.readFloat();
-    }
+	}
 
-    @Override
-    public void write(FriendlyByteBuf buf) {
+	@Override
+	public void write(FriendlyByteBuf buf) {
 		buf.writeBlockPos(pos);
 		buf.writeInt(waxTop);
 		buf.writeInt(waxBottom);
@@ -58,15 +57,15 @@ public class LavaLampGlobS2CPacket implements S2CPacket {
 		buf.writeEnum(rotation);
 		buf.writeFloat(x);
 		buf.writeFloat(z);
-    }
+	}
 
-    @Override
-    public void handle(Minecraft mc) {
-        Level world = ClientSideAccess.world();
+	@Override
+	public void handle(Minecraft mc) {
+		Level world = ClientSideAccess.world();
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (!(blockEntity instanceof LavaLampEntity lavaLamp)) return;
 		lavaLamp.onParticlePacket(
 			LavaLampEntity.Glob.fromVolume(movingUp, speed, volume, rotation, x, z),
 			waxTop, waxBottom);
-    }
+	}
 }

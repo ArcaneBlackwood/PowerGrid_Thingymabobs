@@ -9,15 +9,14 @@ import org.patryk3211.powergrid.circuits.components.Component;
 import org.patryk3211.powergrid.circuits.components.IInteractableComponent;
 import org.patryk3211.powergrid.circuits.schematic.PlacedComponent;
 import com.simibubi.create.AllItems;
-
 import dev.thingymabobs.Thingymabobs;
 import dev.thingymabobs.util.SableUtils;
 import net.createmod.catnip.math.VecHelper;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -76,6 +75,7 @@ public class InteractionHoldComponent extends InteractionHandler {
 	}
 	@Override
 	protected boolean tick() {
+		Thingymabobs.LOGGER.info(this+" tick");
 		CircuitBoardBlockEntity board = location.getBlockEntity(CircuitBoardBlockEntity.class);
 		if (board == null || board.isRemoved()) {
 			return false;
@@ -95,15 +95,15 @@ public class InteractionHoldComponent extends InteractionHandler {
 	protected boolean tickClient(CircuitBoardBlockEntity board, Capable component) {
 		if (placed.destroyed) return true;
 
-		Minecraft mc = Minecraft.getInstance();
+		var mc = net.minecraft.client.Minecraft.getInstance();
 		Player player = mc.player;
 		if (!(mc.hitResult instanceof BlockHitResult hit)) return true;
 		if (!hit.getBlockPos().equals(location.pos)) return true;
-        if (!mc.gameRenderer.getMainCamera().isDetached()) {
-            player.swingTime = 0;
-            player.swinging = true;
-            player.swingingArm = InteractionHand.MAIN_HAND;
-        }
+		if (!mc.gameRenderer.getMainCamera().isDetached()) {
+			player.swingTime = 0;
+			player.swinging = true;
+			player.swingingArm = InteractionHand.MAIN_HAND;
+		}
 		BlockState state = location.getBlockState();
 		var hitLocalPos = hit.getLocation().subtract(location.pos.getX(), location.pos.getY(), location.pos.getZ());
 		hitLocalPos = VecHelper.rotateCentered(hitLocalPos, -CircuitBoardBlock.getAngleY(state), Direction.Axis.Y);
@@ -172,7 +172,7 @@ public class InteractionHoldComponent extends InteractionHandler {
 
 		@OnlyIn(Dist.CLIENT)
 		default public void interactStart(PlacedComponent placed) {
-			setActiveLocal(new InteractionHoldComponent(Minecraft.getInstance().player, placed));
+			setActiveLocal(new InteractionHoldComponent(net.minecraft.client.Minecraft.getInstance().player, placed));
 		}
 		@OnlyIn(Dist.CLIENT)
 		default public void interactionStop() {
@@ -190,20 +190,20 @@ public class InteractionHoldComponent extends InteractionHandler {
 			if (AllItems.WRENCH.isIn(player.getMainHandItem()))
 				return false;
 
-        	double reach = player.blockInteractionRange() + 1f;
-        	Vec3 eyePosition = player.getEyePosition();
+			double reach = player.blockInteractionRange() + 1f;
+			Vec3 eyePosition = player.getEyePosition();
 			double distance = SableUtils.getGlobalPos(player.level(), pos, vec)
 				.distanceSquared(eyePosition.x, eyePosition.y, eyePosition.z);
 			if (distance > reach * reach)
-           		return true;
+		   		return true;
 			return true;
 		}
-		default public boolean interactTry(CircuitBoardBlockEntity be, PlacedComponent placed, Player player) {
+		default public InteractionResult interactTry(CircuitBoardBlockEntity be, PlacedComponent placed, Player player) {
 			if (AllItems.WRENCH.isIn(player.getMainHandItem()))
-				return false;
+				return InteractionResult.PASS;
 			if (be.getLevel().isClientSide && player.isLocalPlayer())
 				interactStart(placed);
-			return true;
+			return InteractionResult.SUCCESS;
 		}
 
 		default public boolean interactIsActive(Player player, PlacedComponent placed) {

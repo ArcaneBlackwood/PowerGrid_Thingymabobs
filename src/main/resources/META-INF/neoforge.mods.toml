@@ -54,6 +54,8 @@ side = "BOTH"
 
 [[mixins]]
 config="META-INF/thingymabobs.mixins.json"
+[[mixins]]
+config="META-INF/thingymabobs.mixins.client.json"
 
 [[mixins]]
 config="META-INF/thingymabobs.mixins.sable.json"

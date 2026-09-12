@@ -15,39 +15,39 @@ import org.patryk3211.powergrid.utility.Unit;
 import org.patryk3211.powergrid.circuits.components.OrientableComponent;
 
 public class ShuntComponent extends OrientableComponent {
-    private static final ComponentFootprint FOOTPRINT = new ComponentFootprint.Builder(
-            6,3, "component." + Thingymabobs.MOD_ID + ".small_resistor", null)
-        .addPad(1, 1, 0)
-        .addPad(4, 1, 1)
-        .withItem().withOutline().build();
+	private static final ComponentFootprint FOOTPRINT = new ComponentFootprint.Builder(
+			6,3, "component." + Thingymabobs.MOD_ID + ".small_resistor", null)
+		.addPad(1, 1, 0)
+		.addPad(4, 1, 1)
+		.withItem().withOutline().build();
 
-    protected static CProperties.Prop CONFIG = null;
-    public static void configUpdated(CProperties.Prop prop) {
-        CONFIG = prop;
-        RESISTANCE.markDirty();
-        POWER.markDirty();
-    }
+	protected static CProperties.Prop CONFIG = null;
+	public static void configUpdated(CProperties.Prop prop) {
+		CONFIG = prop;
+		RESISTANCE.markDirty();
+		POWER.markDirty();
+	}
 
-    public static final DynamicFloatProperty RESISTANCE = new DynamicFloatProperty(
-        Thingymabobs.MOD_ID, "resistor_value", () -> CONFIG.getFloat("resistance")).useMetrics();
-    public static final LazyConstantProperty POWER = new LazyConstantProperty(
-        Thingymabobs.MOD_ID, "power",
-        () -> Unit.POWER.formatWithPrefixes(CONFIG.getThermal().getPower()).string());
+	public static final DynamicFloatProperty RESISTANCE = new DynamicFloatProperty(
+		Thingymabobs.MOD_ID, "resistor_value", () -> CONFIG.getFloat("resistance")).useMetrics();
+	public static final LazyConstantProperty POWER = new LazyConstantProperty(
+		Thingymabobs.MOD_ID, "power",
+		() -> Unit.POWER.formatWithPrefixes(CONFIG.getThermal().getPower()).string());
 
-    public ShuntComponent() {
-        super(FOOTPRINT);
-    }
+	public ShuntComponent() {
+		super(FOOTPRINT);
+	}
 
-    @Override
-    protected void addProperties(ImmutableCollection.Builder<ComponentProperty<?>> properties) {
-        super.addProperties(properties);
-        properties.add(RESISTANCE, POWER);
-    }
+	@Override
+	protected void addProperties(ImmutableCollection.Builder<ComponentProperty<?>> properties) {
+		super.addProperties(properties);
+		properties.add(RESISTANCE, POWER);
+	}
 
-    @Override
-    public void bake(@NotNull PlacedComponent placed, @NotNull ComponentCircuitBuilder builder, ThermalBuilder.@NotNull IEmitter thermals) {
-        var wire = builder.connect(placed.get(RESISTANCE), builder.terminalNode(0), builder.terminalNode(1));
-        CONFIG.getThermal().apply(thermals)
-            .addHeatSource(wire);
-    }
+	@Override
+	public void bake(@NotNull PlacedComponent placed, @NotNull ComponentCircuitBuilder builder, ThermalBuilder.@NotNull IEmitter thermals) {
+		var wire = builder.connect(placed.get(RESISTANCE), builder.terminalNode(0), builder.terminalNode(1));
+		CONFIG.getThermal().apply(thermals)
+			.addHeatSource(wire);
+	}
 }

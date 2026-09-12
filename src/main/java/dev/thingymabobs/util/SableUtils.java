@@ -34,7 +34,7 @@ public class SableUtils {
 		ThreadLocal.withInitial(() -> new HashMap<>());
 	public static PoseMotion getPoseMotion(BlockEntity block) {
 		if (!isLoaded) return null;
-        final SubLevelAccess level = SableCompanion.INSTANCE.getContaining(block);
+		final SubLevelAccess level = SableCompanion.INSTANCE.getContaining(block);
 		if (level == null) return null;
 		UUID uuid = level.getUniqueId();
 		PoseMotion motion = poseMotions.get().computeIfAbsent(uuid, 
@@ -67,17 +67,17 @@ public class SableUtils {
 	public static Vector3d getGlobalPos(LevelAccessor world, BlockPos block, Vector3d output)  {
 		output.set(block.getX()+0.5f, block.getY()+0.5f, block.getZ()+0.5f);
 		if (!isLoaded) return output;
-        final SubLevelAccess fromSublevel = SableCompanion.INSTANCE.getContaining((Level)world, new Vec3i(block.getX(), block.getY(), block.getZ()));
-        if (fromSublevel == null) return output;
+		final SubLevelAccess fromSublevel = SableCompanion.INSTANCE.getContaining((Level)world, new Vec3i(block.getX(), block.getY(), block.getZ()));
+		if (fromSublevel == null) return output;
 		fromSublevel.logicalPose().transformPosition(output);
-        return output;
+		return output;
 	}
 	public static Vector3d getGlobalPos(BlockEntity block, Vector3d pos) {
 		if (!isLoaded) return pos;
-        final SubLevelAccess fromSublevel = SableCompanion.INSTANCE.getContaining(block);
-        if (fromSublevel == null) return pos;
+		final SubLevelAccess fromSublevel = SableCompanion.INSTANCE.getContaining(block);
+		if (fromSublevel == null) return pos;
 		fromSublevel.logicalPose().transformPosition(pos);
-        return pos;
+		return pos;
 	}
 
 
@@ -177,7 +177,7 @@ public class SableUtils {
 			return direc.step().rotate(orientationPrev);
 		}
 		public Vector3f getPositionGlobal(Vector3f pos) {
-        	return orientationPrev.transform(pos.sub(center)).add(positionPrev);
+			return orientationPrev.transform(pos.sub(center)).add(positionPrev);
 		}
 
 		private Vector3f temp0 = new Vector3f();

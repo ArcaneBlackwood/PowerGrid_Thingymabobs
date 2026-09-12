@@ -10,14 +10,7 @@
 		"RedstoneLinkNetworkHandlerMixin",
 		"LinkBehaviourMixin",
 		"SocketEndpointMixin",
-		"SoundBufferMixin",
-		"SoundEngineMixin",
 		"LevelMixin"
-	],
-	"client": [
-		"MouseHandlerMixin",
-		"HumanoidModelMixin",
-		"KeyMappingMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

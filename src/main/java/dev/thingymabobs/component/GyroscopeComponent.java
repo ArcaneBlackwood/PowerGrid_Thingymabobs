@@ -14,6 +14,8 @@ import org.patryk3211.powergrid.electricity.sim.node.VoltageSourceCoupling;
 import org.patryk3211.powergrid.utility.Unit;
 import com.google.common.collect.ImmutableCollection.Builder;
 import dev.thingymabobs.Thingymabobs;
+import dev.thingymabobs.component.base.AVertMirrorComponent;
+import dev.thingymabobs.component.base.CouplingWireProxy;
 import dev.thingymabobs.component.properties.DynamicFloatProperty;
 import dev.thingymabobs.component.properties.LazyConstantProperty;
 import dev.thingymabobs.component.trancievers.DirectionalRecieverComponent;
@@ -36,14 +38,14 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 public class GyroscopeComponent extends AVertMirrorComponent {
-    protected static final ComponentFootprint FOOTPRINT_H = new ComponentFootprint.Builder(
+	protected static final ComponentFootprint FOOTPRINT_H = new ComponentFootprint.Builder(
 			6,4, "component." + Thingymabobs.MOD_ID + ".gyroscope", null)
 		.addPad(0, 1, 0, "Motor", "M")
 		.addPad(5, 2, 1, "Motor", "M")
 		.addPad(2, 2, 2, "Signal +", "S+")
 		.addPad(3, 1, 3, "Signal -", "S-")
 		.withItem().withOutline().withArrow().build();
-    protected static final ComponentFootprint FOOTPRINT_V = new ComponentFootprint.Builder(
+	protected static final ComponentFootprint FOOTPRINT_V = new ComponentFootprint.Builder(
 			6,4, "component." + Thingymabobs.MOD_ID + ".gyroscope", null)
 		.addPad(0, 0, 0, "Motor", "M")
 		.addPad(0, 3, 1, "Motor", "M")
@@ -56,38 +58,38 @@ public class GyroscopeComponent extends AVertMirrorComponent {
 	public static final String CONFIG_SENSITIVITY = "sensitivity";
 	public static final String CONFIG_FALLOFF = "falloff_smoothing";
 	public static final String CONFIG_PARTICLES = "particle_spawn_rate";
-    protected static CProperties.Prop CONFIG = null;
+	protected static CProperties.Prop CONFIG = null;
 	public static float VOLTAGE, MOTOR_CURRENT_MIN, PARTICLE_SPAWN_RATE;
 	protected static final TMath.SoftMax SOFT_MAX = new TMath.SoftMax();
-    public static void configUpdated(CProperties.Prop prop) {
-        CONFIG = prop;
+	public static void configUpdated(CProperties.Prop prop) {
+		CONFIG = prop;
 		float motorPower = prop.getFloat(CONFIG_MOTOR_POWER).get();
 		float sigalPower = prop.getThermal().getPower() - motorPower;
 		VOLTAGE = Mth.sqrt(sigalPower * prop.getResistance().get());
 		MOTOR_CURRENT_MIN = Mth.sqrt(motorPower / prop.getResistance(CONFIG_MOTOR).get());
 		PARTICLE_SPAWN_RATE = prop.getFloat(CONFIG_PARTICLES).get();
 		SOFT_MAX.setSmooth(prop.getFloat(CONFIG_FALLOFF).get());
-        SENSITIVITY.markDirty();
-        POWER_PROP.markDirty();
-        VOLTAGE_PROP.markDirty();
-        MOTOR_POWER_PROP.markDirty();
-        MOTOR_CURRENT_PROP.markDirty();
-    }
+		SENSITIVITY.markDirty();
+		POWER_PROP.markDirty();
+		VOLTAGE_PROP.markDirty();
+		MOTOR_POWER_PROP.markDirty();
+		MOTOR_CURRENT_PROP.markDirty();
+	}
 		
 	public static final DynamicFloatProperty SENSITIVITY = new DynamicFloatProperty( //v / m/ss
 		Thingymabobs.MOD_ID, "gyroscope.sensitivity", () -> CONFIG.getFloat(CONFIG_SENSITIVITY)).useMetrics();
 	public static final LazyConstantProperty POWER_PROP = new LazyConstantProperty(
-        Thingymabobs.MOD_ID, "gyroscope.power",
-        () -> Unit.POWER.formatWithPrefixes(CONFIG.getThermal().getPower()).string());
+		Thingymabobs.MOD_ID, "gyroscope.power",
+		() -> Unit.POWER.formatWithPrefixes(CONFIG.getThermal().getPower()).string());
 	public static final LazyConstantProperty VOLTAGE_PROP = new LazyConstantProperty(
-        Thingymabobs.MOD_ID, "gyroscope.voltage_max",
-        () -> Unit.VOLTAGE.formatWithPrefixes(VOLTAGE).string());
+		Thingymabobs.MOD_ID, "gyroscope.voltage_max",
+		() -> Unit.VOLTAGE.formatWithPrefixes(VOLTAGE).string());
 	public static final LazyConstantProperty MOTOR_POWER_PROP = new LazyConstantProperty(
-        Thingymabobs.MOD_ID, "gyroscope.motor_power",
-        () -> Unit.POWER.formatWithPrefixes(CONFIG.getFloat(CONFIG_MOTOR_POWER).get()).string());
+		Thingymabobs.MOD_ID, "gyroscope.motor_power",
+		() -> Unit.POWER.formatWithPrefixes(CONFIG.getFloat(CONFIG_MOTOR_POWER).get()).string());
 	public static final LazyConstantProperty MOTOR_CURRENT_PROP = new LazyConstantProperty(
-        Thingymabobs.MOD_ID, "gyroscope.motor_current_min",
-        () -> Unit.CURRENT.formatWithPrefixes(MOTOR_CURRENT_MIN).string());
+		Thingymabobs.MOD_ID, "gyroscope.motor_current_min",
+		() -> Unit.CURRENT.formatWithPrefixes(MOTOR_CURRENT_MIN).string());
 
 
 
@@ -102,13 +104,13 @@ public class GyroscopeComponent extends AVertMirrorComponent {
 	@Override
 	public void bake(@NotNull PlacedComponent placed, @NotNull ComponentCircuitBuilder builder, @NotNull IEmitter thermals) {
 		State state = new State();
-        state.source = builder.addInternalNode(
+		state.source = builder.addInternalNode(
 			VoltageSourceCoupling.class, builder.terminalNode(2), builder.terminalNode(3), CONFIG.getResistance().get());
-        state.source.setVoltage(0);
-        state.source.setResistance(CONFIG.getResistance().get());
+		state.source.setVoltage(0);
+		state.source.setResistance(CONFIG.getResistance().get());
 		state.motor = builder.connect(CONFIG.getResistance(CONFIG_MOTOR).get(), 
 			builder.terminalNode(0), builder.terminalNode(1));
-        placed.customData = state;
+		placed.customData = state;
 		CONFIG.getThermal().apply(thermals)
 			.addHeatSource(state.motor)
 			.addHeatSource(new CouplingWireProxy(state.source));
@@ -117,17 +119,17 @@ public class GyroscopeComponent extends AVertMirrorComponent {
 
 	@Override
 	public boolean tick(@NotNull PlacedComponent placed) {
-        if (!(placed.customData instanceof State state)) return true;
+		if (!(placed.customData instanceof State state)) return true;
 		float rot = tickMotion(placed);
-        if (!state.source.isConverged()) return true;
-        double current = state.source.getCurrent();
-        if (!Double.isFinite(current)) return true;
+		if (!state.source.isConverged()) return true;
+		double current = state.source.getCurrent();
+		if (!Double.isFinite(current)) return true;
 
 		state.source.setVoltage(SOFT_MAX.compute(rot * placed.get(SENSITIVITY), VOLTAGE));
 		return true;
 	}
 	protected float tickMotion(PlacedComponent placed) {
-        if (!(placed.customData instanceof State state)) return 0;
+		if (!(placed.customData instanceof State state)) return 0;
 		float motorCurrent = Math.abs((float)state.motor.current()) / MOTOR_CURRENT_MIN;
 		motorCurrent = 8*(motorCurrent-1)+1;
 		if (motorCurrent < 0) return 0;
@@ -163,18 +165,18 @@ public class GyroscopeComponent extends AVertMirrorComponent {
 	}
 
 	@Override
-    public @NotNull ResourceLocation getModelId(@NotNull PlacedComponent component) {
-        return component.get(VERTICAL) ? Thingymabobs.asResource("gyroscope_vertical")
+	public @NotNull ResourceLocation getModelId(@NotNull PlacedComponent component) {
+		return component.get(VERTICAL) ? Thingymabobs.asResource("gyroscope_vertical")
 			: Thingymabobs.asResource("gyroscope");
-    }
+	}
 
-    @Override
-    public @NotNull Collection<ResourceLocation> requestedModels() {
-        return List.of(
+	@Override
+	public @NotNull Collection<ResourceLocation> requestedModels() {
+		return List.of(
 			Thingymabobs.asResource("gyroscope_vertical"),
 			Thingymabobs.asResource("gyroscope")
-        );
-    }
+		);
+	}
 
 	protected static class State {
 		public VoltageSourceCoupling source;

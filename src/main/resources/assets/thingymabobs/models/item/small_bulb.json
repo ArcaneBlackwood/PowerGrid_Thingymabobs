@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "thingymabobs:item/small_bulb"
+	"layer0": "thingymabobs:item/small_bulb"
   }
 }

@@ -2,12 +2,13 @@ package dev.thingymabobs.blocks.electricfurnace;
 
 import dev.thingymabobs.registry.ModMenus;
 import com.simibubi.create.foundation.gui.menu.MenuBase;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.items.SlotItemHandler;
 
 public class ElectricFurnaceMenu extends MenuBase<ElectricFurnaceEntity> {
@@ -19,14 +20,15 @@ public class ElectricFurnaceMenu extends MenuBase<ElectricFurnaceEntity> {
 	}
 
 	@Override
+	@OnlyIn(Dist.CLIENT)
 	protected ElectricFurnaceEntity createOnClient(RegistryFriendlyByteBuf extraData) {
-        var world = Minecraft.getInstance().level;
-        var be = world.getBlockEntity(extraData.readBlockPos());
-        if(be instanceof ElectricFurnaceEntity sbe) {
-            sbe.readClient(extraData.readNbt(), extraData.registryAccess());
-            return sbe;
-        }
-        return null;
+		var world = net.minecraft.client.Minecraft.getInstance().level;
+		var be = world.getBlockEntity(extraData.readBlockPos());
+		if(be instanceof ElectricFurnaceEntity sbe) {
+			sbe.readClient(extraData.readNbt(), extraData.registryAccess());
+			return sbe;
+		}
+		return null;
 	}
 
 	@Override

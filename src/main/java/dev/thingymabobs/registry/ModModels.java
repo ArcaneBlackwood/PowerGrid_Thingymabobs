@@ -8,17 +8,17 @@ import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public final class ModModels {
-    public static final PartialModel PPBB_MODEL = block("battery/poisonous_potato_battery_block");
-    public static final PartialModel PPBB_MODEL_BAKED = block("battery/baked_poisonous_potato_battery_block");
-    public static final PartialModel PPBA_MODEL = block("battery/poisonous_potato_battery_array_v");
-    public static final PartialModel PPBA_MODEL_BAKED = block("battery/baked_poisonous_potato_battery_array_v");
-    public static final PartialModel PBB_MODEL = block("battery/poisonous_potato_battery_block");
-    public static final PartialModel PBB_MODEL_BAKED = block("battery/baked_poisonous_potato_battery_block");
-    public static final PartialModel PBA_MODEL = block("battery/potato_battery_array_v");
-    public static final PartialModel PBA_MODEL_BAKED = block("battery/baked_potato_battery_array_v");
+	public static final PartialModel PPBB_MODEL = block("battery/poisonous_potato_battery_block");
+	public static final PartialModel PPBB_MODEL_BAKED = block("battery/baked_poisonous_potato_battery_block");
+	public static final PartialModel PPBA_MODEL = block("battery/poisonous_potato_battery_array_v");
+	public static final PartialModel PPBA_MODEL_BAKED = block("battery/baked_poisonous_potato_battery_array_v");
+	public static final PartialModel PBB_MODEL = block("battery/poisonous_potato_battery_block");
+	public static final PartialModel PBB_MODEL_BAKED = block("battery/baked_poisonous_potato_battery_block");
+	public static final PartialModel PBA_MODEL = block("battery/potato_battery_array_v");
+	public static final PartialModel PBA_MODEL_BAKED = block("battery/baked_potato_battery_array_v");
 
-    public static final PartialModel SHUNT_MODEL = block("shunt_v");
-    public static final PartialModel SHUNT_MODEL_BLOWN = block("shunt_blown_v");
+	public static final PartialModel SHUNT_MODEL = block("shunt_v");
+	public static final PartialModel SHUNT_MODEL_BLOWN = block("shunt_blown_v");
 
 
 	public static final PartialModel LL_BASE = block("lava_lamp/base_cutout");
@@ -57,7 +57,7 @@ public final class ModModels {
 
 
 	public static final PartialModel[] FURN_INTERNAL = {
-		block("electric_furnace/internal"),    block("electric_furnace/internal1-0"), block("electric_furnace/internal2-0"), block("electric_furnace/internal3-0"),
+		block("electric_furnace/internal"),	block("electric_furnace/internal1-0"), block("electric_furnace/internal2-0"), block("electric_furnace/internal3-0"),
 		block("electric_furnace/internal0-1"), block("electric_furnace/internal1-1"), block("electric_furnace/internal2-1"), block("electric_furnace/internal3-1"),
 		block("electric_furnace/internal0-2"), block("electric_furnace/internal1-2"), block("electric_furnace/internal2-2"), block("electric_furnace/internal3-2"),
 		block("electric_furnace/internal0-3"), block("electric_furnace/internal1-3"), block("electric_furnace/internal2-3"), block("electric_furnace/internal3-3"),
@@ -77,6 +77,7 @@ public final class ModModels {
 
 	public static final PartialModel PLASMA_GLOBE = block("plasma_globe/plasmaglobe");
 	
+	@OnlyIn(Dist.CLIENT)
 	public static void registerClient() {
 
 	}

@@ -25,71 +25,71 @@ import com.mojang.datafixers.util.Unit;
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 
 public class PoisonousPotatoBatteryArray extends APotatoBatteryArray implements CustomModelItemRenderer.Provider {
-    public PoisonousPotatoBatteryArray(Properties settings) {
-        super(settings);
-    }
-    @Override
-    public PartialModel getModel(ItemStack stack) {
-        return stack.has(ModDataComponents.BAKED.get()) ? ModModels.PPBA_MODEL_BAKED : ModModels.PPBA_MODEL;
-    }
-    @Override
-    public BatterySpec getSpec() {
-        return PotatoBatteryArrayEntity.SPEC_POISON;
-    }
-    @Override
-    public Item getUsedItem() {
-        return Items.BONE_MEAL;
-    }
-    @Override
-    public Item getReplaceItem() {
-        return Items.POISONOUS_POTATO;
-    }
-    @Override
-    public Item getBakedItem() {
-        return null;
-    }
+	public PoisonousPotatoBatteryArray(Properties settings) {
+		super(settings);
+	}
+	@Override
+	public PartialModel getModel(ItemStack stack) {
+		return stack.has(ModDataComponents.BAKED.get()) ? ModModels.PPBA_MODEL_BAKED : ModModels.PPBA_MODEL;
+	}
+	@Override
+	public BatterySpec getSpec() {
+		return PotatoBatteryArrayEntity.SPEC_POISON;
+	}
+	@Override
+	public Item getUsedItem() {
+		return Items.BONE_MEAL;
+	}
+	@Override
+	public Item getReplaceItem() {
+		return Items.POISONOUS_POTATO;
+	}
+	@Override
+	public Item getBakedItem() {
+		return null;
+	}
 	
-    @Override
-    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-        return onBlockEntityUseItemOn(level, pos, be -> {
-            if (!be.use(player, hand, stack, hitResult)) return ItemInteractionResult.FAIL;
+	@Override
+	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+		return onBlockEntityUseItemOn(level, pos, be -> {
+			if (!be.use(player, hand, stack, hitResult)) return ItemInteractionResult.FAIL;
 
-            if(player.isCreative() && player.isShiftKeyDown())
-                return ItemInteractionResult.CONSUME;
-            else
-                return ItemInteractionResult.SUCCESS;
-        });
-    }
+			if(player.isCreative() && player.isShiftKeyDown())
+				return ItemInteractionResult.CONSUME;
+			else
+				return ItemInteractionResult.SUCCESS;
+		});
+	}
 	
-    @Override
-    public List<ItemStack> getDrops(BlockState state, LootParams.Builder builder) {
-        var stacks = super.getDrops(state, builder);
-        var be = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
-        if(be instanceof PotatoBatteryBlockEntity battery) {
-            for(var stack : stacks) {
-                if(stack.is(this.asItem())) {
-                    stack.set(ModDataComponents.ENERGY, battery.getIndividualEnergy());
-                    if (state.getValue(BAKED).booleanValue())
-                        stack.set(ModDataComponents.BLOWN.get(), Unit.INSTANCE);
-                }
-            }
-        }
-        return stacks;
-    }
-    public void setPlacedBy(Level world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
-        super.setPlacedBy(world, pos, state, placer, itemStack);
-        if (itemStack.has(ModDataComponents.ENERGY)) {
-            double energy = itemStack.get(ModDataComponents.ENERGY);
-            this.withBlockEntityDo(world, pos, (be) -> {
-                be.setEnergy(energy);
-            });
-        }
-    }
+	@Override
+	public List<ItemStack> getDrops(BlockState state, LootParams.Builder builder) {
+		var stacks = super.getDrops(state, builder);
+		var be = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
+		if(be instanceof PotatoBatteryBlockEntity battery) {
+			for(var stack : stacks) {
+				if(stack.is(this.asItem())) {
+					stack.set(ModDataComponents.ENERGY, battery.getIndividualEnergy());
+					if (state.getValue(BAKED).booleanValue())
+						stack.set(ModDataComponents.BLOWN.get(), Unit.INSTANCE);
+				}
+			}
+		}
+		return stacks;
+	}
+	public void setPlacedBy(Level world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
+		super.setPlacedBy(world, pos, state, placer, itemStack);
+		if (itemStack.has(ModDataComponents.ENERGY)) {
+			double energy = itemStack.get(ModDataComponents.ENERGY);
+			this.withBlockEntityDo(world, pos, (be) -> {
+				be.setEnergy(energy);
+			});
+		}
+	}
 	@Override
 	public @Nullable BlockState getStateForPlacement(@NotNull BlockPlaceContext ctx) {
 		var state = super.getStateForPlacement(ctx);
 		if(state == null) return null;
-        state.setValue(BAKED, ctx.getItemInHand().has(ModDataComponents.BAKED.get()));
+		state.setValue(BAKED, ctx.getItemInHand().has(ModDataComponents.BAKED.get()));
 		return state;
 	}
 }

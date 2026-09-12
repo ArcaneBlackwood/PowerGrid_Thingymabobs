@@ -60,7 +60,7 @@ public class Thermal extends ASubProp  {
 		return ThermalBehaviour.simple(be,  getMass(), getPower() / (getTemp() - 22.0F), getOverheat());
 	}
 	public ThermalBuilder apply(ThermalBuilder.IEmitter thermals) {
-        return thermals.builder()
+		return thermals.builder()
 			.setMaxPower(getPower(), getTemp())
 			.setThermalMass(getMass()).setOverheatTemperature(getOverheat());
 	}

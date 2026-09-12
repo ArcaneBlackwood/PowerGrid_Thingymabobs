@@ -14,11 +14,11 @@ public class TransmitterComponent extends ATrancieverComponent {
 	public TransmitterComponent() {
 		super();
 	}
-    @Override
-    protected void addProperties(ImmutableCollection.Builder<ComponentProperty<?>> properties) {
+	@Override
+	protected void addProperties(ImmutableCollection.Builder<ComponentProperty<?>> properties) {
 		properties.add(LABEL, PROP_TRANSMIT_CURRENT_FULL, PROP_TRANSMIT_RESISTANCE);
 		super.addProperties(properties);
-    }
+	}
 	@Override
 	protected boolean isTransmitter() {
 		return true;

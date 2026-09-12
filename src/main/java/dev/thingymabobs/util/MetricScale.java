@@ -30,11 +30,11 @@ public enum MetricScale {
 	PETA("P", 15, 50),
 	EXA("Ee", 18, 60),
 	ZETTA("Z", 21, 70);
-    private static final MetricScale[] VALUES = values();
+	private static final MetricScale[] VALUES = values();
 	private static final MetricScale[] VALUES_ORDERED = Arrays.stream(VALUES)
-        .sorted((c1, c2) -> Integer.compare(c1.dec10, c2.dec10))
-        .toArray(MetricScale[]::new);
-    private static final int[] ORDINAL_TO_ORDERED_INDEX = buildOrdinalOrderMap();
+		.sorted((c1, c2) -> Integer.compare(c1.dec10, c2.dec10))
+		.toArray(MetricScale[]::new);
+	private static final int[] ORDINAL_TO_ORDERED_INDEX = buildOrdinalOrderMap();
 	private static int[] buildOrdinalOrderMap() {
 		int[] result = new int[VALUES_ORDERED.length];
 		for (int i = 0; i < result.length; i++)
@@ -47,10 +47,10 @@ public enum MetricScale {
 			.registerInt("unit_style", 0, 0, 1, 
 				"Used for property fields in components, it specifies how metric numbers are formatted.  0 has the format '1k2', 1 has the format '1.2k'");
 	}
-    protected static CProperties.Prop CONFIG = null;
+	protected static CProperties.Prop CONFIG = null;
 	protected static int UNIT_STYLE = 0;
-    public static void configUpdated(CProperties.Prop prop) {
-        CONFIG = prop;
+	public static void configUpdated(CProperties.Prop prop) {
+		CONFIG = prop;
 		UNIT_STYLE = prop.getInt("unit_style").get();
 	}
 	
@@ -81,7 +81,7 @@ public enum MetricScale {
 	}
 
 	public char getLetter() {
-        if (validChars.length() == 0) return '\0';
+		if (validChars.length() == 0) return '\0';
 		return validChars.charAt(0);
 	}
 	public double getScale() {
@@ -120,7 +120,7 @@ public enum MetricScale {
 	}
 	@Override
 	public String toString() {
-        if (validChars.length() == 0) return "";
+		if (validChars.length() == 0) return "";
 		return validChars.substring(0, 1);
 	}
 
@@ -135,11 +135,11 @@ public enum MetricScale {
 		if (value == 0) return NONE;
 		if (value < 0) value = -value;
 		//value *= value > 10 ? SCALE_WIGGLE_ROOM_LARGE : SCALE_WIGGLE_ROOM_SMALL;
-        MetricScale prev = VALUES_ORDERED[0];
+		MetricScale prev = VALUES_ORDERED[0];
 		for (MetricScale scale : VALUES_ORDERED) {
 			if (!useSubUnits && scale.subUnit) continue;
 			if (scale.scale10 > value) return prev;
-            prev = scale;
+			prev = scale;
 		}
 		return VALUES_ORDERED[VALUES_ORDERED.length-1];
 	}
@@ -200,10 +200,10 @@ public enum MetricScale {
 		for (int i = 0; i < size; i++) {
 			char c = value.charAt(i);
 			int digit = -1;
-            for (int j=0; j<NUMBERS.length; j++) if (NUMBERS[j] == c) {
-                digit = j;
-                break;
-            }
+			for (int j=0; j<NUMBERS.length; j++) if (NUMBERS[j] == c) {
+				digit = j;
+				break;
+			}
 			if (c == '.') decimalIndex = decimalIndex < 0 ? i : -2;
 			if (digit!=-1) {
 				if (digit < 10 && unitIndex < 0) unitOnStart = false;
@@ -236,12 +236,12 @@ public enum MetricScale {
 			}
 		}
 
-        //Handle if unit is used as decimal
-        if (!hasDecimal && hasUnit) {
-            decimalIndex = unitIndex;
-            hasDecimal = true;
-            hasUnit = false;
-        }
+		//Handle if unit is used as decimal
+		if (!hasDecimal && hasUnit) {
+			decimalIndex = unitIndex;
+			hasDecimal = true;
+			hasUnit = false;
+		}
 
 		//Handle if has both decimal and unit
 		if (hasDecimal && hasUnit) {
@@ -251,35 +251,35 @@ public enum MetricScale {
 			}
 			hasUnit = false;
 		} else if (!hasDecimal && !hasUnit) {
-            decimalIndex = size-1;
-        }
+			decimalIndex = size-1;
+		}
 
 		//Fetch number
 		double number = 0, place = 1;
 		for (int i = decimalIndex; i >= 0; i--) {
-            char c = value.charAt(i);
+			char c = value.charAt(i);
 			int digit = -1;
-            for (int j=0; j<10; j++) if (NUMBERS[j] == c) {
-                digit = j;
-                break;
-            }
+			for (int j=0; j<10; j++) if (NUMBERS[j] == c) {
+				digit = j;
+				break;
+			}
 			if (digit==-1 ) continue;
 			number += digit * place;
 			place *= 10;
 		}
 		place = 0.1;
-        if (hasDecimal) for (int i = decimalIndex; i < size; i++) {
-            char c = value.charAt(i);
+		if (hasDecimal) for (int i = decimalIndex; i < size; i++) {
+			char c = value.charAt(i);
 			int digit = -1;
-            for (int j=0; j<10; j++) if (NUMBERS[j] == c) {
-                digit = j;
-                break;
-            }
+			for (int j=0; j<10; j++) if (NUMBERS[j] == c) {
+				digit = j;
+				break;
+			}
 			if (digit==-1) continue;
 			number += digit * place;
 			place /= 10;
 		}
-        
+		
 		//Apply or calculate scale
 		if (scale != null) number *= scale.getScale();
 		return new Pair<>(number, scale);
@@ -388,18 +388,18 @@ public enum MetricScale {
 		//Calculate number of total digits
 		long divisor = 1;
 		int digitCount = 0;
-        for (;digitCount<result.fractionDigits; digitCount++)
+		for (;digitCount<result.fractionDigits; digitCount++)
 			divisor *= 10;
 		for (; digitCount < 16 && divisor <= digits; digitCount++)
 			divisor *= 10;
 		if (digitCount == 17) return null;
-        if (digitCount == result.fractionDigits) {
-            result.wholeDigits = 1;
-            digitCount++;
-        } else
-            result.wholeDigits = digitCount - result.fractionDigits;
+		if (digitCount == result.fractionDigits) {
+			result.wholeDigits = 1;
+			digitCount++;
+		} else
+			result.wholeDigits = digitCount - result.fractionDigits;
 		if (hasFraction) digitCount += 1;
-        
+		
 		//Convert digits to string characters
 		result.string = new byte[digitCount];
 		for (int pos = digitCount-1, place = 0; place < 20 && pos >= 0; digits /= 10, place++) {

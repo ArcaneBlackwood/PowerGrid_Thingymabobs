@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "thingymabobs:item/poisonous_potato_battery"
+	"layer0": "thingymabobs:item/poisonous_potato_battery"
   }
 }

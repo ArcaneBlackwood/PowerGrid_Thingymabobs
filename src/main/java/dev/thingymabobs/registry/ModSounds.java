@@ -29,6 +29,17 @@ public class ModSounds {
 				ResourceLocation.fromNamespaceAndPath(Thingymabobs.MOD_ID, "battery_replace"))
 		);
 
+	public static final DeferredHolder<SoundEvent, SoundEvent> BUTTON_ON =
+		SOUND_EVENTS.register("button_on", () ->
+			SoundEvent.createVariableRangeEvent(
+				ResourceLocation.fromNamespaceAndPath(Thingymabobs.MOD_ID, "button_on"))
+		);
+	public static final DeferredHolder<SoundEvent, SoundEvent> BUTTON_OFF =
+		SOUND_EVENTS.register("button_off", () ->
+			SoundEvent.createVariableRangeEvent(
+				ResourceLocation.fromNamespaceAndPath(Thingymabobs.MOD_ID, "button_off"))
+		);
+
 
 	public static final DeferredHolder<SoundEvent, SoundEvent> ELECTRIC_FURNACE_OPEN =
 		SOUND_EVENTS.register("electric_furnace.open", () ->
@@ -67,7 +78,7 @@ public class ModSounds {
 		);
 
 	
-    public static void register(IEventBus modBus) {
-        SOUND_EVENTS.register(modBus);
-    }
+	public static void register(IEventBus modBus) {
+		SOUND_EVENTS.register(modBus);
+	}
 }

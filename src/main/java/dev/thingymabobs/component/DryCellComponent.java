@@ -1,6 +1,7 @@
 package dev.thingymabobs.component;
 
 import dev.thingymabobs.Thingymabobs;
+import dev.thingymabobs.component.base.CouplingWireProxy;
 import dev.thingymabobs.component.properties.DynamicFloatProperty;
 import dev.thingymabobs.component.properties.LazyConstantProperty;
 import dev.thingymabobs.config.properties.CProperties;
@@ -43,18 +44,18 @@ public class DryCellComponent extends OrientableComponent implements IComponentG
 		.addPad(4, 1, 1, "Negative", "-")
 		.withItem().withOutline().build();
 
-    protected static CProperties.Prop CONFIG = null;
+	protected static CProperties.Prop CONFIG = null;
 	protected static BatterySpec SPEC;
 	protected static Thermal THERMAL;
 	protected static float REVERSE_DAMAGE_MULTIPLIER;
-    public static void configUpdated(CProperties.Prop prop) {
-        CONFIG = prop;
+	public static void configUpdated(CProperties.Prop prop) {
+		CONFIG = prop;
 		SPEC = prop.getBattery();
 		THERMAL = prop.getThermal();
 		REVERSE_DAMAGE_MULTIPLIER = CONFIG.getFloat(CONFIG_REVERSE_DAMAGE).get();
 		CAPACITY_AH.markDirty();
 		POWER.markDirty();
-    }
+	}
 
 	public static final DynamicFloatProperty CAPACITY_AH = new DynamicFloatProperty(
 		Thingymabobs.MOD_ID, "capacity",
@@ -64,14 +65,14 @@ public class DryCellComponent extends OrientableComponent implements IComponentG
 	public static final CalculatedProperty<Float> OPEN_VOLTAGE = new CalculatedProperty<>(
 		Thingymabobs.MOD_ID, "open_voltage",
 		placed -> SPEC.calculateVoltage(placed.get(STATE_OF_CHARGE)),
-        value -> Unit.VOLTAGE.formatWithPrefixes(value).string());
+		value -> Unit.VOLTAGE.formatWithPrefixes(value).string());
 	public static final CalculatedProperty<Float> INTERNAL_RESISTANCE = new CalculatedProperty<>(
 		Thingymabobs.MOD_ID, "internal_resistance",
 		placed -> SPEC.calculateResistance(placed.get(STATE_OF_CHARGE)),
-        value -> MetricScale.format1D1K(value, "Ω", 1));
+		value -> MetricScale.format1D1K(value, "Ω", 1));
 	public static final LazyConstantProperty POWER = new LazyConstantProperty(
 		Thingymabobs.MOD_ID, "power",
-        () -> Unit.POWER.formatWithPrefixes(THERMAL.getPower()).string());
+		() -> Unit.POWER.formatWithPrefixes(THERMAL.getPower()).string());
 
 	public DryCellComponent() {
 		super(FOOTPRINT);
@@ -83,15 +84,15 @@ public class DryCellComponent extends OrientableComponent implements IComponentG
 	}
 	@Override
 	public void bake(
-        @NotNull PlacedComponent placed,
-        @NotNull ComponentCircuitBuilder builder,
-        ThermalBuilder.@NotNull IEmitter thermals
+		@NotNull PlacedComponent placed,
+		@NotNull ComponentCircuitBuilder builder,
+		ThermalBuilder.@NotNull IEmitter thermals
 	) {
 		float soc = Mth.clamp(placed.get(STATE_OF_CHARGE),0,1);
 		float resistance = SPEC.calculateResistance(soc);
 
 		VoltageSourceCoupling source = builder.addInternalNode(
-            VoltageSourceCoupling.class, builder.terminalNode(0), builder.terminalNode(1), resistance);
+			VoltageSourceCoupling.class, builder.terminalNode(0), builder.terminalNode(1), resistance);
 		source.setVoltage(SPEC.calculateVoltage(soc));
 		source.setResistance(resistance);
 		placed.customData = source;
@@ -129,9 +130,9 @@ public class DryCellComponent extends OrientableComponent implements IComponentG
 
 	@Override
 	public InteractionResult use(
-        CircuitBoardBlockEntity be,
-        PlacedComponent placed,
-        Player player
+		CircuitBoardBlockEntity be,
+		PlacedComponent placed,
+		Player player
 	) {
 		ItemStack held = player.getMainHandItem();
 		if (!held.is(ModItems.DRY_CELL.get())) {
@@ -161,7 +162,7 @@ public class DryCellComponent extends OrientableComponent implements IComponentG
 
 		if (world != null && world.isClientSide) {
 			world.playSound(
-                null, be.getBlockPos(), ModSounds.BATTERY_REPLACE.get(), SoundSource.BLOCKS, 0.8f, 1f);
+				null, be.getBlockPos(), ModSounds.BATTERY_REPLACE.get(), SoundSource.BLOCKS, 0.8f, 1f);
 		}
 		player.displayClientMessage(Component.translatable("thingymabobs.message.dry_cell.replaced"), true);
 		return InteractionResult.SUCCESS;
@@ -175,16 +176,16 @@ public class DryCellComponent extends OrientableComponent implements IComponentG
 
 	@Override
 	public boolean addToGoggleTooltip(
-        @NotNull PlacedComponent placed,
-        @NotNull List<Component> tooltip,
-        boolean isPlayerSneaking
+		@NotNull PlacedComponent placed,
+		@NotNull List<Component> tooltip,
+		boolean isPlayerSneaking
 	) {
 		float soc = Mth.clamp(placed.get(STATE_OF_CHARGE),0,1);
 		float voltage = SPEC.calculateVoltage(soc);
 		tooltip.add(Component.translatable("thingymabobs.tooltip.dry_cell.soc", Math.round(soc * 100f)));
 		tooltip.add(Component.translatable(
-            "thingymabobs.tooltip.dry_cell.voltage",
-            Unit.VOLTAGE.format(voltage)
+			"thingymabobs.tooltip.dry_cell.voltage",
+			Unit.VOLTAGE.format(voltage)
 		));
 		if (soc < 0.999f) {
 			tooltip.add(Component.translatable("thingymabobs.tooltip.dry_cell.replace"));

@@ -28,12 +28,12 @@ import net.minecraft.world.level.LevelAccessor;
 @Mixin(RedstoneLinkNetworkHandler.class)
 public abstract class RedstoneLinkNetworkHandlerMixin implements RedstoneLinkNetworkHandlerExt {
 	@Unique
-    protected final List<RedstoneLinkNetworkHandlerExt.Network> pending = new ArrayList<>();
+	protected final List<RedstoneLinkNetworkHandlerExt.Network> pending = new ArrayList<>();
 
-    // shadow the existing method so we can call it from the overwrite below
-    @Shadow
-    public abstract Set<IRedstoneLinkable> getNetworkOf(LevelAccessor world, IRedstoneLinkable actor);
-    @Shadow
+	// shadow the existing method so we can call it from the overwrite below
+	@Shadow
+	public abstract Set<IRedstoneLinkable> getNetworkOf(LevelAccessor world, IRedstoneLinkable actor);
+	@Shadow
 	public AtomicInteger globalPowerVersion;
 
 
@@ -46,9 +46,9 @@ public abstract class RedstoneLinkNetworkHandlerMixin implements RedstoneLinkNet
 		return fromPos.distanceSquared(toPos) <= Mth.square(AllConfigs.server().logistics.linkRange.get());
 	}
 
-    @Override
-    public void tick() {
-        
+	@Override
+	public void tick() {
+		
 		for (Network network : pending) {
 			for (Iterator<IRedstoneLinkable> iterator = network.links.iterator(); iterator.hasNext(); ) {
 				IRedstoneLinkable other = iterator.next();
@@ -82,20 +82,20 @@ public abstract class RedstoneLinkNetworkHandlerMixin implements RedstoneLinkNet
 			}
 		}
 		pending.clear();
-    }
+	}
 
-    @Inject(at = @At("HEAD"), cancellable = true, method = "updateNetworkOf", require = 1)
-    public void thingymabobs$updateNetworkOf(LevelAccessor world, IRedstoneLinkable actor, CallbackInfo ci) {
+	@Inject(at = @At("HEAD"), cancellable = true, method = "updateNetworkOf", require = 1)
+	public void thingymabobs$updateNetworkOf(LevelAccessor world, IRedstoneLinkable actor, CallbackInfo ci) {
 		globalPowerVersion.incrementAndGet();
-        Set<IRedstoneLinkable> network = getNetworkOf(world, actor);
-        if (network == null || network.size() < 2) {
+		Set<IRedstoneLinkable> network = getNetworkOf(world, actor);
+		if (network == null || network.size() < 2) {
 			if (!actor.isListening()) return;
 			actor.setReceivedStrength(0);
 			if (actor instanceof LinkBehaviourExt destinExt)
 				destinExt.setReceivedStrength(0f);
 			return;
 		};
-        pending.add(new RedstoneLinkNetworkHandlerExt.Network(network, world));
-    	ci.cancel();
-    }
+		pending.add(new RedstoneLinkNetworkHandlerExt.Network(network, world));
+		ci.cancel();
+	}
 }

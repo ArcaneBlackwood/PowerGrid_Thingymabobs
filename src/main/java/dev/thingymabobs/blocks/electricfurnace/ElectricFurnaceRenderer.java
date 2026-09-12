@@ -23,17 +23,20 @@ import net.minecraft.core.Direction.Axis;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.model.data.ModelData;
 
+@OnlyIn(Dist.CLIENT)
 public class ElectricFurnaceRenderer extends SafeBlockEntityRenderer<ElectricFurnaceEntity> {
-    public static final float DOOR_SPEED = 15;
+	public static final float DOOR_SPEED = 15;
 	public static int QUALITY_RENDER_DISTANCE = 32;
-    public ElectricFurnaceRenderer(BlockEntityRendererProvider.Context context) {
-        super();
-    }
+	public ElectricFurnaceRenderer(BlockEntityRendererProvider.Context context) {
+		super();
+	}
 	
-    @Override
-    protected void renderSafe(ElectricFurnaceEntity be, float partialTicks, PoseStack matrices, MultiBufferSource consumer, int light, int overlay) {
+	@Override
+	protected void renderSafe(ElectricFurnaceEntity be, float partialTicks, PoseStack matrices, MultiBufferSource consumer, int light, int overlay) {
 		LocalPlayer player = Minecraft.getInstance().player;
 		boolean qualityRender = be.getBlockPos().distToCenterSqr(player.getEyePosition())
 			< QUALITY_RENDER_DISTANCE*QUALITY_RENDER_DISTANCE;
@@ -91,21 +94,21 @@ public class ElectricFurnaceRenderer extends SafeBlockEntityRenderer<ElectricFur
 			matrices.popPose();
 		}
 
-    }
+	}
 	public static float approach(float a, float b, float time) {
 		return (b*time+a)/(time+1);
 	}
-    public void rotateToFacing(PoseStack pose, Direction facing) {
+	public void rotateToFacing(PoseStack pose, Direction facing) {
 		if (facing == Direction.NORTH) return;
 		pose.translate(0.5f, 0, 0.5f);
-        pose.mulPose(switch (facing) {
+		pose.mulPose(switch (facing) {
 			case EAST -> new Quaternionf().rotateY(Mth.PI * -0.5f);
 			case SOUTH -> new Quaternionf().rotateY(Mth.PI);
 			case WEST -> new Quaternionf().rotateY(Mth.PI * 0.5f);
 			default -> new Quaternionf();
-        });
+		});
 		pose.translate(-0.5f, 0, -0.5f);
-    }
+	}
 	protected static void renderTemperature(float value, BlockEntity be, PoseStack matrices, MultiBufferSource consumer, int light) {
 		BakedModel model = ModModels.FURN_TEMPERATURE.get();
 		BakedQuadEditor quad;

@@ -1,12 +1,13 @@
 package dev.thingymabobs.component;
 
 import dev.thingymabobs.Thingymabobs;
+import dev.thingymabobs.component.base.TransformerRatedWire;
 import dev.thingymabobs.component.properties.DynamicIntProperty;
 import dev.thingymabobs.component.properties.LazyConstantProperty;
 import dev.thingymabobs.config.properties.CProperties;
 import dev.thingymabobs.config.properties.CProperties.ASubProp;
 import dev.thingymabobs.config.properties.CProperties.Builder;
-import dev.thingymabobs.sim.TransformerRatedWire;
+
 import com.google.common.collect.ImmutableCollection;
 import net.createmod.catnip.config.ConfigBase;
 import net.minecraft.network.chat.Component;
@@ -36,15 +37,15 @@ public class TransformerComponent extends OrientableComponent implements ICompon
 		.addPad(4, 3, 3, "Secondary 2", "S2")
 		.withItem().withOutline().build();
 
-    protected static CProperties.Prop CONFIG = null;
+	protected static CProperties.Prop CONFIG = null;
 	protected static Config CONFIG_TRANS;
-    public static void configUpdated(CProperties.Prop prop) {
-        CONFIG = prop;
+	public static void configUpdated(CProperties.Prop prop) {
+		CONFIG = prop;
 		CONFIG_TRANS = CONFIG.get(Config.class, Config.KEY);
 		TOTAL_TURNS.markDirty();
 		PRIMARY_TURNS.markDirty();
 		POWER.markDirty();
-    }
+	}
 
 	private static final Supplier<Integer> TURN_PROVIDER = () ->
 		CONFIG_TRANS.getMaxTurns();
@@ -193,7 +194,7 @@ public class TransformerComponent extends OrientableComponent implements ICompon
 		float primaryStrayResistance,
 		float secondaryStrayResistance,
 		float magnetizingResistance
-    ) { }
+	) { }
 	public static class Config extends ASubProp {
 		public static final String KEY = "tf";
 		public ConfigBase.ConfigInt maxTurns = null;

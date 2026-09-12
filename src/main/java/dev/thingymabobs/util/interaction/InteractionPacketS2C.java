@@ -14,22 +14,22 @@ public class InteractionPacketS2C implements S2CPacket {
 	InteractLocation location;
 	String key;
 
-    public InteractionPacketS2C(Player player, InteractionHandler handler) {
+	public InteractionPacketS2C(Player player, InteractionHandler handler) {
 		this.player = player.getUUID();
 		key = handler.getKey();
 		location = handler.location;
 		Thingymabobs.LOGGER.info("  Server Write key "+key);
-    }
+	}
 	public InteractionPacketS2C(Player player) {
 		this.player = player.getUUID();
 		key = null;
 		location = null;
 		Thingymabobs.LOGGER.info("  Server Write null");
-    }
+	}
 
-    public InteractionPacketS2C(FriendlyByteBuf buf) {
+	public InteractionPacketS2C(FriendlyByteBuf buf) {
 		player = buf.readUUID();
-        int keySize = buf.readByte();
+		int keySize = buf.readByte();
 		if (keySize < 0) {
 			key = null;
 			Thingymabobs.LOGGER.info("  Client read null ");
@@ -43,7 +43,7 @@ public class InteractionPacketS2C implements S2CPacket {
 			return;
 		}
 		location = type.reader().read(buf);
-    }
+	}
 
 	@Override
 	public void write(FriendlyByteBuf buf) {

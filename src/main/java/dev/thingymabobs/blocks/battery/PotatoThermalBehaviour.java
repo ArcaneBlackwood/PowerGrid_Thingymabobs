@@ -31,25 +31,25 @@ public class PotatoThermalBehaviour extends ThermalBehaviour {
 		return new PotatoThermalBehaviour(be, thermalMass, dissipationFactor(power, targetTemperature), overheatTemperature);
 	}
 	
-    @Override
-    public void tick() {
-        super.tick();
+	@Override
+	public void tick() {
+		super.tick();
 
-        var world = getWorld();
-        if(world.isClientSide && sparks > 0.01 && !blockEntity.isVirtual()) {
+		var world = getWorld();
+		if(world.isClientSide && sparks > 0.01 && !blockEntity.isVirtual()) {
 			var random = world.getRandom();
 			float chance = sparks * 0.8f + 0.2f;
 			if (random.nextFloat() < chance) {
-        		var pos = getPos();
+				var pos = getPos();
 				Direction dir = blockEntity.getBlockState().getValue(BlockStateProperties.FACING).getOpposite();
 				explodeParticles(world, pos.getX(), pos.getY(), pos.getZ(), dir, 2);
 			}
-        }
-    }
+		}
+	}
 	
 	@OnlyIn(Dist.CLIENT)
-    public static void explodeParticles(Level world, double x, double y, double z, Direction dir, int count) {
-        var r = world.random;
+	public static void explodeParticles(Level world, double x, double y, double z, Direction dir, int count) {
+		var r = world.random;
 		float distance = 8f / 16f;
 		float height = 3f / 16f;
 		Vector3f planex = new Vector3f(tangent(dir).step());
@@ -77,7 +77,7 @@ public class PotatoThermalBehaviour extends ThermalBehaviour {
 				heading.x, heading.y, heading.z
 			);
 		}
-    }
+	}
 	public static Direction tangent(Direction dir) {
 		return switch (dir.ordinal()) {
 			case 0 -> Direction.EAST;

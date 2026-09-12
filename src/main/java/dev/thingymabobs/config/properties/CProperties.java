@@ -210,7 +210,6 @@ public final class CProperties extends ConfigBase implements ResistanceValues.Pr
 			ASubProp prevProp = props.put(name, prop);
 			if (prevProp != null)
 				Thingymabobs.LOGGER.warn("Replacing previous config property in '"+id+"'' with: "+prop.toString());
-			Thingymabobs.LOGGER.info(this.hashCode()+" Registering prop "+name+": "+prop+"\n\t"+toString());
 			return this;
 		}
 		public Prop registerResistance(float resistance) {

@@ -168,9 +168,9 @@ public class ElectricFurnaceRecipe extends ARecipe<ElectricFurnaceRecipe.Paramet
 					if (item.isEmpty()) continue;
 					results.add(item);
 				}
-                Thingymabobs.LOGGER.info("Burn recipe: into #"+results.size());
+				Thingymabobs.LOGGER.info("Burn recipe: into #"+results.size());
 			} else 
-                Thingymabobs.LOGGER.info("Apply recipe: into #"+results.size());
+				Thingymabobs.LOGGER.info("Apply recipe: into #"+results.size());
 			return results;
 		}
 		public int getMultiplier() {

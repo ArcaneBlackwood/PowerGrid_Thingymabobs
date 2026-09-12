@@ -1,4 +1,4 @@
-package dev.thingymabobs.mixin.unit;
+package dev.thingymabobs.mixin.unit.client;
 
 import java.nio.ByteBuffer;
 import javax.sound.sampled.AudioFormat;
