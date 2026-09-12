@@ -14,6 +14,7 @@ import dev.thingymabobs.blocks.switches.SwitchBlockEntity;
 import dev.thingymabobs.registry.capabilities.ICapability;
 import dev.thingymabobs.registry.capabilities.ItemCapability;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.core.registries.Registries;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -23,6 +24,7 @@ import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsE
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import dev.thingymabobs.blocks.Zoey.PlasmaGlobe.PlasmaGlobeEntity;
+import dev.thingymabobs.blocks.Zoey.PlasmaGlobe.PlasmaGlobeEntityRenderer;
 
 public final class ModBlockEntities {
 	public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES =
@@ -104,8 +106,9 @@ public final class ModBlockEntities {
 	}
 	@OnlyIn(Dist.CLIENT)
 	private static void registerClientExtensions(RegisterClientExtensionsEvent event) {
-		net.minecraft.client.renderer.blockentity.BlockEntityRenderers.register(LAVA_LAMP.get(), LavaLampRenderer::new);
-		net.minecraft.client.renderer.blockentity.BlockEntityRenderers.register(ELECTRIC_FURNACE.get(), ElectricFurnaceRenderer::new);
+		BlockEntityRenderers.register(LAVA_LAMP.get(), LavaLampRenderer::new);
+		BlockEntityRenderers.register(ELECTRIC_FURNACE.get(), ElectricFurnaceRenderer::new);
+		BlockEntityRenderers.register(PLASMA_GLOBE.get(), PlasmaGlobeEntityRenderer::new);
 	}
 
 }

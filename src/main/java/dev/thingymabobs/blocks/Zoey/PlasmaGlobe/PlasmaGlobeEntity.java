@@ -1,5 +1,8 @@
 package dev.thingymabobs.blocks.Zoey.PlasmaGlobe;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jetbrains.annotations.Nullable;
 
 import org.patryk3211.powergrid.collections.ModdedSoundEvents;
@@ -16,6 +19,8 @@ import dev.thingymabobs.config.properties.CProperties;
 import dev.thingymabobs.registry.ModBlockEntities;
 import dev.thingymabobs.registry.ModItems;
 
+import dev.thingymabobs.blocks.Zoey.PlasmaGlobe.PlasmaTendril;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup.Provider;
@@ -23,14 +28,13 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.registries.DeferredItem;
 
 public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBehaviour.SyncAppender {
@@ -55,7 +59,7 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
 		RESISTANCE_MAX = RATED_VOLTAGE*RATED_VOLTAGE/power;
 		MIN_VOLTAGE = RATED_VOLTAGE * 0.7f;
 		MAX_VOLTAGE = RATED_VOLTAGE * 1.3f;
-	}
+	};
 
 	public static final DeferredItem<Item> TRANSFORMER = ModItems.TRANSFORMER;
 
@@ -90,58 +94,60 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
 	@Override
 	public ItemRequirement getRequiredItems(BlockState state) {
 		super.getRequiredItems(state);
-		if(state.getValue(PlasmaGlobe.STATE) == PlasmaGlobe.STATE_EMPTY)
+		if (state.getValue(PlasmaGlobe.STATE) == PlasmaGlobe.STATE_EMPTY){
 			return new ItemRequirement(ItemRequirement.ItemUseType.CONSUME, TRANSFORMER.get());
+		};
 		return ItemRequirement.NONE;
 	};
 
-
-	// Consider Reworking ?? (seems dumb and in-efficient ~w~) (why boolean, and set state twice ????? why get int and overwrite???)
-	public boolean replaceTransformer(Player player, InteractionHand hand, ItemStack usedStack, float hitY){
-		assert level != null;
-		state = replaceTransformerInternal(player,hand,usedStack,hitY,getBlockState());
+	public boolean replaceTransformer(Player player, ItemStack usedStack, float hitY){
+		replaceTransformerInternal(player,usedStack,hitY);
 		return state != -1;
 	};
 
-	private int replaceTransformerInternal(Player player, InteractionHand hand, ItemStack usedStack, float hitY, BlockState blockState) {
-		meep : {
-			if(usedStack == null || usedStack.isEmpty()){ break meep;};
-			if(usedStack.is(TRANSFORMER.get()) && (usedStack.getCount() > 1 || player.isCreative())){
-				playInteractTransformerSound();
-				if(!level.isClientSide) {
-					((ThermalBehaviour)thermalBehaviour).resetTemperature();
-					if (!PlasmaGlobe.hasFunctionalTransformer(state) && !player.isCreative()){ 
-						usedStack.shrink(1);
-					};
+	private void replaceTransformerInternal(Player player, ItemStack usedStack, float hitY) {
+		if (usedStack == null || usedStack.isEmpty()){ return; };
+		if (usedStack.is(TRANSFORMER.get()) && (usedStack.getCount() > 1 || player.isCreative())){
+			playInteractTransformerSound();
+			if (!level.isClientSide) {
+				((ThermalBehaviour)thermalBehaviour).resetTemperature();
+				if (!PlasmaGlobe.hasFunctionalTransformer(state) && !player.isCreative()){ 
+					usedStack.shrink(1);
 				};
-				//notifyUpdate();
-				return PlasmaGlobe.STATE_OFF;
-			}else if(usedStack.getItem() instanceof DyeItem dye) { // Fix heights for dye'ing
-				playInteractDyeSound();
-				int newColor = dye.getDyeColor().getTextureDiffuseColor();
-				if (hitY < 6/16f) colorBase = newColor;
-				else if (hitY < 11/16f) colorPlasma = newColor;
-				else colorGlass = newColor;
-				//notifyUpdate();
-				return state;
 			};
+			state = PlasmaGlobe.STATE_OFF;
+			notifyUpdate();
+		} else if (usedStack.getItem() instanceof DyeItem dye) { // Fix heights for dye'ing
+			playInteractDyeSound();
+			int newColor = dye.getDyeColor().getTextureDiffuseColor();
+
+			if (hitY < 6/16f){
+				colorBase = newColor;
+			} else if (hitY < 11/16f){
+				colorPlasma = newColor;
+			} else {
+				colorGlass = newColor;
+			};
+			//notifyUpdate();
 		};
-		return -1;
 	};
 
+
+	//Interaction Sounds
 	public void playInteractTransformerSound() {
-		if (level == null || level.isClientSide) return;
+		if (level == null || level.isClientSide){ return; };
 		level.playSound(null, worldPosition, SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 0.30F, 1.0F);
 	};
 
 	public void playInteractDyeSound() {
-		if (level == null || level.isClientSide) return;
+		if (level == null || level.isClientSide) { return; };
 		level.playSound(null, worldPosition, SoundEvents.DYE_USE, SoundSource.BLOCKS, 0.30F, 1.0F);
 	};
 
 
+	// Boom boom
 	public void playBlowEffect() {
-		if(level == null) return;
+		if (level == null) return;
 		var pos = this.worldPosition.getCenter();
 		if (level.isClientSide()) {
 			SparkParticleData.explodeParticles(level, (float) pos.x, (float) pos.y, (float) pos.z, Direction.UP, 5);
@@ -150,6 +156,8 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
 		};
 	};
 
+
+	// Updates the local state of the lava lamp
 	protected void updateState() {
 		BlockState blockState = getBlockState();
 		if(!level.isClientSide) {
@@ -158,28 +166,28 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
 			boolean functionalTransformer = PlasmaGlobe.hasFunctionalTransformer(state);
 
 			meep : {
-				if(!functionalTransformer || thermal.isOverheated()){
+				if (!functionalTransformer || thermal.isOverheated()) {
 					state = PlasmaGlobe.STATE_BLOWN;
 					break meep;
 				};
 
 				wire.setResistance(getGlobeResistance());
 				double voltage = wire.potentialDifference();
-				if(voltage < MIN_VOLTAGE){
+				if (voltage < MIN_VOLTAGE){
 					state = PlasmaGlobe.STATE_OFF;
-				}else if(voltage < RATED_VOLTAGE){
+				} else if (voltage < RATED_VOLTAGE){
 					state = PlasmaGlobe.STATE_ON_LOW;
-				}else if(voltage < MAX_VOLTAGE){
+				} else if (voltage < MAX_VOLTAGE){
 					state = PlasmaGlobe.STATE_ON;
-				}else{
+				} else {
 					state = PlasmaGlobe.STATE_ON_HIGH;
 				};
 			};
 
 			if (oldState != state) { // Send only on state changes
 				wire.setState(functionalTransformer);
-				if (!functionalTransformer) thermal.resetTemperature();
-				if (state == PlasmaGlobe.STATE_BLOWN) playBlowEffect();
+				if (!functionalTransformer) { thermal.resetTemperature(); };
+				if (state == PlasmaGlobe.STATE_BLOWN) { playBlowEffect(); };
 				level.setBlock(worldPosition, blockState.setValue(PlasmaGlobe.STATE, state), Block.UPDATE_ALL_IMMEDIATE);
 				notifyUpdate();
 			};
@@ -192,8 +200,8 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
 	public void tick() {
 		super.tick();
 		updateState();
+		if (!level.isClientSide) { return; };
 		updateParticles(1/20f);
-		if (level.isClientSide) { return; };
 		spawnParticles();
 	};
 
@@ -204,9 +212,34 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
 	};
 
 
+
+
+	private final List<PlasmaTendril> tendrils = new ArrayList<>(); // All active tendrils
+	public static final double ElectrodePoint = 7 / 16.0; // the center bulb
+	public static final double DistToGlass = 3.5 / 16.0; // dist up from electrode to glass
+	public static final int MaxTendrils = 5; // Count of max tendrils allowed at once
+	// ^ maybe make config able??
+
 	// Particles (Implimented later)
-	public void updateParticles(float deltaTime) {};
-	public void spawnParticles() {};
+	public void updateParticles(float deltaTime) {
+		tendrils.removeIf(PlasmaTendril::Step);
+	};
+
+	public void spawnParticles() {
+		if(tendrils.size() >= MaxTendrils){
+			return;
+		} else {
+			tendrils.add(new PlasmaTendril());
+		};
+	};
+
+	public List<PlasmaTendril> getTendrils() {
+		return tendrils;
+	};
+
+
+
+
 
 
 	// Electrical stuff
@@ -233,8 +266,7 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
 	};
 
 
-
-	// Save Stuff
+	// Save && Write Stuff
 	@Override
 	protected void write(CompoundTag tag, Provider registries, boolean clientPacket) {
 		super.write(tag, registries, clientPacket);
