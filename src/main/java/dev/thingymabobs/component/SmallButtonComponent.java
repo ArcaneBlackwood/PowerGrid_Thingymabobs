@@ -102,7 +102,6 @@ public class SmallButtonComponent extends VariantOrientableComponent implements 
 	static int what = 0;
 	@Override
 	public InteractionResult use(CircuitBoardBlockEntity be, PlacedComponent placed, Player player) {
-		Thingymabobs.LOGGER.info("Interact try");
 		return interactTry(be, placed, player);
 	}
 	@Override
@@ -111,7 +110,6 @@ public class SmallButtonComponent extends VariantOrientableComponent implements 
 	}
 	@Override
 	public void interactOnStart(PlacedComponent placed, InteractionHoldComponent interact, Player player, int newCount) {
-		Thingymabobs.LOGGER.info("Interact start");
 		if(placed.getWorld().isClientSide) return;
 		if (newCount != 1) return;
 
@@ -131,7 +129,6 @@ public class SmallButtonComponent extends VariantOrientableComponent implements 
 	}
 	@Override
 	public void interactOnStop(PlacedComponent placed, InteractionHoldComponent interact, Player player, int oldCount) {
-		Thingymabobs.LOGGER.info("Interact stop oldCount "+oldCount);
 		if (oldCount != 1 && player != null) return;
 
 		placed.set(STATE, false);

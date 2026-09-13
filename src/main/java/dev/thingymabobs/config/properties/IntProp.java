@@ -12,7 +12,6 @@ public class IntProp extends ASubProp {
 	protected boolean unloaded = false;
 
 	public IntProp(int value) {
-		Thingymabobs.LOGGER.info("IntProp "+this);
 		this.valueDefault = value;
 	}
 	public IntProp(int value, int min, int max) {

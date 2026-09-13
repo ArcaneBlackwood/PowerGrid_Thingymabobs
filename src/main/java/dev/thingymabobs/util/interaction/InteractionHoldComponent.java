@@ -75,7 +75,6 @@ public class InteractionHoldComponent extends InteractionHandler {
 	}
 	@Override
 	protected boolean tick() {
-		Thingymabobs.LOGGER.info(this+" tick");
 		CircuitBoardBlockEntity board = location.getBlockEntity(CircuitBoardBlockEntity.class);
 		if (board == null || board.isRemoved()) {
 			return false;

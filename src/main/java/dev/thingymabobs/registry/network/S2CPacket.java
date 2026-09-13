@@ -17,7 +17,7 @@ public interface S2CPacket extends IPacket {
 	@Override
 	default boolean dispatch(PacketTargets targets) {
 		if (!targets.isS2C()) throw new IllegalCallerException("Trying to dispatch a S2C packet with a C2S target");
-		FriendlyByteBuf buf = PacketManager.newPacketBuffer();
+		FriendlyByteBuf buf = PacketManager.newPacketBuffer(this);
 		write(buf);
 		return targets.dispatch(TYPE, buf);
 	}

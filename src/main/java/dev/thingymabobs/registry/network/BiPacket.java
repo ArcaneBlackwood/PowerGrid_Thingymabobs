@@ -21,7 +21,7 @@ public interface BiPacket extends IPacket {
 	
 	@Override
 	default boolean dispatch(PacketTargets targets) {
-		FriendlyByteBuf buf = PacketManager.newPacketBuffer();
+		FriendlyByteBuf buf = PacketManager.newPacketBuffer(this);
 		if (targets.isS2C())
 			writeS2C(buf);
 		else

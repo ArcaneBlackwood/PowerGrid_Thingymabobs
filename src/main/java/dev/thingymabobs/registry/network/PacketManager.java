@@ -69,9 +69,9 @@ public final class PacketManager {
 						Thingymabobs.LOGGER.warn("Failed to read Bi packet: "+packetID);
 						return;
 					}
-					if (context.player() instanceof ServerPlayer player)
+					if (context.player() instanceof ServerPlayer player) {
 						packet.readC2S(buf, player);
-					else if (context instanceof ClientPayloadContext)
+					} else if (context instanceof ClientPayloadContext)
 						packet.readS2C(buf);
 					else
 						Thingymabobs.LOGGER.warn("Failed to determine direction of BiPacket, context "+context);
@@ -125,9 +125,19 @@ public final class PacketManager {
 	private static <K, T extends K> PacketCollection.Entry<K> packet(T instance) {
 		return new PacketCollection.Entry<K>((K)instance);
 	}
-	protected static FriendlyByteBuf newPacketBuffer() {
+	protected static FriendlyByteBuf newPacketBuffer(C2SPacket that) {
 		FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-		buf.writeVarInt(VERSION);
+		buf.writeVarInt(C2S_PACKETS.get(that));
+		return buf;
+	}
+	protected static FriendlyByteBuf newPacketBuffer(BiPacket that) {
+		FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+		buf.writeVarInt(BI_PACKETS.get(that));
+		return buf;
+	}
+	protected static FriendlyByteBuf newPacketBuffer(S2CPacket that) {
+		FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+		buf.writeVarInt(S2C_PACKETS.get(that));
 		return buf;
 	}
 }

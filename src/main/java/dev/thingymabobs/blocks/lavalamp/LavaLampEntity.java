@@ -86,7 +86,6 @@ public class LavaLampEntity extends ElectricBlockEntity implements ElectricBehav
 	public static float RESISTANCE_MAX;
 	public static void configUpdated(CProperties.Prop prop) {
 		CONFIG = prop;
-		Thingymabobs.LOGGER.info(prop.toString());
 		CONFIG_PROPS = prop.get(Config.class, "llp");
 		CONFIG_THERMAL = prop.get(LavaLampThermalBehaviour.Properties.class, "llt");
 		RESISTANCE_MIN = CONFIG_PROPS.voltage*CONFIG_PROPS.voltage / (CONFIG_THERMAL.lampPower*2);

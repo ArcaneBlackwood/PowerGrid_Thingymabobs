@@ -1,6 +1,8 @@
 package dev.thingymabobs.util.interaction;
 
 import java.util.UUID;
+
+import dev.thingymabobs.Thingymabobs;
 import dev.thingymabobs.registry.network.BiPacket;
 import dev.thingymabobs.registry.network.PacketTargets;
 import net.minecraft.client.Minecraft;
@@ -24,14 +26,11 @@ public class InteractionPacket implements BiPacket {
 		this.player = player.getUUID();
 		key = handler.getKey();
 		location = handler.location;
-		//Thingymabobs.LOGGER.info("  Server Write key "+key);
 		dispatch(PacketTargets.toClient(player));
 	}
 	public void sendToClient(ServerPlayer player) {
 		this.player = player.getUUID();
 		key = null;
-		location = null;
-		//Thingymabobs.LOGGER.info("  Server Write null");
 		dispatch(PacketTargets.toClient(player));
 	}
 
@@ -39,13 +38,11 @@ public class InteractionPacket implements BiPacket {
 	public void sendToServer(InteractionHandler handler) {
 		key = handler.getKey();
 		location = handler.location;
-		//Thingymabobs.LOGGER.info("  Client Write key "+key);
 		dispatch(PacketTargets.toServer());
 	}
 	@OnlyIn(Dist.CLIENT)
 	public void sendToServer() {
 		key = null;
-		location = null;
 		dispatch(PacketTargets.toServer());
 	}
 
@@ -53,7 +50,7 @@ public class InteractionPacket implements BiPacket {
 	@Override
 	@OnlyIn(Dist.CLIENT)
 	public boolean writeC2S(FriendlyByteBuf buf) {
-		if (location == null) {
+		if (key == null) {
 			buf.writeByte(-1);
 		} else {
 			buf.writeByte(key.length());
@@ -65,7 +62,7 @@ public class InteractionPacket implements BiPacket {
 	@Override
 	public boolean writeS2C(FriendlyByteBuf buf) {
 		buf.writeUUID(player);
-		if (location == null) {
+		if (key == null) {
 			buf.writeByte(-1);
 		} else {
 			buf.writeByte(key.length());
@@ -79,7 +76,7 @@ public class InteractionPacket implements BiPacket {
 		int keySize = buf.readByte();
 		if (keySize < 0) {
 			key = null;
-			//Thingymabobs.LOGGER.info("  Server read null ");
+			InteractionManager.clearActive(player);
 			return false;
 		}
 		key = Utf8String.read(buf, keySize);
@@ -91,22 +88,21 @@ public class InteractionPacket implements BiPacket {
 		}
 		location = type.reader().read(buf);
 		
-		if (location == null) {
-			InteractionManager.clearActive(player);
-		} else {
-			//Thingymabobs.LOGGER.info("  Server read location "+location);
-			InteractionManager.setActive(player, location, type.constructor());
-		}
+		InteractionManager.setActive(player, location, type.constructor());
 		return true;
 	}
 	@Override
 	@OnlyIn(Dist.CLIENT)
 	public boolean readS2C(FriendlyByteBuf buf) {
 		player = buf.readUUID();
+		ClientLevel world = Minecraft.getInstance().level;
+		Player remote = world.getPlayerByUUID(player);
+		if (remote == null) return false;
+
 		int keySize = buf.readByte();
 		if (keySize < 0) {
 			key = null;
-			//Thingymabobs.LOGGER.info("  Client read null ");
+			InteractionManager.clearActive(remote);
 			return false;
 		}
 		key = Utf8String.read(buf, keySize);
@@ -119,12 +115,7 @@ public class InteractionPacket implements BiPacket {
 
 		location = type.reader().read(buf);
 
-		ClientLevel world = Minecraft.getInstance().level;
-		Player remote = world.getPlayerByUUID(player);
-		if (remote == null) return false;
-
 		if (location == null) {
-			InteractionManager.clearActive(remote);
 		} else {
 			location.setWorld(world);
 			InteractionManager.setActive(remote, location, type.constructor());
