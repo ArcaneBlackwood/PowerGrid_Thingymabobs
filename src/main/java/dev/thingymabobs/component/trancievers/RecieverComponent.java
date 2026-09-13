@@ -32,7 +32,8 @@ public class RecieverComponent extends ATrancieverComponent {
 	}
 	@Override
 	protected float getSignalResistance(PlacedComponent placed, float signalValue) {
-		return Mth.lerp(signalValue / 15f, placed.get(PROP_RECIEVE_RESISTANCE_MAX), placed.get(PROP_RECIEVE_RESISTANCE_MIN));
+		if (!Float.isFinite(signalValue)) return placed.get(PROP_RECIEVE_RESISTANCE_MAX);
+		return Mth.lerp(Mth.clamp(signalValue, 0f, 1f), placed.get(PROP_RECIEVE_RESISTANCE_MAX), placed.get(PROP_RECIEVE_RESISTANCE_MIN));
 	}
 
 

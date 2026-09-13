@@ -10,7 +10,10 @@
 		"RedstoneLinkNetworkHandlerMixin",
 		"LinkBehaviourMixin",
 		"SocketEndpointMixin",
-		"LevelMixin"
+		"LevelMixin",
+		"ComponentPropertyMixin",
+		"ChunkMapMixin",
+		"ChunkMapMixin$TrackedEntityMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

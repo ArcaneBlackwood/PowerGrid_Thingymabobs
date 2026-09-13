@@ -217,6 +217,12 @@ public final class ModBlocks {
 		CProperties.register(PLASMA_GLOBE.getId())
 			.registerFloat(CProperties.VOLTAGE, 240f)
 			.registerThermal(20f, 150f, 45f, 175f)
+			.registerInt(PlasmaGlobeEntity.CONFIG_MAX_TENDRILS, 20, 
+				"Configures the maximum number of tentrils/plasma arcs in the globe.  The globe will tend towards having half this count.")
+			.registerInt(PlasmaGlobeEntity.CONFIG_TENDRIL_LIFE, 220, 
+				"How many ticks each tentril will exist for.")
+			.registerInt(PlasmaGlobeEntity.CONFIG_TENDRIL_LIFE_VARY, 180, 
+				"The maximum distance from base tendril lifetime for each tentrils lifetime. Zero means tentrils always exist for the same time.")
 			.complete(PlasmaGlobeEntity::configUpdated);
 		
 

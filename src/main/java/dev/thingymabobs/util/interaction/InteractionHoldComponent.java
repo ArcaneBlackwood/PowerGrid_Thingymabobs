@@ -172,17 +172,17 @@ public class InteractionHoldComponent extends InteractionHandler {
 
 		@OnlyIn(Dist.CLIENT)
 		default public void interactStart(PlacedComponent placed) {
-			setActiveLocal(new InteractionHoldComponent(net.minecraft.client.Minecraft.getInstance().player, placed));
+			InteractionManager.setActiveLocal(new InteractionHoldComponent(net.minecraft.client.Minecraft.getInstance().player, placed));
 		}
 		@OnlyIn(Dist.CLIENT)
 		default public void interactionStop() {
-			InteractionHandler.clearActiveLocal();
+			InteractionManager.clearActiveLocal();
 		}
 		default public void interactStart(Player player, PlacedComponent placed) {
-			InteractionHandler.setActive(player, new Location(player.level(), placed), InteractionHoldComponent::new);
+			InteractionManager.setActive(player, new Location(player.level(), placed), InteractionHoldComponent::new);
 		}
 		default public void interactionStop(Player player) {
-			InteractionHandler.clearActive(player);
+			InteractionManager.clearActive(player);
 		}
 
 
@@ -207,7 +207,7 @@ public class InteractionHoldComponent extends InteractionHandler {
 		}
 
 		default public boolean interactIsActive(Player player, PlacedComponent placed) {
-			InteractionHandler handler = InteractionHandler.getActive(player);
+			InteractionHandler handler = InteractionManager.getActive(player);
 			if (handler == null || !(handler.location instanceof Location loc)) return false;
 			if (loc.world != player.level() || !loc.pos.equals(placed.getPos())
 				|| loc.x != placed.x || loc.y != placed.y) return false;

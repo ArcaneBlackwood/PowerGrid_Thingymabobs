@@ -1,7 +1,7 @@
 package dev.thingymabobs.mixin.unit.client;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import dev.thingymabobs.util.interaction.InteractionHandler;
+import dev.thingymabobs.util.interaction.InteractionManager;
 import net.minecraft.client.MouseHandler;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -17,7 +17,7 @@ public class MouseHandlerMixin {
 			final long windowPointer, final int button, final int action, final int modifiers, final CallbackInfo ci,
 			@Local(ordinal = 1, argsOnly = true) final int i, @Local(argsOnly = true, ordinal = 0) final long l
 	) {
-		if (InteractionHandler.onMousePress(button, action, modifiers))
+		if (InteractionManager.onMousePress(button, action, modifiers))
 			ci.cancel();
 	}
 }

@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import dev.thingymabobs.util.interaction.InteractionHandler;
+import dev.thingymabobs.util.interaction.InteractionManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
@@ -25,7 +25,7 @@ public class HumanoidModelMixin<T extends LivingEntity> {
 			return;
 		if (Minecraft.getInstance().isPaused()) return;
 		HumanoidModel<?> model = (HumanoidModel<?>) (Object) this;
-		if (InteractionHandler.getActive(player) == null) return;
+		if (InteractionManager.getActive(player) == null) return;
 
 		model.leftArm.zRot = 0.0f;
 		model.leftArm.zRot = 0.0f;

@@ -80,7 +80,7 @@ public abstract class ATrancieverComponent extends MirrorableComponent implement
 		POWER_WATTS_MIN = CONFIG_TRANS.powerMin.getF();
 		POWER_VOLTAGE = CONFIG_TRANS.voltage.getF();
 		SIGNAL_WATTS = CONFIG_TRANS.signalPower.getF();
-		TRANSMIT_RESISTANCE = CONFIG_TRANS.resTransmit.getF();
+		TRANSMIT_RESISTANCE = Math.max(CONFIG_TRANS.resTransmit.getF(), Thingymabobs.RESISTANCE_CLAMP);
 
 		POWER_RESISTANCE = POWER_VOLTAGE*POWER_VOLTAGE/POWER_WATTS_MIN;
 		POWER_CURRENT = POWER_WATTS_MIN / POWER_VOLTAGE;
@@ -123,8 +123,8 @@ public abstract class ATrancieverComponent extends MirrorableComponent implement
 		() -> Unit.RESISTANCE.formatWithPrefixes(TRANSMIT_RESISTANCE).string());
 
 	//Reciever properties
-	private static final Supplier<Float> RES_MIN_PROVIDER = () -> CONFIG_TRANS.resMin.getF();
-	private static final Supplier<Float> RES_MAX_PROVIDER = () -> CONFIG_TRANS.resMax.getF();
+	protected static final Supplier<Float> RES_MIN_PROVIDER = () -> Math.max(CONFIG_TRANS.resMin.getF(), Thingymabobs.RESISTANCE_CLAMP);
+	protected static final Supplier<Float> RES_MAX_PROVIDER = () -> Math.max(CONFIG_TRANS.resMax.getF(), Thingymabobs.RESISTANCE_CLAMP);
 	//Signal = 15
 	public static final DynamicFloatProperty PROP_RECIEVE_RESISTANCE_MIN = new DynamicFloatProperty(
 		Thingymabobs.MOD_ID, "tranciever.recieve_resistance_min",

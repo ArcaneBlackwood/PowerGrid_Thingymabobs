@@ -1,7 +1,7 @@
 package dev.thingymabobs.blocks.Zoey.PlasmaGlobe;
 
-import java.util.*;
 import org.joml.Vector3f;
+import net.minecraft.util.RandomSource;
 
 public class PlasmaTendril {
 
@@ -17,8 +17,6 @@ public class PlasmaTendril {
 	private final int sprite; // Index of selected sprite
     private int age; // Age of current tendril
 
-	private static final Random RANDOM = new Random();
-
 	// Which axis (0=X,1=Y,2=Z) and sign (+1/-1) a face sits on.
 	private record Face(int axis, int sign) {};
 
@@ -26,21 +24,20 @@ public class PlasmaTendril {
 
 
 
-	// Ticks Alive
-	public static final int LifeSpanMin = 40;
-	public static final int LifeSpanMax = 400;
-
 	// Tendril sprite counts
 	public static final int TendrilSpriteCount = 4; // total count
 
-    public PlasmaTendril() {
-		Face startFace = RandomFace();
-        this.start = PointOnFace(startFace);
-        this.end = PointOnFace(RandomAdjacentOrSameFace(startFace));
+    public PlasmaTendril(RandomSource random) {
+		Face startFace = RandomFace(random);
+        this.start = PointOnFace(random, startFace);
+        this.end = PointOnFace(random, RandomAdjacentOrSameFace(random, startFace));
 		this.current = new Vector3f(this.start);
 
-        this.lifetime = RANDOM.nextInt(LifeSpanMin, LifeSpanMax);
-		this.sprite = RANDOM.nextInt(0, TendrilSpriteCount);
+        this.lifetime = random.nextInt(
+			PlasmaGlobeEntity.TRNDRIL_LIFE - PlasmaGlobeEntity.TRNDRIL_LIFE_VARY, 
+			PlasmaGlobeEntity.TRNDRIL_LIFE + PlasmaGlobeEntity.TRNDRIL_LIFE_VARY
+		);
+		this.sprite = random.nextInt(PlasmaTendril.TendrilSpriteCount);
         this.age = 0;
     };
 
@@ -59,17 +56,17 @@ public class PlasmaTendril {
 
 
 	// Picks a uniformly random face from the cube
-	private static Face RandomFace() {
-		int axis = RANDOM.nextInt(3);
-		int sign = RANDOM.nextBoolean() ? 1 : -1;
+	private static Face RandomFace(RandomSource random) {
+		int axis = random.nextInt(3);
+		int sign = random.nextBoolean() ? 1 : -1;
 		return new Face(axis, sign);
 	};
 
 
 	// Pics at random, same or adjacent face for the end point
-	private static Face RandomAdjacentOrSameFace(Face from) {
+	private static Face RandomAdjacentOrSameFace(RandomSource random, Face from) {
 		// 0 = same face, 1..4 = the four faces on the other two axes (both signs)
-		int choice = RANDOM.nextInt(5);
+		int choice = random.nextInt(5);
 		if (choice == 0) {
 			return from;
 		};
@@ -91,11 +88,11 @@ public class PlasmaTendril {
 
 	// Random point lying on the given face: the face's axis is pinned to +/-1,
 	// the other two axes are randomized across the full [-1, 1] range.
-	private static Vector3f PointOnFace(Face face) {
+	private static Vector3f PointOnFace(RandomSource random, Face face) {
 		Vector3f point = new Vector3f(
-				RANDOM.nextFloat() * 2f - 1f,
-				RANDOM.nextFloat() * 2f - 1f,
-				RANDOM.nextFloat() * 2f - 1f
+				random.nextFloat() * 2f - 1f,
+				random.nextFloat() * 2f - 1f,
+				random.nextFloat() * 2f - 1f
 		);
 
 		switch (face.axis()) {

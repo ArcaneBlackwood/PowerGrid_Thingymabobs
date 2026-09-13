@@ -30,8 +30,8 @@ public class PlasmaGlobeEntityRenderer implements BlockEntityRenderer<PlasmaGlob
 
 		// Tendril math lives in -1..1 space centered on the electrode, NOT the block center -
 		// anchor to the real bulb height and scale to the real electrode->glass distance.
-		poseStack.translate(0.5, PlasmaGlobeEntity.ElectrodePoint, 0.5);
-		float glassDist = (float) PlasmaGlobeEntity.DistToGlass;
+		poseStack.translate(0.5, PlasmaGlobeEntity.ELECTRODE_POINT_Y, 0.5);
+		float glassDist = (float) PlasmaGlobeEntity.ELECTRODE_GLASS_DISTANCE;
 		poseStack.scale(glassDist, glassDist, glassDist);
 
 		VertexConsumer buffer = bufferSource.getBuffer(RenderType.lines());

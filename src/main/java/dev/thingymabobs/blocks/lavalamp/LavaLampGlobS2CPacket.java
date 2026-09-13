@@ -1,13 +1,14 @@
 package dev.thingymabobs.blocks.lavalamp;
 
-import org.patryk3211.powergrid.network.S2CPacket;
 import org.patryk3211.powergrid.utility.ClientSideAccess;
-import net.minecraft.client.Minecraft;
+import dev.thingymabobs.registry.network.S2CPacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 public class LavaLampGlobS2CPacket implements S2CPacket {
 	BlockPos pos;
@@ -20,6 +21,7 @@ public class LavaLampGlobS2CPacket implements S2CPacket {
 	Rotation rotation;
 	float x, z;
 
+	public LavaLampGlobS2CPacket() { }
 	public LavaLampGlobS2CPacket(LavaLampEntity be, LavaLampEntity.Glob glob) {
 		pos = be.getBlockPos();
 		waxTop = be.getVisibleWaxRaw(true);
@@ -34,20 +36,9 @@ public class LavaLampGlobS2CPacket implements S2CPacket {
 		z = glob.z;
 	}
 
-	public LavaLampGlobS2CPacket(FriendlyByteBuf buf) {
-		pos = buf.readBlockPos();
-		waxTop = buf.readInt();
-		waxBottom = buf.readInt();
-		movingUp = buf.readBoolean();
-		speed = buf.readFloat();
-		volume = buf.readInt();
-		rotation = buf.readEnum(Rotation.class);
-		x = buf.readFloat();
-		z = buf.readFloat();
-	}
 
 	@Override
-	public void write(FriendlyByteBuf buf) {
+	public boolean write(FriendlyByteBuf buf) {
 		buf.writeBlockPos(pos);
 		buf.writeInt(waxTop);
 		buf.writeInt(waxBottom);
@@ -57,10 +48,25 @@ public class LavaLampGlobS2CPacket implements S2CPacket {
 		buf.writeEnum(rotation);
 		buf.writeFloat(x);
 		buf.writeFloat(z);
+		return true;
 	}
-
 	@Override
-	public void handle(Minecraft mc) {
+	@OnlyIn(Dist.CLIENT)
+	public boolean read(FriendlyByteBuf buf) {
+		pos = buf.readBlockPos();
+		waxTop = buf.readInt();
+		waxBottom = buf.readInt();
+		movingUp = buf.readBoolean();
+		speed = buf.readFloat();
+		volume = buf.readInt();
+		rotation = buf.readEnum(Rotation.class);
+		x = buf.readFloat();
+		z = buf.readFloat();
+		handle();
+		return true;
+	}
+	@OnlyIn(Dist.CLIENT)
+	public void handle() {
 		Level world = ClientSideAccess.world();
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (!(blockEntity instanceof LavaLampEntity lavaLamp)) return;
@@ -68,4 +74,5 @@ public class LavaLampGlobS2CPacket implements S2CPacket {
 			LavaLampEntity.Glob.fromVolume(movingUp, speed, volume, rotation, x, z),
 			waxTop, waxBottom);
 	}
+
 }

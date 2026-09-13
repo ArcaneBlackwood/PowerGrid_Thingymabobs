@@ -73,17 +73,17 @@ public class InteractionHold extends InteractionHandler {
 		@OnlyIn(Dist.CLIENT)
 		default public void interactStart(BlockPos pos) {
 			var mc = net.minecraft.client.Minecraft.getInstance();
-			setActiveLocal(new InteractionHold(mc.player, new InteractLocation(mc.level, pos)));
+			InteractionManager.setActiveLocal(new InteractionHold(mc.player, new InteractLocation(mc.level, pos)));
 		}
 		@OnlyIn(Dist.CLIENT)
 		default public void interactionStop() {
-			InteractionHandler.clearActiveLocal();
+			InteractionManager.clearActiveLocal();
 		}
 		default public void interactStart(Player player, InteractLocation location) {
-			InteractionHandler.setActive(player, location, InteractionHold::new);
+			InteractionManager.setActive(player, location, InteractionHold::new);
 		}
 		default public void interactionStop(Player player) {
-			InteractionHandler.clearActive(player);
+			InteractionManager.clearActive(player);
 		}
 
 		default public boolean interactIsValid(Player player, BlockPos pos) {

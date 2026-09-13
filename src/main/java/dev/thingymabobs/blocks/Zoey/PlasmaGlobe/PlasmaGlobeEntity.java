@@ -42,14 +42,24 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
 	protected int state;
 
 	protected static CProperties.Prop CONFIG = null;
-	public static float IDEAL_TEMPERATURE;
-	public static float RESISTANCE_MIN;
-	public static float RESISTANCE_MAX;
-	public static float RATED_VOLTAGE;
-	public static float MIN_VOLTAGE;
-	public static float MAX_VOLTAGE;
+	public static final String CONFIG_MAX_TENDRILS = "max_tendrils";
+	public static final String CONFIG_TENDRIL_LIFE = "tendril_lifetime";
+	public static final String CONFIG_TENDRIL_LIFE_VARY = "tendril_lifetime_vary";
+	protected static float IDEAL_TEMPERATURE;
+	protected static float RESISTANCE_MIN;
+	protected static float RESISTANCE_MAX;
+	protected static float RATED_VOLTAGE;
+	protected static float MIN_VOLTAGE;
+	protected static float MAX_VOLTAGE;
+	protected static final float ELECTRODE_POINT_Y = 7.0f / 16.0f; // the center bulb
+	protected static final float ELECTRODE_GLASS_DISTANCE = 3.5f / 16.0f; // dist up from electrode to glass
+	protected static int MAX_TENDRILS = 10;
+	protected static int TRNDRIL_LIFE = 220;
+	protected static int TRNDRIL_LIFE_VARY = 180;
+	protected static int RANDOM_INT_MAX;
 	public static void configUpdated(CProperties.Prop prop) {
 		CONFIG = prop;
+
 		float power = prop.getThermal().getPower();
 		IDEAL_TEMPERATURE = prop.getThermal().getTemp();
 		RATED_VOLTAGE = prop.getFloat(CProperties.VOLTAGE).get();
@@ -57,6 +67,11 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
 		RESISTANCE_MAX = RATED_VOLTAGE*RATED_VOLTAGE/power;
 		MIN_VOLTAGE = RATED_VOLTAGE * 0.7f;
 		MAX_VOLTAGE = RATED_VOLTAGE * 1.3f;
+
+		MAX_TENDRILS = prop.getInt(CONFIG_MAX_TENDRILS).get();
+		TRNDRIL_LIFE = prop.getInt(CONFIG_TENDRIL_LIFE).get();
+		TRNDRIL_LIFE_VARY = prop.getInt(CONFIG_TENDRIL_LIFE_VARY).get();
+		RANDOM_INT_MAX = TRNDRIL_LIFE * MAX_TENDRILS;
 	};
 
 	public static final DeferredItem<Item> TRANSFORMER = ModItems.TRANSFORMER;
@@ -143,7 +158,7 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
 	};
 
 
-	// Boom boom
+	// Boom boom boom boom, I want you in my room
 	public void playBlowEffect() {
 		if (level == null) return;
 		var pos = this.worldPosition.getCenter();
@@ -189,7 +204,14 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
 				level.setBlock(worldPosition, blockState.setValue(PlasmaGlobe.STATE, state), Block.UPDATE_ALL_IMMEDIATE);
 				notifyUpdate();
 			};
-		};
+		} else {
+			int oldState = blockState.getValue(PlasmaGlobe.STATE);
+
+			if (oldState != state) { // Send only on state changes
+				if (state == PlasmaGlobe.STATE_BLOWN) { playBlowEffect(); };
+				level.setBlock(worldPosition, blockState.setValue(PlasmaGlobe.STATE, state), Block.UPDATE_ALL_IMMEDIATE);
+			};
+		}
 	};
 
 
@@ -200,7 +222,11 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
 		updateState();
 		if (!level.isClientSide) { return; };
 		updateParticles(1/20f);
-		spawnParticles();
+
+		int spawnChance = 2*(MAX_TENDRILS-tendrils.size());
+		if (level.random.nextInt(RANDOM_INT_MAX) < spawnChance) {
+			spawnParticles();
+		};
 	};
 
 	@Override
@@ -213,10 +239,6 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
 
 
 	private final List<PlasmaTendril> tendrils = new ArrayList<>(); // All active tendrils
-	public static final double ElectrodePoint = 7 / 16.0; // the center bulb
-	public static final double DistToGlass = 3.5 / 16.0; // dist up from electrode to glass
-	public static final int MaxTendrils = 5; // Count of max tendrils allowed at once
-	// ^ maybe make config able??
 
 	// Particles (Implimented later)
 	@OnlyIn(Dist.CLIENT)
@@ -226,10 +248,10 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
 
 	@OnlyIn(Dist.CLIENT)
 	public void spawnParticles() {
-		if(tendrils.size() >= MaxTendrils){
+		if(tendrils.size() >= MAX_TENDRILS){
 			return;
 		} else {
-			tendrils.add(new PlasmaTendril());
+			tendrils.add(new PlasmaTendril(level.random));
 		};
 	};
 
@@ -273,6 +295,7 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
 		tag.putInt("ColorB", colorBase);
 		tag.putInt("ColorG", colorGlass);
 		tag.putInt("ColorW", colorPlasma);
+		tag.putByte("State", (byte)state);
 	};
 
 	@Override
@@ -281,6 +304,7 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
 		colorBase = tag.getInt("ColorB");
 		colorGlass = tag.getInt("ColorG");
 		colorPlasma = tag.getInt("ColorW");
+		state = tag.getByte("State");
 	};
 
 	@Override

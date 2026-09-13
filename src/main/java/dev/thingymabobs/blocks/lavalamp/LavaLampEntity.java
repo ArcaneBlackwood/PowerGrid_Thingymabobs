@@ -19,7 +19,8 @@ import dev.thingymabobs.config.properties.CProperties;
 import dev.thingymabobs.config.properties.CProperties.ASubProp;
 import dev.thingymabobs.registry.ModAttachments;
 import dev.thingymabobs.registry.ModBlockEntities;
-import dev.thingymabobs.registry.ModPacketsManager;
+import dev.thingymabobs.registry.network.PacketTargets;
+
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.tterrag.registrate.util.entry.ItemEntry;
 import net.createmod.catnip.config.ConfigBase;
@@ -291,7 +292,7 @@ public class LavaLampEntity extends ElectricBlockEntity implements ElectricBehav
 		globs.add(newGlob);
 		if (movingUp) waxBottom -= volume;
 		else waxTop += volume;
-		ModPacketsManager.sendToClientsTracking(new LavaLampGlobS2CPacket(this, newGlob), this);
+		new LavaLampGlobS2CPacket(this, newGlob).dispatch(PacketTargets.toTracking(this));
 	}
 	public void onParticlePacket(Glob glob, int waxTop, int waxBottom) {
 		if (level == null || !level.isClientSide) return;

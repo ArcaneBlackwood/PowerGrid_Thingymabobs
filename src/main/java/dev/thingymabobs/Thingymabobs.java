@@ -1,19 +1,16 @@
 package dev.thingymabobs;
 
 import java.io.StringWriter;
-
 import org.joml.Vector3f;
 import org.patryk3211.powergrid.config.ResistanceValues;
 import org.patryk3211.powergrid.config.ThermalValues;
 import org.patryk3211.powergrid.electricity.wire.powercord.CordItem;
 import org.slf4j.Logger;
-
 import com.llamalad7.mixinextras.MixinExtrasBootstrap;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.logging.LogUtils;
 import com.simibubi.create.Create;
-
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.thingymabobs.blocks.lavalamp.LavaLampEntity;
 import dev.thingymabobs.config.properties.CProperties;
@@ -27,15 +24,14 @@ import dev.thingymabobs.registry.ModDataComponents;
 import dev.thingymabobs.registry.ModItems;
 import dev.thingymabobs.registry.ModMenus;
 import dev.thingymabobs.registry.ModModels;
-import dev.thingymabobs.registry.ModPackets;
-import dev.thingymabobs.registry.ModPacketsManager;
 import dev.thingymabobs.registry.ModRecipies;
 import dev.thingymabobs.registry.ModSoundScapes;
 import dev.thingymabobs.registry.ModSounds;
+import dev.thingymabobs.registry.network.PacketManager;
 import dev.thingymabobs.util.IDirectionSocketElectric;
 import dev.thingymabobs.util.MetricScale;
 import dev.thingymabobs.util.SableUtils;
-import dev.thingymabobs.util.interaction.InteractionHold;
+import dev.thingymabobs.util.interaction.InteractionManager;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -52,21 +48,24 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
 public final class Thingymabobs {
 	public static final String MOD_ID = "thingymabobs";
 	public static final Logger LOGGER = LogUtils.getLogger();
-	public static ModContainer container;
+	public static final boolean DIST_CLIENT = FMLLoader.getDist() == Dist.CLIENT;
+	public static ModContainer CONTAINER;
+
+	public static final float RESISTANCE_CLAMP = 0.00001f;
+
 	static {
 		MixinExtrasBootstrap.init();
 	}
 
+
 	public Thingymabobs(IEventBus modBus, ModContainer modContainer) {
-		container = modContainer;
+		CONTAINER = modContainer;
 		modBus.addListener(Thingymabobs::onCommon);
 		NeoForge.EVENT_BUS.addListener(Thingymabobs::tickGlobal);
 		LifecycleEvent.SETUP.register(Thingymabobs::setup);
 
-		modBus.addListener(ModPacketsManager::registerPayloadHandlers);
-		ModPackets.PACKETS.registerC2SListener();
-		ModPackets.PACKETS.registerS2CListener();
-		InteractionHold.register(modBus);
+		PacketManager.register(modBus);
+		InteractionManager.register(modBus);
 		MetricScale.register(modBus);
 		ModComponents.register(modBus);
 		ModDataComponents.DATA_COMPONENTS.register(modBus);
@@ -85,8 +84,9 @@ public final class Thingymabobs {
 		ModConfigs.register(modBus);
 	}
 	@OnlyIn(Dist.CLIENT)
-	public void registerClient(IEventBus modBus) {
-		InteractionHold.registerClient(modBus);
+	private void registerClient(IEventBus modBus) {
+		PacketManager.registerClient(modBus);
+		InteractionManager.registerClient(modBus);
 		ModModels.registerClient();
 		ModItems.registerClient(modBus);
 		ModBlockEntities.registerClient(modBus);
@@ -94,6 +94,9 @@ public final class Thingymabobs {
 		ModSoundScapes.registerClient(modBus);
 	}
 	
+
+
+
 	public static void setup() {
 		SableUtils.isLoaded = ModList.get().isLoaded("sable");
 	}
@@ -106,7 +109,7 @@ public final class Thingymabobs {
 	}
 
 
-	public static void logStackTrace(int limit) {//-1 for unlimited
+	public static void logStackTrace(int limit) {
 		Thread thread = Thread.currentThread();
 		StringWriter sw = new StringWriter();
 		for (var trace : thread.getStackTrace()) {
@@ -115,6 +118,7 @@ public final class Thingymabobs {
 		}
 		Thingymabobs.LOGGER.debug(sw.toString());
 	}
+
 
 
 	public static ResourceLocation asResource(String path) {

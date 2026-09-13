@@ -42,7 +42,7 @@ public final class ModConfigs {
 
 		T config = specPair.getLeft();
 		config.specification = specPair.getRight();
-		Thingymabobs.container.registerConfig(type, config.specification);
+		Thingymabobs.CONTAINER.registerConfig(type, config.specification);
 		return config;
 	}
 

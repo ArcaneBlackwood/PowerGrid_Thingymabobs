@@ -35,6 +35,10 @@ repositories {
 
 neoForge {
 	version = neoforge_version
+	parchment {
+		mappingsVersion = parchment_mappings_version
+		minecraftVersion = minecraft_version
+	}
 	
 	runs {
 		client {

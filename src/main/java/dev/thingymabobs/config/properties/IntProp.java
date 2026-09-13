@@ -1,5 +1,6 @@
 package dev.thingymabobs.config.properties;
 
+import dev.thingymabobs.Thingymabobs;
 import dev.thingymabobs.config.properties.CProperties.ASubProp;
 import net.createmod.catnip.config.ConfigBase;
 
@@ -11,6 +12,7 @@ public class IntProp extends ASubProp {
 	protected boolean unloaded = false;
 
 	public IntProp(int value) {
+		Thingymabobs.LOGGER.info("IntProp "+this);
 		this.valueDefault = value;
 	}
 	public IntProp(int value, int min, int max) {
@@ -38,7 +40,7 @@ public class IntProp extends ASubProp {
 	}
 	@Override
 	public Class<?> getType() {
-		return FloatProp.class;
+		return IntProp.class;
 	}
 	@Override
 	public void register(String id, CProperties.Builder builder) {

@@ -31,7 +31,7 @@ Items appear in both a dedicated Thingymabobs tab and the vanilla Redstone Block
 	- [x] Multiblock (24 potatos per block)
 - [x] Switch variants (DPDT, SPDT, TPST, DPST and LV, MV)
 	- [x] LV Components
-- [ ] Button component variants (SPDT, small)
+- [x] Button component variants (SPDT, small)
 - [x] Small low power Resistor, Diode, Capacitor
 	- [ ] Transistors (Low power, less efficient, less gain)
 - [ ] LED (Default era accurate, low efficiency, limited colors)

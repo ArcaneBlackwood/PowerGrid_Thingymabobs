@@ -61,6 +61,7 @@ public class SableUtils {
 	public static void onRemoveSubLevel(SubLevelAccess level) {
 		UUID uuid = level.getUniqueId();
 		PoseMotion motion = poseMotions.get().remove(uuid);
+		if (motion == null) return;
 		motion.destroy();
 	}
 
