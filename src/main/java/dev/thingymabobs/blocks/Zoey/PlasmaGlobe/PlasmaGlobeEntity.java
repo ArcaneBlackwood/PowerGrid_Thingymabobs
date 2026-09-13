@@ -221,11 +221,13 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
 		super.tick();
 		updateState();
 		if (!level.isClientSide) { return; };
-		updateParticles(1/20f);
-
-		int spawnChance = 2*(MAX_TENDRILS-tendrils.size());
-		if (level.random.nextInt(RANDOM_INT_MAX) < spawnChance) {
-			spawnParticles();
+		if (PlasmaGlobe.isPowered(state)) {
+			updateParticles(1/20f);
+			int spawnChance = 2*(MAX_TENDRILS-tendrils.size());
+			if (level.random.nextInt(RANDOM_INT_MAX) < spawnChance)
+				spawnParticles();
+		} else if (!tendrils.isEmpty()) {
+			ClearTendrils();
 		};
 	};
 
@@ -240,10 +242,14 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
 
 	private final List<PlasmaTendril> tendrils = new ArrayList<>(); // All active tendrils
 
-	// Particles (Implimented later)
 	@OnlyIn(Dist.CLIENT)
 	public void updateParticles(float deltaTime) {
 		tendrils.removeIf(PlasmaTendril::Step);
+	};
+
+	@OnlyIn(Dist.CLIENT)
+	public void ClearTendrils(){
+		tendrils.clear();
 	};
 
 	@OnlyIn(Dist.CLIENT)
