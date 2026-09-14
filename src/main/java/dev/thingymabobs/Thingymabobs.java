@@ -85,7 +85,6 @@ public final class Thingymabobs {
 	}
 	@OnlyIn(Dist.CLIENT)
 	private void registerClient(IEventBus modBus) {
-		PacketManager.registerClient(modBus);
 		InteractionManager.registerClient(modBus);
 		ModModels.registerClient();
 		ModItems.registerClient(modBus);
@@ -93,15 +92,19 @@ public final class Thingymabobs {
 		ModMenus.registerClient(modBus);
 		ModSoundScapes.registerClient(modBus);
 	}
+	public static void onCommon(FMLCommonSetupEvent event) {
+		if (FMLLoader.getDist() == Dist.CLIENT) onCommonClient(event);
+	}
+	@OnlyIn(Dist.CLIENT)
+	public static void onCommonClient(FMLCommonSetupEvent event) {
+		ModBlocks.postRegisterClient();
+	}
 	
 
 
 
 	public static void setup() {
 		SableUtils.isLoaded = ModList.get().isLoaded("sable");
-	}
-	public static void onCommon(FMLCommonSetupEvent event) {
-		ModBlocks.postRegister();
 	}
 	public static void tickGlobal(ServerTickEvent.Post tick) {
 		if (Create.REDSTONE_LINK_NETWORK_HANDLER != null)

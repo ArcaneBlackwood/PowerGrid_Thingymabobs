@@ -8,8 +8,6 @@ import dev.thingymabobs.util.interaction.InteractionPacket;
 import io.netty.buffer.Unpooled;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
@@ -80,22 +78,6 @@ public final class PacketManager {
 					payload.release();
 				}
 			});
-	}
-	public static void onServerPlayerConnect(PlayerLoggedInEvent event) {
-		if (!(event.getEntity() instanceof ServerPlayer player)) return;
-		new S2CVersionPacket().dispatch(PacketTargets.toClient(player));
-	}
-
-
-
-	//	#### CLIENT PACKET REGISTERING
-	@OnlyIn(Dist.CLIENT)
-	public static void registerClient(IEventBus modBus) {
-		modBus.addListener((RegisterPayloadHandlersEvent event) ->
-			PacketManager.registerPayloadHandlersClient(event.registrar(PowerGrid.MOD_ID).optional()));
-	}
-	@OnlyIn(Dist.CLIENT)
-	public static void registerPayloadHandlersClient(PayloadRegistrar registrar) {
 		registrar.playToClient(
 			S2CPacket.TYPE,
 			BufferPayload.codec(S2CPacket.TYPE),
@@ -114,7 +96,10 @@ public final class PacketManager {
 				}
 			});
 	}
-
+	public static void onServerPlayerConnect(PlayerLoggedInEvent event) {
+		if (!(event.getEntity() instanceof ServerPlayer player)) return;
+		new S2CVersionPacket().dispatch(PacketTargets.toClient(player));
+	}
 
 
 	//	##	HELPERS

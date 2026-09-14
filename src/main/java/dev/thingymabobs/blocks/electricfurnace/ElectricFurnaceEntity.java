@@ -69,6 +69,7 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
 		CONFIG = prop;
 		EF_CONFIG = prop.get(ElectricFurnaceConfig.class, "ef");
 		THERMAL = prop.getThermal();
+		Thingymabobs.LOGGER.info("ElectricFurnaceEntity config: "+prop+", thermals: "+THERMAL);
 		DISSIPATOIN_DOOR_OPEN = ThermalBehaviour.dissipationFactor(THERMAL.getPower(), EF_CONFIG.getDoorOpenTemp()) 
 			- ThermalBehaviour.dissipationFactor(THERMAL.getPower(), THERMAL.getTemp());
 		BLOW_POWER = THERMAL.getPower() * 18 / 13 * EF_CONFIG.getCoilPowerMul();
@@ -178,23 +179,22 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
 	@Override
 	public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
 		if (itemCapability == null) return false;
-		ModLang.translate("gui.electric_furnace.goggles.title")
+		ModLang.translate("tooltip.electric_furnace.title")
 			.forGoggles(tooltip);
 		
 		BlockState state = getBlockState();
 		if (state.getValue(ElectricFurnace.BLOWN))
-			ModLang.translate("gui.electric_furnace.goggles.blown")
+			ModLang.translate("tooltip.electric_furnace.blown")
 				.style(ChatFormatting.RED)
 				.forGoggles(tooltip);
 		if (thermalBehaviour != null)
-			ModLang.translate("gui.electric_furnace.goggles.temp")
+			ModLang.translate("tooltip.electric_furnace.temp",
+					Unit.TEMPERATURE.format(thermalBehaviour.getTemperature()))
 				.style(ChatFormatting.GOLD)
-				.add(Unit.TEMPERATURE.format(thermalBehaviour.getTemperature()))
 				.forGoggles(tooltip);
 		
-		ModLang.text("Power ")
+		ModLang.translate("tooltip.power", Unit.POWER.format(wire.power()))
 			.style(ChatFormatting.YELLOW)
-			.add(Unit.POWER.format(wire.power()))
 			.forGoggles(tooltip);
 		
 		for (int i = 0; i < itemCapability.getSlots(); i++) {

@@ -1,2 +1,3 @@
 #!/bin/bash
-"$(dirname -- "${BASH_SOURCE[0]}")/../gradlew" build --console=rich
+cd "$(dirname -- "${BASH_SOURCE[0]}")/../"
+./gradlew build --console=rich

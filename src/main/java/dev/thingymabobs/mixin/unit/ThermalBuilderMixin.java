@@ -7,9 +7,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
 import dev.thingymabobs.mixin.ThermalBuilderExt;
-
 import java.util.function.Consumer;
 
 @Mixin(ThermalBuilder.class)

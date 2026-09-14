@@ -48,6 +48,7 @@ neoForge {
 			
 			//systemProperty 'mixin.debug.verbose', 'true'
 			//systemProperty 'mixin.debug.export', 'true'
+			//systemProperty 'mixin.dumpTargetOnFailure', 'true'
 			//systemProperty 'mixin.env.disableRefMap', 'true'
 			
 			programArgument '--username'
@@ -78,6 +79,9 @@ neoForge {
 		}
 		server {
 			server()
+			//systemProperty 'mixin.debug.verbose', 'true'
+			//systemProperty 'mixin.debug.export', 'true'
+			//systemProperty 'mixin.dumpTargetOnFailure', 'true'
 			loggingConfigFile = file('log4j2.xml')
 			programArgument '--nogui'
 		}

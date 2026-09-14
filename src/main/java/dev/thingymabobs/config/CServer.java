@@ -18,15 +18,10 @@ public class CServer extends ConfigBase {
 
 	@Override
 	public void onLoad() {
+		Thingymabobs.LOGGER.info("CServer onload");
 		super.onLoad();
 		if(!isUpToDate())
 			Thingymabobs.LOGGER.warn("Detected outdated configs, consider resetting your server configs if you experience issues.");
-	}
-
-	@Override
-	public void onReload() {
-		super.onReload();
-		Thingymabobs.LOGGER.warn("Server config reloaded, this can cause unexpected behaviour if done during gameplay!");
 	}
 
 	public boolean isUpToDate() {

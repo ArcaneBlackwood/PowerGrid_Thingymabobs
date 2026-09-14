@@ -118,6 +118,11 @@ public final class CProperties extends ConfigBase implements ResistanceValues.Pr
 		super.onLoad();
 		for (Prop prop : PROPERTIES.values()) prop.onLoad();
 	}
+	@Override
+	public void onReload() {
+		super.onReload();
+		for (Prop prop : PROPERTIES.values()) prop.onLoad();
+	}
 
 	public class Prop {
 		public final Map<String, ASubProp> props = new HashMap<>();

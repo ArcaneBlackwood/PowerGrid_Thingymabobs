@@ -25,8 +25,9 @@ public class SpecialStringBuilder {
 		return this;
 	}
 	public SpecialStringBuilder append(String value) {
-		currentSize += value.length();
-		entries.add(value.getBytes());
+		byte[] newBytes = value.getBytes();
+		currentSize += newBytes.length;
+		entries.add(newBytes);
 		return this;
 	}
 	public SpecialStringBuilder compile() {

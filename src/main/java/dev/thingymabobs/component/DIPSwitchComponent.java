@@ -3,11 +3,15 @@ package dev.thingymabobs.component;
 import dev.thingymabobs.Thingymabobs;
 import dev.thingymabobs.component.properties.LazyConstantProperty;
 import dev.thingymabobs.config.properties.CProperties;
+import dev.thingymabobs.registry.ModSounds;
+
 import com.google.common.collect.ImmutableCollection;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.patryk3211.powergrid.circuits.circuitboard.CircuitBoardBlockEntity;
@@ -17,7 +21,6 @@ import org.patryk3211.powergrid.circuits.components.properties.ComponentProperty
 import org.patryk3211.powergrid.circuits.schematic.ComponentFootprint;
 import org.patryk3211.powergrid.circuits.schematic.PlacedComponent;
 import org.patryk3211.powergrid.circuits.thermal.ThermalBuilder;
-import org.patryk3211.powergrid.collections.ModdedSoundEvents;
 import org.patryk3211.powergrid.electricity.sim.SwitchedWire;
 import org.patryk3211.powergrid.utility.Unit;
 import org.patryk3211.powergrid.circuits.components.OrientableComponent;
@@ -77,17 +80,22 @@ public class DIPSwitchComponent extends OrientableComponent implements IInteract
 	public InteractionResult use(CircuitBoardBlockEntity be, PlacedComponent placed, Player player) {
 		var newState = !placed.get(STATE);
 		placed.set(STATE, newState);
+		Level world = be.getLevel();
 
-		if(be.getLevel().isClientSide) {
+		if(world.isClientSide) {
 			Component.modelChanged(be.getBlockPos());
 		} else {
-			if(newState) {
-				ModdedSoundEvents.MICROSWITCH_ON.playOnServer(be.getLevel(), be.getBlockPos());
-			} else {
-				ModdedSoundEvents.MICROSWITCH_OFF.playOnServer(be.getLevel(), be.getBlockPos());
-			}
 			placed.notifyClients(STATE);
 			stateUpdated(placed);
+		}
+		if(newState) {
+			world.playSound(
+				null, placed.getPos(), ModSounds.DIP_SWITCH_ON.get(), SoundSource.BLOCKS, 0.6f, 
+				0.95f + world.random.nextFloat() * 0.1f);
+		} else {
+			world.playSound(
+				null, placed.getPos(), ModSounds.DIP_SWITCH_OFF.get(), SoundSource.BLOCKS, 0.6f, 
+				0.95f + world.random.nextFloat() * 0.1f);
 		}
 		be.setChanged();
 		return InteractionResult.SUCCESS;

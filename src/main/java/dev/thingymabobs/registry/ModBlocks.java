@@ -41,6 +41,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -212,6 +214,7 @@ public final class ModBlocks {
 				2.5f, 2f/400f, 20*20f,
 				500f, 3.5f))
 			.complete(ElectricFurnaceEntity::configUpdated);
+		Thingymabobs.LOGGER.info("ElectricFurnaceEntity register config");
 
 
 		CProperties.register(PLASMA_GLOBE.getId())
@@ -234,7 +237,8 @@ public final class ModBlocks {
 		});
 	}
 
-	public static void postRegister() {
+	@OnlyIn(Dist.CLIENT)
+	public static void postRegisterClient() {
 		CreateRegistrate.connectedTextures(PotatoBatteryBlockCT::new).accept(POTATO_BATTERY_BLOCK.get());
 		CreateRegistrate.connectedTextures(PoisonousPotatoBatteryBlockCT::new).accept(POISONOUS_POTATO_BATTERY_BLOCK.get());
 	}

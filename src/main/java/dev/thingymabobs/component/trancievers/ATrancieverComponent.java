@@ -286,21 +286,21 @@ public abstract class ATrancieverComponent extends MirrorableComponent implement
 		if (placed.has(LABEL)) {
 			var label = placed.get(LABEL);
 			if(label.isEmpty()) {
-				ModLang.translate(isTransmitter() ? "gui.tranciever.info_transmitter" : "gui.tranciever.info_reciever").forGoggles(tooltip);
+				ModLang.translate(isTransmitter() ? "tooltip.tranciever.info_transmitter" : "tooltip.tranciever.info_reciever").forGoggles(tooltip);
 			} else {
 				ModLang.text(label).forGoggles(tooltip);
 			}
 		} else {
-			ModLang.translate(isTransmitter() ? "gui.tranciever.info_transmitter" : "gui.tranciever.info_reciever").forGoggles(tooltip);
+			ModLang.translate(isTransmitter() ? "tooltip.tranciever.info_transmitter" : "tooltip.tranciever.info_reciever").forGoggles(tooltip);
 		}
 		if(placed.customData == null || !(placed.customData instanceof RenderState data)) return false;
 
 		if (data.signalValue < 0.5f) {
-			ModLang.translate("gui.tranciever.no_power")
+			ModLang.translate("tooltip.tranciever.no_power")
 				.style(ChatFormatting.RED)
 				.forGoggles(tooltip);
 		} else {
-			ModLang.translate("gui.tranciever.signal_value", data.signalValue)
+			ModLang.translate("tooltip.tranciever.signal_value", data.signalValue)
 				.style(data.signalValue > 0 ? ChatFormatting.GREEN : ChatFormatting.GOLD)
 				.forGoggles(tooltip);
 		}

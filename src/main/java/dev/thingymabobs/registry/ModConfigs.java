@@ -4,12 +4,12 @@ import dev.thingymabobs.Thingymabobs;
 import dev.thingymabobs.config.CServer;
 import net.createmod.catnip.config.ConfigBase;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.config.IConfigSpec;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
+
 import java.util.function.Supplier;
 
 public final class ModConfigs {
@@ -54,15 +54,14 @@ public final class ModConfigs {
 		modBus.addListener(ModConfigs::configReload);
 	}
 
-	@SubscribeEvent
 	public static void configLoad(ModConfigEvent.Loading event) {
 		IConfigSpec eventSpec = event.getConfig().getSpec();
+		Thingymabobs.LOGGER.info("ModConfigs onload: "+event);
 		if (eventSpec == server.specification) server.onLoad();
 		//if (eventSpec == common.specification) common.onLoad();
 		//if (eventSpec == client.specification) client.onLoad();
 	}
 
-	@SubscribeEvent
 	public static void configReload(ModConfigEvent.Reloading event) {
 		IConfigSpec eventSpec = event.getConfig().getSpec();
 		if (eventSpec == server.specification) server.onReload();

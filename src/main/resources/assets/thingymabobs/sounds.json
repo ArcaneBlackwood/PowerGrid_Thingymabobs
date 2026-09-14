@@ -24,6 +24,16 @@
 	  "thingymabobs:button_off"
 	]
   },
+  "dip_switch_on": {
+	"sounds": [
+	  "thingymabobs:dip_switch_on"
+	]
+  },
+  "dip_switch_off": {
+	"sounds": [
+	  "thingymabobs:dip_switch_off"
+	]
+  },
   "electric_furnace.open": {
 	"sounds": [
 	  "thingymabobs:electric_furnace/open"

@@ -56,7 +56,7 @@ public final class ModComponents {
 				30, 10f, 1.0E-4f, 0.9999f, 1.5f))
 			.complete(TransformerComponent::configUpdated);
 		CProperties.register(register("dry_cell", new DryCellComponent()))
-			.registerBattery(2f, 2f, 
+			.registerBattery(120f, 120f, 
 				0.9f, 1.6f, 0.15f, 5f, 0.5f)
 			.registerThermal(0.2f, 5f)
 			.registerFloat(DryCellComponent.CONFIG_REVERSE_DAMAGE, 5f, 
@@ -69,10 +69,6 @@ public final class ModComponents {
 		register("tall_connector", new TallConnectorComponent());
 
 
-		CProperties.register(register("dip_switch", new DIPSwitchComponent()))
-			.registerResistance(0.1f)
-			.registerThermal(0.01f, 0.025f)
-			.complete(DIPSwitchComponent::configUpdated);
 		CProperties.register(register("ceramic_capacitor", new CeramicCapacitorComponent()))
 			.registerResistance(0.01f)
 			.registerFloat("capacitance", 0.0001f, 1e-11f, 0.005f)
@@ -96,6 +92,10 @@ public final class ModComponents {
 			.registerResistance(0.1f)
 			.registerThermal(0.01f, 0.025f)
 			.complete(SmallButtonComponent::configUpdated);
+		CProperties.register(register("dip_switch", new DIPSwitchComponent()))
+			.registerResistance(0.1f)
+			.registerThermal(0.01f, 0.025f)
+			.complete(DIPSwitchComponent::configUpdated);
 
 
 		CProperties.register(register("buzzer", new BuzzerComponent()))

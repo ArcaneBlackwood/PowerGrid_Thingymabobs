@@ -94,10 +94,10 @@ public final class ModBlockEntities {
 
 	public static void register(IEventBus modBus) {
 		BLOCK_ENTITY_TYPES.register(modBus);
-		modBus.addListener(ModBlockEntities::registerCapabilities);
 	}
 	@OnlyIn(Dist.CLIENT)
 	public static void registerClient(IEventBus modBus) {
+		modBus.addListener(ModBlockEntities::registerCapabilities);
 		modBus.addListener(ModBlockEntities::registerClientExtensions);
 	}
 	@OnlyIn(Dist.CLIENT)

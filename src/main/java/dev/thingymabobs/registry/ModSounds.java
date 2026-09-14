@@ -39,6 +39,16 @@ public class ModSounds {
 			SoundEvent.createVariableRangeEvent(
 				ResourceLocation.fromNamespaceAndPath(Thingymabobs.MOD_ID, "button_off"))
 		);
+	public static final DeferredHolder<SoundEvent, SoundEvent> DIP_SWITCH_ON =
+		SOUND_EVENTS.register("dip_switch_on", () ->
+			SoundEvent.createVariableRangeEvent(
+				ResourceLocation.fromNamespaceAndPath(Thingymabobs.MOD_ID, "dip_switch_on"))
+		);
+	public static final DeferredHolder<SoundEvent, SoundEvent> DIP_SWITCH_OFF =
+		SOUND_EVENTS.register("dip_switch_off", () ->
+			SoundEvent.createVariableRangeEvent(
+				ResourceLocation.fromNamespaceAndPath(Thingymabobs.MOD_ID, "dip_switch_off"))
+		);
 
 
 	public static final DeferredHolder<SoundEvent, SoundEvent> ELECTRIC_FURNACE_OPEN =

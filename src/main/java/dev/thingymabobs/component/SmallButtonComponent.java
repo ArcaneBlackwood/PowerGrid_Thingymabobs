@@ -58,7 +58,7 @@ public class SmallButtonComponent extends VariantOrientableComponent implements 
 
 
 	public static final BooleanProperty NORMALLY_CLOSED = new BooleanProperty(
-		Thingymabobs.MOD_ID, "switch_state");
+		Thingymabobs.MOD_ID, "button_nc");
 	public static final BooleanProperty STATE = new BooleanProperty(
 		Thingymabobs.MOD_ID, "switch_state").hidden().cast();
 	public static final LazyConstantProperty MAX_CURRENT = new LazyConstantProperty(

@@ -7,10 +7,13 @@ import dev.thingymabobs.component.properties.LazyConstantProperty;
 import dev.thingymabobs.config.properties.CProperties;
 import dev.thingymabobs.config.properties.Thermal;
 import dev.thingymabobs.registry.ModItems;
+import dev.thingymabobs.registry.ModLang;
 import dev.thingymabobs.registry.ModSounds;
 import dev.thingymabobs.util.MetricScale;
 
 import com.google.common.collect.ImmutableCollection;
+
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -31,6 +34,7 @@ import org.patryk3211.powergrid.circuits.components.properties.FloatProperty;
 import org.patryk3211.powergrid.circuits.schematic.ComponentFootprint;
 import org.patryk3211.powergrid.circuits.schematic.PlacedComponent;
 import org.patryk3211.powergrid.circuits.thermal.ThermalBuilder;
+import org.patryk3211.powergrid.electricity.GlobalElectricNetworks;
 import org.patryk3211.powergrid.electricity.battery.BatterySpec;
 import org.patryk3211.powergrid.electricity.sim.node.VoltageSourceCoupling;
 import org.patryk3211.powergrid.utility.Unit;
@@ -39,9 +43,9 @@ import java.util.List;
 public class DryCellComponent extends OrientableComponent implements IComponentGoggleInformation, IInteractableComponent {
 	public static final String CONFIG_REVERSE_DAMAGE = "reverse_damage";
 	protected static final ComponentFootprint FOOTPRINT = new ComponentFootprint.Builder(
-			5, 3, "component." + Thingymabobs.MOD_ID + ".dry_cell", null)
+			6, 3, "component." + Thingymabobs.MOD_ID + ".dry_cell", null)
 		.addPad(0, 1, 0, "Positive", "+")
-		.addPad(4, 1, 1, "Negative", "-")
+		.addPad(5, 1, 1, "Negative", "-")
 		.withItem().withOutline().build();
 
 	protected static CProperties.Prop CONFIG = null;
@@ -96,6 +100,7 @@ public class DryCellComponent extends OrientableComponent implements IComponentG
 		source.setVoltage(SPEC.calculateVoltage(soc));
 		source.setResistance(resistance);
 		placed.customData = source;
+		placed.add(source);
 
 		THERMAL.apply(thermals)
 			.addHeatSource(new CouplingWireProxy(source));
@@ -122,10 +127,18 @@ public class DryCellComponent extends OrientableComponent implements IComponentG
 		return true;
 	}
 
+	protected void addToNetwork(PlacedComponent placed, VoltageSourceCoupling source) {
+		Level world = placed.getWorld();
+		
+		var networks = GlobalElectricNetworks.getWorldNetworks(world);
+		networks.addNode(null);
+
+	}
+
 
 	@Override
 	public VoxelShape getShape(@NotNull PlacedComponent placed) {
-		return IInteractableComponent.extrudedFootprint(placed, 2.0F / 16.0F);
+		return IInteractableComponent.extrudedFootprint(placed, 3.0F / 16.0F);
 	}
 
 	@Override
@@ -181,14 +194,17 @@ public class DryCellComponent extends OrientableComponent implements IComponentG
 		boolean isPlayerSneaking
 	) {
 		float soc = Mth.clamp(placed.get(STATE_OF_CHARGE),0,1);
-		float voltage = SPEC.calculateVoltage(soc);
-		tooltip.add(Component.translatable("thingymabobs.tooltip.dry_cell.soc", Math.round(soc * 100f)));
-		tooltip.add(Component.translatable(
-			"thingymabobs.tooltip.dry_cell.voltage",
-			Unit.VOLTAGE.format(voltage)
-		));
+
+		ModLang.translate("tooltip.dry_cell.soc", Math.round(soc * 100f))
+			.style(soc < 0.3 ? ChatFormatting.RED : 
+				soc < 0.6 ? ChatFormatting.YELLOW :
+				ChatFormatting.GREEN)
+			.forGoggles(tooltip);
+
 		if (soc < 0.999f) {
-			tooltip.add(Component.translatable("thingymabobs.tooltip.dry_cell.replace"));
+			ModLang.translate("tooltip.dry_cell.replace")
+				.style(ChatFormatting.GRAY)
+				.forGoggles(tooltip);
 		}
 		return true;
 	}
