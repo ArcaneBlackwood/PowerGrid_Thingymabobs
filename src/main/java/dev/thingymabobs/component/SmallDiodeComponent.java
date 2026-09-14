@@ -21,12 +21,12 @@ public class SmallDiodeComponent extends VerticallyOrientableComponent {
 	public static final float K = 1.380649e-23f;
 	public static final float Q = 1.602176634e-19f;
 	private static final ComponentFootprint FOOTPRINT = new ComponentFootprint.Builder(
-			3,1, "component." + Thingymabobs.MOD_ID + ".small_diode", null)
+			3,1, Thingymabobs.MOD_ID + ".component.small_diode", null)
 		.addPad(0, 0, 0, "Cathode -", "C-")
 		.addPad(2, 0, 1, "Anode +", "A+")
 		.withItem().withOutline().build();
 	private static final ComponentFootprint VERTICAL_FOOTPRINT = new ComponentFootprint.Builder(
-			2,1, "component." + Thingymabobs.MOD_ID + ".small_diode", null)
+			2,1, Thingymabobs.MOD_ID + ".component.small_diode", null)
 		.addPad(0, 0, 0, "+Cathode", "+C")
 		.addPad(1, 0, 1, "-Anode", "-A")
 		.withItem().withOutline().build();

@@ -30,7 +30,7 @@ import java.util.function.Supplier;
 
 public class TransformerComponent extends OrientableComponent implements IComponentGoggleInformation {
 	protected static final ComponentFootprint FOOTPRINT = new ComponentFootprint.Builder(
-			5, 4, "component." + Thingymabobs.MOD_ID + ".transformer", null)
+			5, 4, Thingymabobs.MOD_ID + ".component.transformer", null)
 		.addPad(0, 0, 0, "Primary 1", "P1")
 		.addPad(0, 3, 1, "Primary 2", "P2")
 		.addPad(4, 0, 2, "Secondary 1", "S1")

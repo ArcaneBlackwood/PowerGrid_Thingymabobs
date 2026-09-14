@@ -17,12 +17,12 @@ import org.patryk3211.powergrid.circuits.components.VerticallyOrientableComponen
 
 public class SmallResistorComponent extends VerticallyOrientableComponent {
 	private static final ComponentFootprint FOOTPRINT = new ComponentFootprint.Builder(
-			3,1, "component." + Thingymabobs.MOD_ID + ".small_resistor", null)
+			3,1, Thingymabobs.MOD_ID + ".component.small_resistor", null)
 		.addPad(0, 0, 0)
 		.addPad(2, 0, 1)
 		.withItem().withOutline().build();
 	private static final ComponentFootprint VERTICAL_FOOTPRINT = new ComponentFootprint.Builder(
-			2,1, "component." + Thingymabobs.MOD_ID + ".small_resistor", null)
+			2,1, Thingymabobs.MOD_ID + ".component.small_resistor", null)
 		.addPad(0, 0, 0)
 		.addPad(1, 0, 1)
 		.withItem().withOutline().build();

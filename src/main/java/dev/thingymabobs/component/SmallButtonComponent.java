@@ -33,20 +33,20 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class SmallButtonComponent extends VariantOrientableComponent implements IInteractableComponent, IGoggleLabel, InteractionHoldComponent.Capable {
 	protected static final Variant FOOTPRINT_SINGLE = new Variant(new ComponentFootprint.Builder(
-			2,2, "component." + Thingymabobs.MOD_ID + ".button", null)
+			2,2, Thingymabobs.MOD_ID + ".component.button", null)
 		.addPad(1, 0, 0)
 		.addPad(0, 1, 1)
 		.withItem().withOutline().build(), "_single");
 	public static final int INDEX_DOUBLE = 1;
 	protected static final Variant FOOTPRINT_DOUBLE = new Variant(new ComponentFootprint.Builder(
-			2,2, "component." + Thingymabobs.MOD_ID + ".button_double", null)
+			2,2, Thingymabobs.MOD_ID + ".component.button_double", null)
 		.addPad(0, 0, 0, "A", "A")
 		.addPad(0, 1, 1, "A", "A")
 		.addPad(1, 0, 2, "B", "B")
 		.addPad(1, 1, 3, "B", "B")
 		.withItem().withOutline().build(), "_double");
 	protected static final Variant FOOTPRINT_SMALL = new Variant(new ComponentFootprint.Builder(
-			1,2, "component." + Thingymabobs.MOD_ID + ".button", null)
+			1,2, Thingymabobs.MOD_ID + ".component.button", null)
 		.addPad(0, 0, 0)
 		.addPad(0, 1, 1)
 		.withItem().withOutline().build(), "_small");

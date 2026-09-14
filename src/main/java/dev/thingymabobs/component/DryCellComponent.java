@@ -43,7 +43,7 @@ import java.util.List;
 public class DryCellComponent extends OrientableComponent implements IComponentGoggleInformation, IInteractableComponent {
 	public static final String CONFIG_REVERSE_DAMAGE = "reverse_damage";
 	protected static final ComponentFootprint FOOTPRINT = new ComponentFootprint.Builder(
-			6, 3, "component." + Thingymabobs.MOD_ID + ".dry_cell", null)
+			6, 3, Thingymabobs.MOD_ID + ".component.dry_cell", null)
 		.addPad(0, 1, 0, "Positive", "+")
 		.addPad(5, 1, 1, "Negative", "-")
 		.withItem().withOutline().build();

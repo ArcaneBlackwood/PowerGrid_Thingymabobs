@@ -23,7 +23,7 @@ import org.patryk3211.powergrid.utility.Unit;
 public class VariableBuzzerComponent extends ABuzzerComponent {
 	public static final String CONFIG_PITCH_VAR = "current_to_pitch";
 	private static final ComponentFootprint FOOTPRINT = new ComponentFootprint.Builder(
-			3,5, "component." + Thingymabobs.MOD_ID + ".buzzer", null)
+			3,5, Thingymabobs.MOD_ID + ".component.buzzer", null)
 		.addPad(0, 1, 0, "Volume", "V")
 		.addPad(2, 1, 1, "Volume", "V")
 		.addPad(0, 3, 2, "Pitch +", "P+")

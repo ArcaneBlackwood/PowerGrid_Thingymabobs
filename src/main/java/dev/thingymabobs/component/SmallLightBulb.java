@@ -34,12 +34,12 @@ import java.util.List;
 
 public class SmallLightBulb extends VerticallyOrientableComponent implements IRenderedComponent, IGoggleLabel {
 	private static final ComponentFootprint FOOTPRINT_L = new ComponentFootprint.Builder(
-			2,2, "component." + Thingymabobs.MOD_ID + ".light_bulb", null)
+			2,2, Thingymabobs.MOD_ID + ".component.light_bulb", null)
 		.addPad(0, 0, 0)
 		.addPad(1, 1, 1)
 		.withItem().withOutline().build();
 	private static final ComponentFootprint FOOTPRINT_S = new ComponentFootprint.Builder(
-			2,1, "component." + Thingymabobs.MOD_ID + ".light_bulb", null)
+			2,1, Thingymabobs.MOD_ID + ".component.light_bulb", null)
 		.addPad(0, 0, 0)
 		.addPad(1, 0, 1)
 		.withItem().withOutline().build();

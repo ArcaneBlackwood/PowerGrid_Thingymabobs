@@ -32,7 +32,7 @@ import java.util.List;
 
 public class SwitchTPSTComponent extends OrientableComponent implements IInteractableComponent, IGoggleLabel {
 	private static final ComponentFootprint FOOTPRINT = new ComponentFootprint.Builder(
-			5,3, "component." + Thingymabobs.MOD_ID + ".switch_tpst", null)
+			5,3, Thingymabobs.MOD_ID + ".component.switch_tpst", null)
 		.addPad(0, 0, 0, "Common", "C")
 		.addPad(2, 0, 1, "Common", "C")
 		.addPad(4, 0, 2, "Common", "C")

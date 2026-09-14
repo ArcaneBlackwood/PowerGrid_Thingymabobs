@@ -46,7 +46,7 @@ import java.util.Locale;
 public final class PotatoBatteryComponent extends OrientableComponent implements IInteractableComponent {
 	public static final BatterySpec BATTERY_SPEC = PotatoBatteryBlock.BATTERY_SPEC;
 	private static final ComponentFootprint FOOTPRINT = new ComponentFootprint.Builder(
-			6,4, "component." + Thingymabobs.MOD_ID + ".potato_battery", null)
+			6,4, Thingymabobs.MOD_ID + ".component.potato_battery", null)
 		.addPad(1, 1, 0, "Positive", "+")
 		.addPad(4, 2, 1, "Negative", "-")
 		.withItem().withOutline().build();

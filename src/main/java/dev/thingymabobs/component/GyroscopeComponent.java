@@ -39,14 +39,14 @@ import net.neoforged.api.distmarker.OnlyIn;
 
 public class GyroscopeComponent extends AVertMirrorComponent {
 	protected static final ComponentFootprint FOOTPRINT_H = new ComponentFootprint.Builder(
-			6,4, "component." + Thingymabobs.MOD_ID + ".gyroscope", null)
+			6,4, Thingymabobs.MOD_ID + ".component.gyroscope", null)
 		.addPad(0, 1, 0, "Motor", "M")
 		.addPad(5, 2, 1, "Motor", "M")
 		.addPad(2, 2, 2, "Signal +", "S+")
 		.addPad(3, 1, 3, "Signal -", "S-")
 		.withItem().withOutline().withArrow().build();
 	protected static final ComponentFootprint FOOTPRINT_V = new ComponentFootprint.Builder(
-			6,4, "component." + Thingymabobs.MOD_ID + ".gyroscope", null)
+			6,4, Thingymabobs.MOD_ID + ".component.gyroscope", null)
 		.addPad(0, 0, 0, "Motor", "M")
 		.addPad(0, 3, 1, "Motor", "M")
 		.addPad(3, 1, 2, "Signal +", "S+")

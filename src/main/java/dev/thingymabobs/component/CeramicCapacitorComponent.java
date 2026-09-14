@@ -17,7 +17,7 @@ import org.patryk3211.powergrid.circuits.components.OrientableComponent;
 
 public class CeramicCapacitorComponent extends OrientableComponent {
 	private static final ComponentFootprint FOOTPRINT = new ComponentFootprint.Builder(
-			3, 1, "component." + Thingymabobs.MOD_ID + ".ceramic_capacitor", null)
+			3, 1, Thingymabobs.MOD_ID + ".component.ceramic_capacitor", null)
 		.addPad(0, 0, 0)
 		.addPad(2, 0, 1)
 		.withItem().withOutline().build();

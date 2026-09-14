@@ -30,12 +30,12 @@ import net.minecraft.util.Mth;
 
 public class AccelerometerComponent extends AVertMirrorComponent {
 	protected static final ComponentFootprint FOOTPRINT_H = new ComponentFootprint.Builder(
-			5,3, "component." + Thingymabobs.MOD_ID + ".accelerometer", null)
+			5,3, Thingymabobs.MOD_ID + ".component.accelerometer", null)
 		.addPad(4, 0, 0, "Signal +", "S+")
 		.addPad(4, 2, 1, "Signal -", "S-")
 		.withItem().withOutline().withArrow(Orientation.LEFT).build();
 	protected static final ComponentFootprint FOOTPRINT_V = new ComponentFootprint.Builder(
-			4,3, "component." + Thingymabobs.MOD_ID + ".accelerometer", null)
+			4,3, Thingymabobs.MOD_ID + ".component.accelerometer", null)
 		.addPad(2, 0, 0, "Signal +", "S+")
 		.addPad(2, 2, 1, "Signal -", "S-")
 		.withItem().withOutline().build();

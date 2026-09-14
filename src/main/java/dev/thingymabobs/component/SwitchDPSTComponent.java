@@ -32,7 +32,7 @@ import java.util.List;
 
 public class SwitchDPSTComponent extends OrientableComponent implements IInteractableComponent, IGoggleLabel {
 	private static final ComponentFootprint FOOTPRINT = new ComponentFootprint.Builder(
-			4,3, "component." + Thingymabobs.MOD_ID + ".switch_dpst", null)
+			4,3, Thingymabobs.MOD_ID + ".component.switch_dpst", null)
 		.addPad(0, 0, 0, "Common", "C")
 		.addPad(0, 2, 1, "Common", "C")
 		.addPad(3, 0, 2, "Normally Open", "NO")

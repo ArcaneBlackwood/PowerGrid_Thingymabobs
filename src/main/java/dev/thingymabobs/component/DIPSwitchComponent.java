@@ -34,7 +34,7 @@ import java.util.List;
 
 public class DIPSwitchComponent extends OrientableComponent implements IInteractableComponent, IGoggleLabel {
 	private static final ComponentFootprint FOOTPRINT = new ComponentFootprint.Builder(
-			2,1, "component." + Thingymabobs.MOD_ID + ".dip_switch", null)
+			2,1, Thingymabobs.MOD_ID + ".component.dip_switch", null)
 		.addPad(0, 0, 0)
 		.addPad(1, 0, 1)
 		.withItem().withOutline().build();

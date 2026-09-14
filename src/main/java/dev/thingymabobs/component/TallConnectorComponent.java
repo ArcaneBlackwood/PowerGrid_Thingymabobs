@@ -16,7 +16,7 @@ import java.util.List;
 
 public class TallConnectorComponent extends Component {
 	private static final ComponentFootprint FOOTPRINT = new ComponentFootprint.Builder(
-				3,3, "component." + Thingymabobs.MOD_ID + ".tall_connector", null)
+				3,3, Thingymabobs.MOD_ID + ".component.tall_connector", null)
 			.addPad(1, 1, 0)
 			.withItem().withOutline().build();
 

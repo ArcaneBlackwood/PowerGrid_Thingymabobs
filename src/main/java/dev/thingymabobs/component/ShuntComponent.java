@@ -16,7 +16,7 @@ import org.patryk3211.powergrid.circuits.components.OrientableComponent;
 
 public class ShuntComponent extends OrientableComponent {
 	private static final ComponentFootprint FOOTPRINT = new ComponentFootprint.Builder(
-			6,3, "component." + Thingymabobs.MOD_ID + ".small_resistor", null)
+			6,3, Thingymabobs.MOD_ID + ".component.small_resistor", null)
 		.addPad(1, 1, 0)
 		.addPad(4, 1, 1)
 		.withItem().withOutline().build();
