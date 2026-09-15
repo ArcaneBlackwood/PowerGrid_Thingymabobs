@@ -42,6 +42,19 @@ public final class ModItems {
 		ITEMS.registerSimpleItem("dry_cell", new Item.Properties().stacksTo(16));
 	public static final DeferredItem<Item> DIP_SWITCH =
 		ITEMS.registerSimpleItem("dip_switch", new Item.Properties());
+
+	public static final DeferredItem<Item> MICRO_RELAY =
+		ITEMS.registerSimpleItem("micro_relay", new Item.Properties());
+	public static final DeferredItem<Item> MICRO_RELAY_DPST =
+		ITEMS.registerSimpleItem("micro_relay_dpst", new Item.Properties());
+	public static final DeferredItem<Item> DUEL_COIL_RELAY =
+		ITEMS.registerSimpleItem("duel_coil_relay", new Item.Properties());
+	public static final DeferredItem<Item> DUEL_COIL_RELAY_DPST =
+		ITEMS.registerSimpleItem("duel_coil_relay_dpst", new Item.Properties());
+	public static final DeferredItem<Item> SMALL_BJT_NPN =
+		ITEMS.registerSimpleItem("small_bjt_npn", new Item.Properties());
+	public static final DeferredItem<Item> SMALL_BJT_PNP =
+		ITEMS.registerSimpleItem("small_bjt_pnp", new Item.Properties());
 	public static final DeferredItem<Item> CERAMIC_CAPACITOR =
 		ITEMS.registerSimpleItem("ceramic_capacitor", new Item.Properties());
 	public static final DeferredItem<Item> SMALL_DIODE =
@@ -52,6 +65,7 @@ public final class ModItems {
 		ITEMS.registerSimpleItem("small_bulb", new Item.Properties());
 	public static final DeferredItem<Item> SMALL_BUTTON =
 		ITEMS.registerSimpleItem("small_button", new Item.Properties());
+
 	public static final DeferredItem<Item> TALL_CONNECTOR =
 		ITEMS.registerSimpleItem("tall_connector", new Item.Properties());
 	public static final DeferredItem<Item> BUZZER =
@@ -129,8 +143,12 @@ public final class ModItems {
 			new Item.Properties());
 	
 	public static final DeferredItem<?>[] ALL_ITEMS = {
-		TRANSFORMER, DRY_CELL, BUZZER, VARIABLE_BUZZER, SHUNT, TRANSMITTER, RECIEVER, DIRECTIONAL_RECIEVER, DISTANCE_RECIEVER, ACCELEROMETER, GYROSCOPE,
-		CERAMIC_CAPACITOR, SMALL_DIODE, SMALL_RESISTOR, SMALL_LIGHT_BULB, SMALL_BUTTON, DIP_SWITCH, TALL_CONNECTOR,
+		TRANSFORMER, DRY_CELL, BUZZER, VARIABLE_BUZZER, SHUNT,
+		TRANSMITTER, RECIEVER, DIRECTIONAL_RECIEVER, DISTANCE_RECIEVER, ACCELEROMETER, GYROSCOPE,
+		
+		MICRO_RELAY_DPST, MICRO_RELAY, DUEL_COIL_RELAY, DUEL_COIL_RELAY_DPST, SMALL_BJT_NPN, SMALL_BJT_PNP, CERAMIC_CAPACITOR,
+		SMALL_DIODE, SMALL_RESISTOR, SMALL_LIGHT_BULB, SMALL_BUTTON, DIP_SWITCH, TALL_CONNECTOR,
+		
 		LV_SWITCH_DPDT, LV_SWITCH_SPDT, LV_SWITCH_TPST, LV_SWITCH_DPST,
 		MV_SWITCH_DPDT, MV_SWITCH_SPDT, MV_SWITCH_TPST, MV_SWITCH_DPST,
 		POISONOUS_POTATO_BATTERY, POTATO_BATTERY_ARRAY, POISONOUS_POTATO_BATTERY_ARRAY, POTATO_BATTERY_BLOCK, POISONOUS_POTATO_BATTERY_BLOCK,

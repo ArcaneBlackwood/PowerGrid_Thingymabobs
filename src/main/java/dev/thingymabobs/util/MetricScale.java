@@ -315,7 +315,7 @@ public enum MetricScale {
 	public static String format1D1K(double value, String unit, int precision) {
 		SpecialStringBuilder sb = new SpecialStringBuilder();
 		MetricScale scale = getScaleOf(value);
-		doubleToString(sb, value / scale.getScale(), '.', FORMAT_DECIMAL_PLACES,
+		doubleToString(sb, value / scale.getScale(), '.', precision,
 			0, false, true, false);
 		char decimal = scale.getLetter();
 		if (decimal != '\0') sb.append(scale.getLetter());

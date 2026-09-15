@@ -1,0 +1,21 @@
+{
+	"format_version": "1.9.0",
+	"credit": "Made with Blockbench",
+	"textures": {
+		"0": "thingymabobs:block/component/relay",
+		"particle": "thingymabobs:block/component/relay"
+	},
+	"elements": [
+		{
+			"from": [0, 0, 0],
+			"to": [5, 5, 3],
+			"faces": {
+				"north": {"uv": [0, 6, 5, 11], "texture": "#0"},
+				"east": {"uv": [5, 6, 8, 11], "texture": "#0"},
+				"south": {"uv": [8, 6, 13, 11], "texture": "#0"},
+				"west": {"uv": [13, 6, 16, 11], "texture": "#0"},
+				"up": {"uv": [13, 0, 16, 5], "rotation": 90, "texture": "#0"}
+			}
+		}
+	]
+}

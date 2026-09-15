@@ -53,10 +53,10 @@ public class VariableBuzzerComponent extends ABuzzerComponent {
 		() -> Unit.POWER.formatWithPrefixes(CONFIG.getThermal().getPower()).string());
 	public static final LazyConstantProperty VOLUME_MIN_POWER = new LazyConstantProperty(
 		Thingymabobs.MOD_ID, "buzzer.volume_min_power",
-		() -> MetricScale.format1D1K(VOLUME_POWER_MIN, "", 1));
+		() -> MetricScale.format1D1K(VOLUME_POWER_MIN, "W", 1));
 	public static final LazyConstantProperty VOLUME_MAX_POWER = new LazyConstantProperty(
 		Thingymabobs.MOD_ID, "buzzer.volume_max_power",
-		() -> MetricScale.format1D1K(VOLUME_POWER_MAX, "", 1));
+		() -> MetricScale.format1D1K(VOLUME_POWER_MAX, "W", 1));
 	public static final LazyConstantProperty RESISTANCE = new LazyConstantProperty(
 		Thingymabobs.MOD_ID, "resistance",
 		() -> Unit.RESISTANCE.formatWithPrefixes(CONFIG.getResistance().get()).string());
@@ -91,14 +91,17 @@ public class VariableBuzzerComponent extends ABuzzerComponent {
 
 	@Override
 	public boolean tick(@NotNull PlacedComponent placed) {
-		if (hasAudioSource) return true;
 		if (placed.getWorld().isClientSide) tickClient(placed);
 		return true;
 	}
 	@OnlyIn(Dist.CLIENT)
 	protected void tickClient(@NotNull PlacedComponent placed) {
-		if (getVolume(placed) > 0.01)
+		if (!(placed.customData instanceof State state)) return;
+		state.volume = getVolume(placed);
+		if ((state.soundInstance == null || state.soundInstance.isStopped()) && state.volume > 0.01)
 			net.minecraft.client.Minecraft.getInstance().getSoundManager().play(new BuzzerSoundInstance(placed));
+		if (state.soundInstance != null)
+			state.pitch = getPitch(placed);
 	}
 	
 	@Override
@@ -114,7 +117,7 @@ public class VariableBuzzerComponent extends ABuzzerComponent {
 		return PITCH.limit(placed.get(PITCH) + power * placed.get(PITCH_VAR)) * SOUND_PITCH_INV;
 	}
 
-	protected static class State {
-		public ElectricWire buzzerWire, pitchWire;
+	protected static class State extends AState {
+		public ElectricWire pitchWire;
 	}
 }

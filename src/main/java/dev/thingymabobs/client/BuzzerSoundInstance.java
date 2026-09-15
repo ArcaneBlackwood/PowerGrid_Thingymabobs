@@ -25,32 +25,53 @@ public class BuzzerSoundInstance extends net.minecraft.client.resources.sounds.A
 		this.looping = true;
 		this.delay = 0;
 		this.volume = 0.0F;
-		if(placed.component instanceof ABuzzerComponent buzzer)
-			buzzer.hasAudioSource = true;
+		if(placed.customData instanceof ABuzzerComponent.AState state)
+			state.soundInstance = this;
 	}
 
 	public boolean canStartSilent() {
 		return true;
 	}
 
+	public void forceStop() {
+		cleanup();
+	}
+
 	@Override
 	public void tick() {
-		Level world = placed.getWorld();
-		if(placed.component instanceof ABuzzerComponent buzzer) {
-			BlockEntity blockEntity = world.getBlockEntity(placed.getPos());
-			if(blockEntity == null || blockEntity.isRemoved()) {
-				stop();
-			} else {
-				buzzer.hasAudioSource = true;
-				this.volume = buzzer.getVolume(placed);
-				if (this.volume < 0.0001f) {
-					if (lastVolumeTicks <= 0) this.stop();
-					else lastVolumeTicks--;
-				} else
-					lastVolumeTicks = 200;
-				this.pitch = buzzer.getPitch(placed);
-			}
-			if (isStopped()) buzzer.hasAudioSource = false;
+		if (checkInvalid()) {
+			cleanup();
+			return;
 		}
+		if(!(placed.customData instanceof ABuzzerComponent.AState state)) {
+			cleanup();
+			return;
+		}
+		state.soundInstance = this;
+		this.volume = state.volume;
+		if (this.volume < 0.0001f) {
+			if (lastVolumeTicks <= 0) this.stop();
+			else lastVolumeTicks--;
+		} else {
+			lastVolumeTicks = 200;
+			this.pitch = state.pitch;
+		}
+	}
+	private void cleanup() {
+		stop();
+		this.volume = 0;
+		if (placed.customData instanceof ABuzzerComponent.AState state) {
+			if (state.soundInstance == this)
+				state.soundInstance = null;
+		}
+	}
+	private boolean checkInvalid() {
+		if (isStopped()) return true;
+		if (placed == null || placed.destroyed) return true;
+		Level world = placed.getWorld();
+		if (world == null) return true;
+		BlockEntity be = placed.getWorld().getBlockEntity(placed.getPos());
+		if (be == null || be.isRemoved()) return true;
+		return false;
 	}
 }

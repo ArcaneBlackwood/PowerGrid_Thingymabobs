@@ -29,6 +29,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class SmallButtonComponent extends VariantOrientableComponent implements IInteractableComponent, IGoggleLabel, InteractionHoldComponent.Capable {
@@ -119,8 +120,9 @@ public class SmallButtonComponent extends VariantOrientableComponent implements 
 		if(placed.isClient()) {
 			Component.modelChanged(pos);
 		} else {
+			Vec3 posExact = placed.getExactPos();
 			world.playSound(
-				null, placed.getPos(), ModSounds.BUTTON_ON.get(), SoundSource.BLOCKS, 0.8f, 
+				(Player)null, posExact.x, posExact.y, posExact.z, ModSounds.BUTTON_OFF.get(), SoundSource.BLOCKS, 0.8f, 
 				0.9f + world.random.nextFloat() * 0.2f);
 			placed.notifyClients(STATE);
 			stateUpdated(placed);
@@ -137,8 +139,9 @@ public class SmallButtonComponent extends VariantOrientableComponent implements 
 		if(placed.isClient()) {
 			Component.modelChanged(pos);
 		} else {
+			Vec3 posExact = placed.getExactPos();
 			world.playSound(
-				null, placed.getPos(), ModSounds.BUTTON_OFF.get(), SoundSource.BLOCKS, 0.8f, 
+				(Player)null, posExact.x, posExact.y, posExact.z, ModSounds.BUTTON_OFF.get(), SoundSource.BLOCKS, 0.8f, 
 				0.9f + world.random.nextFloat() * 0.2f);
 			placed.notifyClients(STATE);
 			stateUpdated(placed);

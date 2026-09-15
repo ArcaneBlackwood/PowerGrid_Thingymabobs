@@ -286,6 +286,11 @@ public final class CProperties extends ConfigBase implements ResistanceValues.Pr
 			props.put(name, custom);
 			return this;
 		}
+		public Prop registerInt(String name, int value, int min, int max) {
+			IntProp custom = new IntProp(value, min, max);
+			props.put(name, custom);
+			return this;
+		}
 		public Prop registerInt(String name, int value, int min, int max, String comment) {
 			IntProp custom = new IntProp(value, min, max);
 			custom.comment = comment;

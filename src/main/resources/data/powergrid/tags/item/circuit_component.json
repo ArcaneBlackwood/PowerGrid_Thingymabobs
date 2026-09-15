@@ -24,6 +24,12 @@
 	"thingymabobs:poisonous_potato_battery",
 	"thingymabobs:accelerometer",
 	"thingymabobs:gyroscope",
-	"thingymabobs:small_button"
+	"thingymabobs:small_button",
+	"thingymabobs:small_bjt_pnp",
+	"thingymabobs:small_bjt_npn",
+	"thingymabobs:micro_relay",
+	"thingymabobs:micro_relay_dpst",
+	"thingymabobs:duel_coil_relay",
+	"thingymabobs:duel_coil_relay_dpst"
   ]
 }

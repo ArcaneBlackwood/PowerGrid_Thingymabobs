@@ -2,11 +2,17 @@ package dev.thingymabobs.registry;
 
 import dev.thingymabobs.Thingymabobs;
 import dev.thingymabobs.component.AccelerometerComponent;
+import dev.thingymabobs.component.BJTNPNComponent;
+import dev.thingymabobs.component.BJTPNPComponent;
 import dev.thingymabobs.component.BuzzerComponent;
 import dev.thingymabobs.component.CeramicCapacitorComponent;
 import dev.thingymabobs.component.DIPSwitchComponent;
 import dev.thingymabobs.component.DryCellComponent;
+import dev.thingymabobs.component.DuelCoilRelay;
+import dev.thingymabobs.component.DuelCoilRelayDPST;
 import dev.thingymabobs.component.GyroscopeComponent;
+import dev.thingymabobs.component.MicroRelay;
+import dev.thingymabobs.component.MicroRelayDPST;
 import dev.thingymabobs.component.PoisonousPotatoBatteryComponent;
 import dev.thingymabobs.component.PotatoBatteryComponent;
 import dev.thingymabobs.component.ShuntComponent;
@@ -29,7 +35,6 @@ import dev.thingymabobs.component.trancievers.RecieverComponent;
 import dev.thingymabobs.component.trancievers.TransmitterComponent;
 import dev.thingymabobs.config.properties.CProperties;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
@@ -69,6 +74,39 @@ public final class ModComponents {
 		register("tall_connector", new TallConnectorComponent());
 
 
+		float current = 32, resistance = 0.05f;
+		CProperties.register(register("duel_coil_relay", new DuelCoilRelay()))
+			.registerResistance("switch", resistance)
+			.registerFloat(DuelCoilRelay.CONFIG_THRESHOLD, 12f, 1f, 120f)
+			.registerThermal("coil", 0.02f, 1.2f)
+			.registerThermal("switch", 0.075f, current*current*resistance)
+			.complete(DuelCoilRelay::configUpdated);
+		CProperties.register(register("duel_coil_relay_dpst", new DuelCoilRelayDPST()))
+			.registerResistance("switch", resistance)
+			.registerFloat(DuelCoilRelayDPST.CONFIG_THRESHOLD, 12f, 1f, 120f)
+			.registerThermal("coil", 0.02f, 1.2f)
+			.registerThermal("switch", 0.075f, current*current*resistance)
+			.complete(DuelCoilRelayDPST::configUpdated);
+		current = 4; resistance = 0.15f;
+		CProperties.register(register("micro_relay", new MicroRelay()))
+			.registerResistance("switch", resistance)
+			.registerFloat(MicroRelay.CONFIG_THRESHOLD, 10f, 0.5f, 40f)
+			.registerThermal("coil", 0.01f, 0.8f)
+			.registerThermal("switch", 0.05f, current*current*resistance)
+			.complete(MicroRelay::configUpdated);
+		CProperties.register(register("micro_relay_dpst", new MicroRelayDPST()))
+			.registerResistance("switch", resistance)
+			.registerFloat(MicroRelayDPST.CONFIG_THRESHOLD, 10f, 0.5f, 40f)
+			.registerThermal("coil", 0.01f, 0.8f)
+			.registerThermal("switch", 0.05f, current*current*resistance)
+			.complete(MicroRelayDPST::configUpdated);
+		CProperties.register(Thingymabobs.asResource("small_bjt"))
+			.registerResistance(1.0f)
+			.registerFloat(BJTNPNComponent.CONFIG_GAIN, 20, 5, 100)
+			.registerThermal(0.003f, 5f)
+			.complete(BJTNPNComponent::configUpdated);
+		register("small_bjt_npn", new BJTNPNComponent());
+		register("small_bjt_pnp", new BJTPNPComponent());
 		CProperties.register(register("ceramic_capacitor", new CeramicCapacitorComponent()))
 			.registerResistance(0.01f)
 			.registerFloat("capacitance", 0.0001f, 1e-11f, 0.005f)
@@ -103,9 +141,9 @@ public final class ModComponents {
 				"The pitch of the sound file asset used for the buzzer.")
 			.registerResistance(20f)
 			.registerFloat(ABuzzerComponent.CONFIG_PITCH, 1000.0f, 20.0f, 20000.0f)
-			.registerFloat(ABuzzerComponent.CONFIG_VOLUME1, Mth.sqrt(4f/20f),
+			.registerFloat(ABuzzerComponent.CONFIG_VOLUME1, 2.0f,
 				"The input power required to reach max volume")
-			.registerFloat(ABuzzerComponent.CONFIG_VOLUME0, Mth.sqrt(4f/20f),
+			.registerFloat(ABuzzerComponent.CONFIG_VOLUME0, 0.5f,
 				"Minimum input power")
 			.registerThermal(0.005f, 4.0f, 70f, 100f)
 			.complete(BuzzerComponent::configUpdated);
@@ -115,9 +153,9 @@ public final class ModComponents {
 			.registerFloat(ABuzzerComponent.CONFIG_PITCH, 1000.0f, 20.0f, 20000.0f)
 			.registerFloat(VariableBuzzerComponent.CONFIG_PITCH_VAR, 1000.0f, 20.0f, 20000.0f,
 				"How many Hz/W on the pitch input to vary the pitch.")
-			.registerFloat(ABuzzerComponent.CONFIG_VOLUME1, Mth.sqrt(4f/20f),
+			.registerFloat(ABuzzerComponent.CONFIG_VOLUME1, 2.0f,
 				"The input power required to reach max volume")
-			.registerFloat(ABuzzerComponent.CONFIG_VOLUME0, Mth.sqrt(4f/20f),
+			.registerFloat(ABuzzerComponent.CONFIG_VOLUME0, 0.5f,
 				"Minimum input power")
 			.registerThermal(0.005f, 5.0f, 70f, 100f)
 			.complete(VariableBuzzerComponent::configUpdated);

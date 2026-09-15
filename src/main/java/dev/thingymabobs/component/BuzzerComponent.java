@@ -48,10 +48,10 @@ public class BuzzerComponent extends ABuzzerComponent {
 		() -> Unit.POWER.formatWithPrefixes(CONFIG.getThermal().getPower()).string());
 	public static final LazyConstantProperty VOLUME_MIN_POWER = new LazyConstantProperty(
 		Thingymabobs.MOD_ID, "buzzer.volume_min_power",
-		() -> MetricScale.format1D1K(VOLUME_POWER_MIN, "", 1));
+		() -> MetricScale.format1D1K(VOLUME_POWER_MIN, "W", 1));
 	public static final LazyConstantProperty VOLUME_MAX_POWER = new LazyConstantProperty(
 		Thingymabobs.MOD_ID, "buzzer.volume_max_power",
-		() -> MetricScale.format1D1K(VOLUME_POWER_MAX, "", 1));
+		() -> MetricScale.format1D1K(VOLUME_POWER_MAX, "W", 1));
 	public static final LazyConstantProperty RESISTANCE = new LazyConstantProperty(
 		Thingymabobs.MOD_ID, "resistance",
 		() -> Unit.RESISTANCE.formatWithPrefixes(CONFIG.getResistance().get()).string());
@@ -69,6 +69,7 @@ public class BuzzerComponent extends ABuzzerComponent {
 	@Override
 	public void bake(@NotNull PlacedComponent placed, @NotNull ComponentCircuitBuilder builder, ThermalBuilder.@NotNull IEmitter thermals) {
 		State state = new State();
+		state.pitch = getPitch(placed);
 		state.buzzerWire = new ElectricWire(CONFIG.getResistance().get(), builder.terminalNode(0), builder.terminalNode(1));
 		builder.add(state.buzzerWire);
 		placed.add(state.buzzerWire);
@@ -78,16 +79,17 @@ public class BuzzerComponent extends ABuzzerComponent {
 			.addHeatSource(state.buzzerWire);
 	}
 
-
 	@Override
 	public boolean tick(@NotNull PlacedComponent placed) {
-		if (hasAudioSource) return true;
 		if (placed.getWorld().isClientSide) tickClient(placed);
 		return true;
 	}
 	@OnlyIn(Dist.CLIENT)
 	protected void tickClient(@NotNull PlacedComponent placed) {
-		if (getVolume(placed) > 0.01)
+		if (!(placed.customData instanceof State state)) return;
+		state.volume = getVolume(placed);
+		Thingymabobs.LOGGER.info("Volume: "+state.volume+", power: "+state.buzzerWire.power());
+		if ((state.soundInstance == null || state.soundInstance.isStopped()) && state.volume > 0.01)
 			net.minecraft.client.Minecraft.getInstance().getSoundManager().play(new BuzzerSoundInstance(placed));
 	}
 	
@@ -101,7 +103,5 @@ public class BuzzerComponent extends ABuzzerComponent {
 	public float getPitch(PlacedComponent placed) {
 		return placed.get(PITCH) * SOUND_PITCH_INV;
 	}
-	protected static class State {
-		public ElectricWire buzzerWire;
-	}
+	protected static class State extends AState { }
 }

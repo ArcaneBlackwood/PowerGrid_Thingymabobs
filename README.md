@@ -25,6 +25,7 @@ Items appear in both a dedicated Thingymabobs tab and the vanilla Redstone Block
 - [x] Transformer component
 - [x] SCR Thyristor
 - [x] Non recharcable zinc-carbom battery component 
+	- [ ] Change model depending on capacity, modify resistance curve to spike higher
 - [x] Potato batteries
 	- [x] Poisonous variants
 	- [x] Array (8 potatos)
@@ -35,6 +36,11 @@ Items appear in both a dedicated Thingymabobs tab and the vanilla Redstone Block
 - [x] Small low power Resistor, Diode, Capacitor
 	- [ ] Transistors (Low power, less efficient, less gain)
 - [ ] LED (Default era accurate, low efficiency, limited colors)
+	1 copper 1 zinc 1 charcoal -> 1/32 Crude Semiconductor -> Semiconductor Crystal
+	"electroluminescent semiconductor"
+	crafted with the base held in hand, gold wire in other.  Else with deployer with 20% success rate
+	Then deploy glue 100% chance
+	
 - [ ] Bistable relay(two seperate coils for each side)
 - [ ] Small low power relays
 - [ ] Thermocouple

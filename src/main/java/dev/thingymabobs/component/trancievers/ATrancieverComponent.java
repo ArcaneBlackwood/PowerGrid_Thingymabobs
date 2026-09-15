@@ -49,14 +49,14 @@ import net.neoforged.api.distmarker.OnlyIn;
 
 public abstract class ATrancieverComponent extends MirrorableComponent implements IRenderedComponent, IComponentGoggleInformation, IInteractableComponent, ISynchronizedComponent {
 	public static final ComponentFootprint FOOTPRINT = new ComponentFootprint.Builder(
-				7,3, "component." + Thingymabobs.MOD_ID + ".tranciever", null)
+				7,3, Thingymabobs.MOD_ID + ".component.tranciever", null)
 			.addPad(5, 0, 0, "Power -", "-")
 			.addPad(5, 2, 1, "Power +", "+")
 			.addPad(2, 0, 2, "Signal", "S")
 			.addPad(2, 2, 3, "Signal", "S")
 			.withItem().withOutline().build();
 	public static final ComponentFootprint FOOTPRINT_DIRECTIONAL = new ComponentFootprint.Builder(
-				7,3, "component." + Thingymabobs.MOD_ID + ".tranciever", null)
+				7,3, Thingymabobs.MOD_ID + ".component.tranciever", null)
 			.addPad(5, 0, 0, "Power -", "-")
 			.addPad(5, 2, 1, "Power +", "+")
 			.addPad(2, 0, 2, "Signal", "S")

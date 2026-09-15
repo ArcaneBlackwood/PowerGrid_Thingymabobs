@@ -38,6 +38,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 
 public class ElectricFurnaceRecipe extends ARecipe<ElectricFurnaceRecipe.Parameters> {
+	///TODO: Fix crafting when all input slots are full?  off by one error in checking output slot usage?
 	public static final Map<Item, Burnt> ITEM_BURN_TEMPS = new HashMap<>();
 	public ElectricFurnaceRecipe(Parameters params) {
 		this(ModRecipies.ELECTRIC_FURNACE, params);

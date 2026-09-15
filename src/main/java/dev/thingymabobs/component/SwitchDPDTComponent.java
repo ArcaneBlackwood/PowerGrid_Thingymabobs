@@ -3,12 +3,15 @@ package dev.thingymabobs.component;
 import dev.thingymabobs.Thingymabobs;
 import dev.thingymabobs.component.properties.LazyConstantProperty;
 import dev.thingymabobs.config.properties.CProperties;
+import dev.thingymabobs.registry.ModSounds;
 
 import com.google.common.collect.ImmutableCollection;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.patryk3211.powergrid.circuits.circuitboard.CircuitBoardBlockEntity;
@@ -94,10 +97,11 @@ public class SwitchDPDTComponent extends OrientableComponent implements IInterac
 		if(be.getLevel().isClientSide) {
 			Component.modelChanged(be.getBlockPos());
 		} else {
+			Vec3 posExact = placed.getExactPos();
 			if(newState) {
-				ModdedSoundEvents.MICROSWITCH_ON.playOnServer(be.getLevel(), be.getBlockPos());
+				ModdedSoundEvents.MICROSWITCH_ON.play(be.getLevel(), (Player)null, posExact.x, posExact.y, posExact.z, 1, 1);
 			} else {
-				ModdedSoundEvents.MICROSWITCH_OFF.playOnServer(be.getLevel(), be.getBlockPos());
+				ModdedSoundEvents.MICROSWITCH_OFF.play(be.getLevel(), (Player)null, posExact.x, posExact.y, posExact.z, 1, 1);
 			}
 			placed.notifyClients(STATE);
 			stateUpdated(placed);

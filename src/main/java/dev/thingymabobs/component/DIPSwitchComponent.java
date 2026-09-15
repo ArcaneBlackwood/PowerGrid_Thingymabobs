@@ -12,6 +12,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.patryk3211.powergrid.circuits.circuitboard.CircuitBoardBlockEntity;
@@ -88,13 +89,14 @@ public class DIPSwitchComponent extends OrientableComponent implements IInteract
 			placed.notifyClients(STATE);
 			stateUpdated(placed);
 		}
+		Vec3 posExact = placed.getExactPos();
 		if(newState) {
 			world.playSound(
-				null, placed.getPos(), ModSounds.DIP_SWITCH_ON.get(), SoundSource.BLOCKS, 0.6f, 
+				(Player)null, posExact.x, posExact.y, posExact.z, ModSounds.DIP_SWITCH_ON.get(), SoundSource.BLOCKS, 0.6f,
 				0.95f + world.random.nextFloat() * 0.1f);
 		} else {
 			world.playSound(
-				null, placed.getPos(), ModSounds.DIP_SWITCH_OFF.get(), SoundSource.BLOCKS, 0.6f, 
+				(Player)null, posExact.x, posExact.y, posExact.z, ModSounds.DIP_SWITCH_OFF.get(), SoundSource.BLOCKS, 0.6f,
 				0.95f + world.random.nextFloat() * 0.1f);
 		}
 		be.setChanged();
