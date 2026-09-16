@@ -36,6 +36,11 @@ public final class ModItems {
 				ResourceLocation.fromNamespaceAndPath("powergrid", "base")
 	);
 
+	public static final DeferredItem<Item> SEMICONDUCTOR_CRUDE =
+		ITEMS.registerSimpleItem("semiconductor_crude", new Item.Properties());
+	public static final DeferredItem<Item> SEMICONDUCTOR_CRYSTAL =
+		ITEMS.registerSimpleItem("semiconductor_crystal", new Item.Properties());
+
 	public static final DeferredItem<Item> TRANSFORMER =
 		ITEMS.registerSimpleItem("transformer", new Item.Properties());
 	public static final DeferredItem<Item> DRY_CELL =
@@ -143,6 +148,7 @@ public final class ModItems {
 			new Item.Properties());
 	
 	public static final DeferredItem<?>[] ALL_ITEMS = {
+		SEMICONDUCTOR_CRUDE, SEMICONDUCTOR_CRYSTAL,
 		TRANSFORMER, DRY_CELL, BUZZER, VARIABLE_BUZZER, SHUNT,
 		TRANSMITTER, RECIEVER, DIRECTIONAL_RECIEVER, DISTANCE_RECIEVER, ACCELEROMETER, GYROSCOPE,
 		

@@ -28,6 +28,7 @@ import dev.thingymabobs.component.TallConnectorComponent;
 import dev.thingymabobs.component.TransformerComponent;
 import dev.thingymabobs.component.VariableBuzzerComponent;
 import dev.thingymabobs.component.base.ABuzzerComponent;
+import dev.thingymabobs.component.base.ARelay;
 import dev.thingymabobs.component.trancievers.ATrancieverComponent;
 import dev.thingymabobs.component.trancievers.DirectionalRecieverComponent;
 import dev.thingymabobs.component.trancievers.DistanceRecieverComponent;
@@ -62,7 +63,7 @@ public final class ModComponents {
 			.complete(TransformerComponent::configUpdated);
 		CProperties.register(register("dry_cell", new DryCellComponent()))
 			.registerBattery(120f, 120f, 
-				0.9f, 1.6f, 0.15f, 5f, 0.5f)
+				0.9f, 1.6f, 0.15f, 20f, 0.7f)
 			.registerThermal(0.2f, 5f)
 			.registerFloat(DryCellComponent.CONFIG_REVERSE_DAMAGE, 5f, 
 				"Drain done to the battery with reverse current(charging attempt).  Calculated by drain current * value below.")
@@ -74,32 +75,35 @@ public final class ModComponents {
 		register("tall_connector", new TallConnectorComponent());
 
 
-		float current = 32, resistance = 0.05f;
-		CProperties.register(register("duel_coil_relay", new DuelCoilRelay()))
-			.registerResistance("switch", resistance)
-			.registerFloat(DuelCoilRelay.CONFIG_THRESHOLD, 12f, 1f, 120f)
-			.registerThermal("coil", 0.02f, 1.2f)
-			.registerThermal("switch", 0.075f, current*current*resistance)
-			.complete(DuelCoilRelay::configUpdated);
-		CProperties.register(register("duel_coil_relay_dpst", new DuelCoilRelayDPST()))
-			.registerResistance("switch", resistance)
-			.registerFloat(DuelCoilRelayDPST.CONFIG_THRESHOLD, 12f, 1f, 120f)
-			.registerThermal("coil", 0.02f, 1.2f)
-			.registerThermal("switch", 0.075f, current*current*resistance)
-			.complete(DuelCoilRelayDPST::configUpdated);
-		current = 4; resistance = 0.15f;
-		CProperties.register(register("micro_relay", new MicroRelay()))
-			.registerResistance("switch", resistance)
-			.registerFloat(MicroRelay.CONFIG_THRESHOLD, 10f, 0.5f, 40f)
-			.registerThermal("coil", 0.01f, 0.8f)
-			.registerThermal("switch", 0.05f, current*current*resistance)
-			.complete(MicroRelay::configUpdated);
-		CProperties.register(register("micro_relay_dpst", new MicroRelayDPST()))
-			.registerResistance("switch", resistance)
-			.registerFloat(MicroRelayDPST.CONFIG_THRESHOLD, 10f, 0.5f, 40f)
-			.registerThermal("coil", 0.01f, 0.8f)
-			.registerThermal("switch", 0.05f, current*current*resistance)
-			.complete(MicroRelayDPST::configUpdated);
+		{
+			float current = 32, resistance = 0.05f;
+			ARelay relay;
+			CProperties.register(register("duel_coil_relay", relay = new DuelCoilRelay()))
+				.registerResistance(ARelay.CONFIG_SWITCH, resistance)
+				.registerFloat(DuelCoilRelay.CONFIG_THRESHOLD, 12f, 1f, 120f)
+				.registerThermal(ARelay.CONFIG_COIL, 0.02f, 1.2f)
+				.registerThermal(ARelay.CONFIG_SWITCH, 0.075f, current*current*resistance)
+				.complete(relay::configUpdated);
+			CProperties.register(register("duel_coil_relay_dpst", relay = new DuelCoilRelayDPST()))
+				.registerResistance(ARelay.CONFIG_SWITCH, resistance)
+				.registerFloat(DuelCoilRelayDPST.CONFIG_THRESHOLD, 12f, 1f, 120f)
+				.registerThermal(ARelay.CONFIG_COIL, 0.02f, 1.2f)
+				.registerThermal(ARelay.CONFIG_SWITCH, 0.075f, current*current*resistance)
+				.complete(relay::configUpdated);
+			current = 4; resistance = 0.15f;
+			CProperties.register(register("micro_relay", relay = new MicroRelay()))
+				.registerResistance(ARelay.CONFIG_SWITCH, resistance)
+				.registerFloat(MicroRelay.CONFIG_THRESHOLD, 10f, 0.5f, 40f)
+				.registerThermal(ARelay.CONFIG_COIL, 0.01f, 0.8f)
+				.registerThermal(ARelay.CONFIG_SWITCH, 0.05f, current*current*resistance)
+				.complete(relay::configUpdated);
+			CProperties.register(register("micro_relay_dpst", relay = new MicroRelayDPST()))
+				.registerResistance(ARelay.CONFIG_SWITCH, resistance)
+				.registerFloat(MicroRelayDPST.CONFIG_THRESHOLD, 10f, 0.5f, 40f)
+				.registerThermal(ARelay.CONFIG_COIL, 0.01f, 0.8f)
+				.registerThermal(ARelay.CONFIG_SWITCH, 0.05f, current*current*resistance)
+				.complete(relay::configUpdated);
+		}
 		CProperties.register(Thingymabobs.asResource("small_bjt"))
 			.registerResistance(1.0f)
 			.registerFloat(BJTNPNComponent.CONFIG_GAIN, 20, 5, 100)
@@ -124,7 +128,7 @@ public final class ModComponents {
 			.complete(SmallResistorComponent::configUpdated);
 		CProperties.register(register("small_bulb", new SmallLightBulb()))
 			.registerResistance(12*12/0.5f)
-			.registerThermal(0.0001f, 0.5f, 1450f, 1850f)
+			.registerThermal(0.00015f, 0.5f, 1450f, 2000f)
 			.complete(SmallLightBulb::configUpdated);
 		CProperties.register(register("small_button", new SmallButtonComponent()))
 			.registerResistance(0.1f)

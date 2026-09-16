@@ -88,7 +88,6 @@ public class BuzzerComponent extends ABuzzerComponent {
 	protected void tickClient(@NotNull PlacedComponent placed) {
 		if (!(placed.customData instanceof State state)) return;
 		state.volume = getVolume(placed);
-		Thingymabobs.LOGGER.info("Volume: "+state.volume+", power: "+state.buzzerWire.power());
 		if ((state.soundInstance == null || state.soundInstance.isStopped()) && state.volume > 0.01)
 			net.minecraft.client.Minecraft.getInstance().getSoundManager().play(new BuzzerSoundInstance(placed));
 	}

@@ -43,29 +43,29 @@ public class BJTNPNComponent extends OrientableComponent {
 		Thingymabobs.MOD_ID, "resistance",
 		() -> Unit.RESISTANCE.formatWithPrefixes(CONFIG.getResistance().get()).string());
 
-    public BJTNPNComponent() {
-        super(FOOTPRINT);
-    }
+	public BJTNPNComponent() {
+		super(FOOTPRINT);
+	}
 
-    @Override
-    protected void addProperties(ImmutableCollection.Builder<ComponentProperty<?>> properties) {
-        super.addProperties(properties);
-        properties.add(GAIN, POWER, RESISTANCE);
-    }
+	@Override
+	protected void addProperties(ImmutableCollection.Builder<ComponentProperty<?>> properties) {
+		super.addProperties(properties);
+		properties.add(GAIN, POWER, RESISTANCE);
+	}
 
-    @Override
-    public void bake(@NotNull PlacedComponent placed, @NotNull ComponentCircuitBuilder builder, ThermalBuilder.@NotNull IEmitter thermals) {
-        var wire = new BJTWire(
+	@Override
+	public void bake(@NotNull PlacedComponent placed, @NotNull ComponentCircuitBuilder builder, ThermalBuilder.@NotNull IEmitter thermals) {
+		var wire = new BJTWire(
 			builder.terminalNode(0), // Collector
 			builder.terminalNode(1), // Base
 			builder.terminalNode(2), // Emitter
 			5.47e-12, placed.get(GAIN),
 			CONFIG.getResistance().get(), false
-        );
-        builder.add(wire);
-        placed.add(wire);
+		);
+		builder.add(wire);
+		placed.add(wire);
 
 		CONFIG.getThermal().apply(thermals)
 			.addHeatSource(wire);
-    }
+	}
 }

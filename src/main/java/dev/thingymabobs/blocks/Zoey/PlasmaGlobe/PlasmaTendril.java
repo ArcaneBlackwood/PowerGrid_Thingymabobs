@@ -9,13 +9,13 @@ public class PlasmaTendril {
 
 	// END POINTS of tendril before and after lifetime
 	// X,Y,Z angles
-    private final Vector3f start; // Start point
-    private final Vector3f end; // End point 
+	private final Vector3f start; // Start point
+	private final Vector3f end; // End point 
 	private Vector3f current; // Current point in movment
 
-    private final int lifetime; // Lifetime of the tendril
+	private final int lifetime; // Lifetime of the tendril
 	private final int sprite; // Index of selected sprite
-    private int age; // Age of current tendril
+	private int age; // Age of current tendril
 
 	// Which axis (0=X,1=Y,2=Z) and sign (+1/-1) a face sits on.
 	private record Face(int axis, int sign) {};
@@ -27,19 +27,19 @@ public class PlasmaTendril {
 	// Tendril sprite counts
 	public static final int TendrilSpriteCount = 4; // total count
 
-    public PlasmaTendril(RandomSource random) {
+	public PlasmaTendril(RandomSource random) {
 		Face startFace = RandomFace(random);
-        this.start = PointOnFace(random, startFace);
-        this.end = PointOnFace(random, RandomAdjacentOrSameFace(random, startFace));
+		this.start = PointOnFace(random, startFace);
+		this.end = PointOnFace(random, RandomAdjacentOrSameFace(random, startFace));
 		this.current = new Vector3f(this.start);
 
-        this.lifetime = random.nextInt(
+		this.lifetime = random.nextInt(
 			PlasmaGlobeEntity.TRNDRIL_LIFE - PlasmaGlobeEntity.TRNDRIL_LIFE_VARY, 
 			PlasmaGlobeEntity.TRNDRIL_LIFE + PlasmaGlobeEntity.TRNDRIL_LIFE_VARY
 		);
 		this.sprite = random.nextInt(PlasmaTendril.TendrilSpriteCount);
-        this.age = 0;
-    };
+		this.age = 0;
+	};
 
 	///TODO: Suggestion, avoid division by changing age to float and range from 0-1.  And create a new float speed thats set to 1f/lifetime.  Since the longer the lifetime, the slower it takes to complete.
 	// True if needs destruction, else just steps

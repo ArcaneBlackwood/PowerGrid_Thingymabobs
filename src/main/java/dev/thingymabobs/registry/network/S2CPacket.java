@@ -8,7 +8,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 public interface S2CPacket extends IPacket {
-    public static final Type<BufferPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(Thingymabobs.MOD_ID, "s2c"));
+	public static final Type<BufferPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(Thingymabobs.MOD_ID, "s2c"));
 	
 	public abstract boolean write(FriendlyByteBuf buf);
 	@OnlyIn(Dist.CLIENT)

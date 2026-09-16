@@ -56,6 +56,7 @@ public final class Thingymabobs {
 	static {
 		MixinExtrasBootstrap.init();
 	}
+	///TODO: Add mixin to circuit editor moving discard somewhere else
 
 
 	public Thingymabobs(IEventBus modBus, ModContainer modContainer) {

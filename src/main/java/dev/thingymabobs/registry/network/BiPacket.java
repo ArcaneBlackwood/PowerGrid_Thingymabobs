@@ -9,7 +9,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 public interface BiPacket extends IPacket {
-    public static final Type<BufferPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(Thingymabobs.MOD_ID, "bi"));
+	public static final Type<BufferPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(Thingymabobs.MOD_ID, "bi"));
 
 	boolean writeC2S(FriendlyByteBuf buf);
 	@OnlyIn(Dist.CLIENT)

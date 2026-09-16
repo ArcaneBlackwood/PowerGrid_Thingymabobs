@@ -15,6 +15,7 @@ import com.google.common.collect.ImmutableCollection;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionResult;
@@ -38,6 +39,8 @@ import org.patryk3211.powergrid.electricity.GlobalElectricNetworks;
 import org.patryk3211.powergrid.electricity.battery.BatterySpec;
 import org.patryk3211.powergrid.electricity.sim.node.VoltageSourceCoupling;
 import org.patryk3211.powergrid.utility.Unit;
+
+import java.util.Collection;
 import java.util.List;
 
 public class DryCellComponent extends OrientableComponent implements IComponentGoggleInformation, IInteractableComponent {
@@ -207,5 +210,20 @@ public class DryCellComponent extends OrientableComponent implements IComponentG
 				.forGoggles(tooltip);
 		}
 		return true;
+	}
+
+
+	@Override
+	public @NotNull ResourceLocation getModelId(@NotNull PlacedComponent component) {
+		return component.get(STATE_OF_CHARGE) < 0.1
+			? Thingymabobs.asResource("dry_cell_dead")
+			: Thingymabobs.asResource("dry_cell");
+	}
+	@Override
+	public @NotNull Collection<ResourceLocation> requestedModels() {
+		return List.of(
+			Thingymabobs.asResource("dry_cell_dead"),
+			Thingymabobs.asResource("dry_cell")
+		);
 	}
 }

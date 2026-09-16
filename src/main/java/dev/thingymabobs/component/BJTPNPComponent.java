@@ -20,29 +20,29 @@ public class BJTPNPComponent extends OrientableComponent {
 		.withItem().withOutline().build();
 
 
-    public BJTPNPComponent() {
-        super(FOOTPRINT);
-    }
+	public BJTPNPComponent() {
+		super(FOOTPRINT);
+	}
 
-    @Override
-    protected void addProperties(ImmutableCollection.Builder<ComponentProperty<?>> properties) {
-        super.addProperties(properties);
-        properties.add(BJTNPNComponent.GAIN, BJTNPNComponent.POWER, BJTNPNComponent.RESISTANCE);
-    }
+	@Override
+	protected void addProperties(ImmutableCollection.Builder<ComponentProperty<?>> properties) {
+		super.addProperties(properties);
+		properties.add(BJTNPNComponent.GAIN, BJTNPNComponent.POWER, BJTNPNComponent.RESISTANCE);
+	}
 
-    @Override
-    public void bake(@NotNull PlacedComponent placed, @NotNull ComponentCircuitBuilder builder, ThermalBuilder.@NotNull IEmitter thermals) {
-        var wire = new BJTWire(
+	@Override
+	public void bake(@NotNull PlacedComponent placed, @NotNull ComponentCircuitBuilder builder, ThermalBuilder.@NotNull IEmitter thermals) {
+		var wire = new BJTWire(
 			builder.terminalNode(0), // Collector
 			builder.terminalNode(1), // Base
 			builder.terminalNode(2), // Emitter
 			5.47e-12, placed.get(BJTNPNComponent.GAIN),
 			BJTNPNComponent.CONFIG.getResistance().get(), true
-        );
-        builder.add(wire);
-        placed.add(wire);
+		);
+		builder.add(wire);
+		placed.add(wire);
 
 		BJTNPNComponent.CONFIG.getThermal().apply(thermals)
 			.addHeatSource(wire);
-    }
+	}
 }

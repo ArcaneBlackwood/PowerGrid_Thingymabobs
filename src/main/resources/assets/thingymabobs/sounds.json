@@ -34,6 +34,26 @@
 	  "thingymabobs:dip_switch_off"
 	]
   },
+  "relay_on": {
+	"sounds": [
+	  "thingymabobs:relay_on"
+	]
+  },
+  "relay_off": {
+	"sounds": [
+	  "thingymabobs:relay_off"
+	]
+  },
+  "relay_on_small": {
+	"sounds": [
+	  "thingymabobs:relay_on_small"
+	]
+  },
+  "relay_off_small": {
+	"sounds": [
+	  "thingymabobs:relay_off_small"
+	]
+  },
   "electric_furnace.open": {
 	"sounds": [
 	  "thingymabobs:electric_furnace/open"

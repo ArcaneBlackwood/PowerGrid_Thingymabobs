@@ -21,9 +21,9 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 public abstract class PacketTargets {
-    public boolean isS2C() {
-        return true;
-    }
+	public boolean isS2C() {
+		return true;
+	}
 	public abstract boolean dispatch(Type<BufferPayload> type, FriendlyByteBuf data);
 
 
@@ -32,10 +32,10 @@ public abstract class PacketTargets {
 	@OnlyIn(Dist.CLIENT)
 	public static PacketTargets toServer() {
 		return new PacketTargets() {
-            @Override
-            public boolean isS2C() {
-                return false;
-            }
+			@Override
+			public boolean isS2C() {
+				return false;
+			}
 			@Override
 			public boolean dispatch(Type<BufferPayload> type, FriendlyByteBuf data) {
 				var connection = Minecraft.getInstance().getConnection();

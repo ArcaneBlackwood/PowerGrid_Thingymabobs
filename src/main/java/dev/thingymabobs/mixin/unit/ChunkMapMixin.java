@@ -36,7 +36,7 @@ public abstract class ChunkMapMixin implements ChunkMapExt {
 	
 
 	@Override
-    public Stream<ServerPlayerConnection> trackingStream(ServerLevel level, BlockPos blockPos) {
+	public Stream<ServerPlayerConnection> trackingStream(ServerLevel level, BlockPos blockPos) {
 		ChunkPos pos = new ChunkPos(blockPos);
 		return level.players().stream().filter((player) ->
 				isChunkTracked(player, pos.x, pos.z))
@@ -53,8 +53,8 @@ public abstract class ChunkMapMixin implements ChunkMapExt {
 	}
 	@Override
 	public Stream<ServerPlayerConnection> trackingStream(Entity tracking) {
-        var trackedEntity = (TrackedEntityMixin)getEntityMap().get(tracking.getId());
-        if (trackedEntity == null) return Stream.empty();
+		var trackedEntity = (TrackedEntityMixin)getEntityMap().get(tracking.getId());
+		if (trackedEntity == null) return Stream.empty();
 		return trackedEntity.getSeenBy().stream();
 	}
 	/**
@@ -62,8 +62,8 @@ public abstract class ChunkMapMixin implements ChunkMapExt {
 	 */
 	@Override
 	public Stream<ServerPlayerConnection> trackingStream(ServerPlayer tracking) {
-        var trackedEntity = (TrackedEntityMixin)getEntityMap().get(tracking.getId());
-        if (trackedEntity == null) return Stream.empty();
+		var trackedEntity = (TrackedEntityMixin)getEntityMap().get(tracking.getId());
+		if (trackedEntity == null) return Stream.empty();
 		return StreamSupport.stream(CombinedSpliterator.of(
 			SingleSpliterator.of(tracking.connection),
 			trackedEntity.getSeenBy().spliterator()

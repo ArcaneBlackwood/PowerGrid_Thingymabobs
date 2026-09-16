@@ -56,12 +56,12 @@ public class DynamicIntProperty extends IntProperty {
 	}
 	@Override
 	public Integer read(HolderLookup.Provider registries, @Nullable Tag element) {
-      if (element == null || element.getId() != 3) {
-         return defaultValue();
-      } else {
-         int value = ((IntTag)element).getAsInt();
-         return this.limit(value);
-      }
+	  if (element == null || element.getId() != 3) {
+		 return defaultValue();
+	  } else {
+		 int value = ((IntTag)element).getAsInt();
+		 return this.limit(value);
+	  }
 	}
 	@Override
 	public Tag write(HolderLookup.Provider registries, Integer value) {

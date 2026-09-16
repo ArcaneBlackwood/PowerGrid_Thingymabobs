@@ -49,6 +49,26 @@ public class ModSounds {
 			SoundEvent.createVariableRangeEvent(
 				ResourceLocation.fromNamespaceAndPath(Thingymabobs.MOD_ID, "dip_switch_off"))
 		);
+	public static final DeferredHolder<SoundEvent, SoundEvent> RELAY_ON =
+		SOUND_EVENTS.register("relay_on", () ->
+			SoundEvent.createVariableRangeEvent(
+				ResourceLocation.fromNamespaceAndPath(Thingymabobs.MOD_ID, "relay_on"))
+		);
+	public static final DeferredHolder<SoundEvent, SoundEvent> RELAY_OFF =
+		SOUND_EVENTS.register("relay_off", () ->
+			SoundEvent.createVariableRangeEvent(
+				ResourceLocation.fromNamespaceAndPath(Thingymabobs.MOD_ID, "relay_off"))
+		);
+	public static final DeferredHolder<SoundEvent, SoundEvent> RELAY_ON_SMALL =
+		SOUND_EVENTS.register("relay_on_small", () ->
+			SoundEvent.createVariableRangeEvent(
+				ResourceLocation.fromNamespaceAndPath(Thingymabobs.MOD_ID, "relay_on_small"))
+		);
+	public static final DeferredHolder<SoundEvent, SoundEvent> RELAY_OFF_SMALL =
+		SOUND_EVENTS.register("relay_off_small", () ->
+			SoundEvent.createVariableRangeEvent(
+				ResourceLocation.fromNamespaceAndPath(Thingymabobs.MOD_ID, "relay_off_small"))
+		);
 
 
 	public static final DeferredHolder<SoundEvent, SoundEvent> ELECTRIC_FURNACE_OPEN =
