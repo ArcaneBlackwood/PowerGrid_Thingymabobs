@@ -45,6 +45,9 @@ public final class ModModels {
 	public static final PartialModel SLB_BULB_DYED = component("small_light_bulb/bulb_dyed");
 	public static final PartialModel SLB_GLOW = component("small_light_bulb/glow");
 	public static final PartialModel SLB_GLOW_DYED = component("small_light_bulb/glow_dyed");
+	public static final ResourceLocation LED = Thingymabobs.asResource("led");
+	public static final PartialModel LED_GLOW = component("led_glow");
+	public static final PartialModel LED_GLASS = component("led_glass");
 
 	public static final ResourceLocation TRANS_BASE = Thingymabobs.asResource("transceivers/transmitter");
 	public static final ResourceLocation RECV_BASE = Thingymabobs.asResource("transceivers/reciever");

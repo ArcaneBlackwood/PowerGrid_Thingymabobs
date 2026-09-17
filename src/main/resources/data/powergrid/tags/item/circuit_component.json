@@ -30,6 +30,7 @@
 	"thingymabobs:micro_relay",
 	"thingymabobs:micro_relay_dpst",
 	"thingymabobs:duel_coil_relay",
-	"thingymabobs:duel_coil_relay_dpst"
+	"thingymabobs:duel_coil_relay_dpst",
+	"thingymabobs:led"
   ]
 }

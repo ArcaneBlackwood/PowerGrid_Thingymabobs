@@ -36,15 +36,13 @@ public class SmallDiodeComponent extends VerticallyOrientableComponent {
 	public static void configUpdated(CProperties.Prop prop) {
 		CONFIG = prop;
 		CONFIG_DIODE = prop.get(Config.class, Config.KEY);
-		FORWARD_VOLTAGE.markDirty();
 		BREAKDOWN_VOLTAGE.markDirty();
 		RESISTANCE.markDirty();
 		REVERSE_LEAKAGE.markDirty();
+		POWER.markDirty();
 	}
 
-	public static final LazyConstantProperty FORWARD_VOLTAGE = new LazyConstantProperty(
-		Thingymabobs.MOD_ID, "forward_voltage",
-		() -> Unit.VOLTAGE.formatWithPrefixes(CONFIG_DIODE.getForwardVoltage(0, CONFIG.getResistance().get(), 22)).string());
+
 	public static final LazyConstantProperty BREAKDOWN_VOLTAGE = new LazyConstantProperty(
 		Thingymabobs.MOD_ID, "breakdown_voltage",
 		() -> Unit.VOLTAGE.formatWithPrefixes(CONFIG_DIODE.getBreakdown()).string());
@@ -65,7 +63,7 @@ public class SmallDiodeComponent extends VerticallyOrientableComponent {
 	@Override
 	protected void addProperties(ImmutableCollection.Builder<ComponentProperty<?>> properties) {
 		super.addProperties(properties);
-		properties.add(FORWARD_VOLTAGE, BREAKDOWN_VOLTAGE, RESISTANCE,
+		properties.add(BREAKDOWN_VOLTAGE, RESISTANCE,
 			REVERSE_LEAKAGE, POWER);
 	}
 

@@ -77,6 +77,8 @@ public final class ModItems {
 		ITEMS.registerSimpleItem("buzzer", new Item.Properties());
 	public static final DeferredItem<Item> VARIABLE_BUZZER =
 		ITEMS.registerSimpleItem("variable_buzzer", new Item.Properties());
+	public static final DeferredItem<Item> LED =
+		ITEMS.registerSimpleItem("led", new Item.Properties());
 	public static final DeferredItem<Item> SHUNT =
 		ITEMS.registerSimpleItem("shunt", new Item.Properties());
 	public static final DeferredItem<Item> TRANSMITTER =
@@ -149,7 +151,7 @@ public final class ModItems {
 	
 	public static final DeferredItem<?>[] ALL_ITEMS = {
 		SEMICONDUCTOR_CRUDE, SEMICONDUCTOR_CRYSTAL,
-		TRANSFORMER, DRY_CELL, BUZZER, VARIABLE_BUZZER, SHUNT,
+		TRANSFORMER, DRY_CELL, BUZZER, VARIABLE_BUZZER, LED, SHUNT,
 		TRANSMITTER, RECIEVER, DIRECTIONAL_RECIEVER, DISTANCE_RECIEVER, ACCELEROMETER, GYROSCOPE,
 		
 		MICRO_RELAY_DPST, MICRO_RELAY, DUEL_COIL_RELAY, DUEL_COIL_RELAY_DPST, SMALL_BJT_NPN, SMALL_BJT_PNP, CERAMIC_CAPACITOR,

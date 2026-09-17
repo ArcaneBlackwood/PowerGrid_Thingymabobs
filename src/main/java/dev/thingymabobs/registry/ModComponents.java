@@ -11,6 +11,7 @@ import dev.thingymabobs.component.DryCellComponent;
 import dev.thingymabobs.component.DuelCoilRelay;
 import dev.thingymabobs.component.DuelCoilRelayDPST;
 import dev.thingymabobs.component.GyroscopeComponent;
+import dev.thingymabobs.component.LEDComponent;
 import dev.thingymabobs.component.MicroRelay;
 import dev.thingymabobs.component.MicroRelayDPST;
 import dev.thingymabobs.component.PoisonousPotatoBatteryComponent;
@@ -163,6 +164,14 @@ public final class ModComponents {
 				"Minimum input power")
 			.registerThermal(0.005f, 5.0f, 70f, 100f)
 			.complete(VariableBuzzerComponent::configUpdated);
+		CProperties.register(register("led", new LEDComponent()))
+			.registerResistance(0.1f)
+			.registerFloat(LEDComponent.CONFIG_MIN_POWER, 4f, 
+				"Minimum power required for the component to barely light up.")
+			.register(SmallDiodeComponent.Config.KEY, new SmallDiodeComponent.Config(
+				2.0f, 6f, 1e-6f, 2e-12f))
+			.registerThermal(0.05f, 10f)
+			.complete(LEDComponent::configUpdated);
 
 		CProperties.register(register("switch_dpdt", new SwitchDPDTComponent()))
 			.registerResistance(0.1f)

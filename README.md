@@ -33,12 +33,11 @@ Items appear in both a dedicated Thingymabobs tab and the vanilla Redstone Block
 	- [x] LV Components
 - [x] Button component variants (SPDT, small)
 - [x] Small low power Resistor, Diode, Capacitor, Transistors
-- [ ] LED (Default era accurate, low efficiency, limited colors)
+- [x] LED (Default era accurate, low efficiency, limited colors)
 	1 copper 1 zinc 1 charcoal -> 1/32 Crude Semiconductor -> Semiconductor Crystal
 	"electroluminescent semiconductor"
-	crafted with the base held in hand, gold wire in other.  Else with deployer with 20% success rate
-	Then deploy glue 100% chance
-- [ ] Over/underboard jumper?
+	- [ ] crafted with the base held in hand, gold wire in other.  Else with deployer with 20% success rate
+		Then deploy glue 100% chance
 - [x] Duel coil relay
 - [x] Small low power relays
 - [ ] Thermocouple
@@ -47,6 +46,7 @@ Items appear in both a dedicated Thingymabobs tab and the vanilla Redstone Block
 - [x] Tall connector component
 - [x] Small Bulb
 - [x] Shunt resistor
+- [ ] Over/underboard jumper?
 - [ ] Small logic level thyratron, electron tube, triode
 - [ ] Multi position stackable rotaty switch (With non stackable component) (4 can stack in single block?)
 	- [ ] Electrically operated variant
@@ -89,7 +89,6 @@ Replace your powergrid with my custom build here:
 https://github.com/ArcaneBlackwood/PowerGrid-tweaks/releases/latest  
 
 Currently this build is waiting on pull requests on the Power Grid mod this mod requires. They also need to make their way into the main official build. The PR's in question are  
-patryk3211/PowerGrid#1076  For allowing components to save and load items. This is used for the wireless receiver/transmitter.  
 patryk3211/PowerGrid#1051  For enabling the lava lamp to use a custom thermal behaviour. It works quite differently, and cannot use the builtin type.  
 
 Due to this I have built my custom powergrid. If you are testing this mod, please use this custom build else it wont work. Note in my custom build I have a few modifications such as motor current is dependent on load, as well as generators volume dependent on load as well. Ill probably work these into a separate mod, or this mod with a config option.  

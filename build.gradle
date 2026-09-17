@@ -115,11 +115,11 @@ dependencies {
 
 	// Put the exact released JAR in libs/ for the most reliable development setup.
 	///TODO: Upgrade to PG 6.2.0
-	def localPowerGrid = file('libs/powergrid-mc1.21.1-0.6.0.1.jar')
+	def localPowerGrid = file('libs/powergrid-mc1.21.1-0.6.2.jar')
 	if (localPowerGrid.exists()) {
 		implementation files(localPowerGrid)
 	} else {
-		implementation "curse.maven:power-grid-1321420:8648636"
+		implementation "curse.maven:power-grid-1321420:8880703"
 	}
 
 
@@ -142,10 +142,10 @@ tasks.withType(JavaCompile).configureEach {
 
 tasks.named('processResources', ProcessResources).configure {
 	def replaceProperties = [
-			mod_version			 : mod_version,
-			minecraft_version_range : minecraft_version_range,
-			neoforge_version_range  : neoforge_version_range,
-			sable_version		   : sable_version
+		mod_version			 : mod_version,
+		minecraft_version_range : minecraft_version_range,
+		neoforge_version_range  : neoforge_version_range,
+		sable_version		   : sable_version
 	]
 	inputs.properties replaceProperties
 	filesMatching('META-INF/neoforge.mods.toml') {
