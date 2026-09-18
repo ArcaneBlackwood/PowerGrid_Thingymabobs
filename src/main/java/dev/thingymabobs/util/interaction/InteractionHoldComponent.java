@@ -194,7 +194,7 @@ public class InteractionHoldComponent extends InteractionHandler {
 			double distance = SableUtils.getGlobalPos(player.level(), pos, vec)
 				.distanceSquared(eyePosition.x, eyePosition.y, eyePosition.z);
 			if (distance > reach * reach)
-		   		return true;
+		   		return false;
 			return true;
 		}
 		default public InteractionResult interactTry(CircuitBoardBlockEntity be, PlacedComponent placed, Player player) {

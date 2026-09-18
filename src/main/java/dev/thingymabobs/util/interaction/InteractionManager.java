@@ -21,7 +21,6 @@ import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 public class InteractionManager {
-
 	
 	// #### REGISTER & CONSTRUCTORS
 	public static Map<String, Type> TYPES = new HashMap<>();

@@ -95,7 +95,7 @@ public class InteractionHold extends InteractionHandler {
 			double distance = SableUtils.getGlobalPos(player.level(), pos, vec)
 				.distanceSquared(eyePosition.x, eyePosition.y, eyePosition.z);
 			if (distance > reach * reach)
-		   		return true;
+		   		return false;
 			return true;
 		}
 		default public ItemInteractionResult interactTry(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {

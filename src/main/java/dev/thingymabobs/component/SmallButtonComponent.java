@@ -105,6 +105,8 @@ public class SmallButtonComponent extends VariantOrientableComponent implements 
 	public InteractionResult use(CircuitBoardBlockEntity be, PlacedComponent placed, Player player) {
 		return interactTry(be, placed, player);
 	}
+	///TODO:  Ensure atleast one tick is with active.  If on and off single tick, schedule off for one tick later
+	/// Maybe do in selfs main tick?  Counter for switch on, when interaction on, switch state on.
 	@Override
 	public boolean interactTick(PlacedComponent placed, InteractionHoldComponent interact) {
 		return true;

@@ -1,9 +1,14 @@
 package dev.thingymabobs.mixin.unit;
 
+import java.lang.ref.Reference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
 import org.patryk3211.powergrid.circuits.circuitboard.BakedCircuit;
 import org.patryk3211.powergrid.circuits.circuitboard.CircuitBoardBlockEntity;
+import org.patryk3211.powergrid.circuits.schematic.PlacedComponent;
+import org.patryk3211.powergrid.circuits.thermal.ThermalUnit;
 import org.patryk3211.powergrid.electricity.GlobalElectricNetworks;
 import org.patryk3211.powergrid.electricity.sim.node.ICouplingNode;
 import org.patryk3211.powergrid.electricity.sim.node.INode;
@@ -12,11 +17,15 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import dev.thingymabobs.Thingymabobs;
 import dev.thingymabobs.mixin.ISynchronizedComponent;
+import dev.thingymabobs.mixin.PlacedComponentExt;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.network.FriendlyByteBuf;
 
 @Mixin(CircuitBoardBlockEntity.class)
-public class CircuitBoardBlockEntityMixin {
+public abstract class CircuitBoardBlockEntityMixin {
 	@Shadow
 	private BakedCircuit baked;
 	
@@ -54,7 +63,18 @@ public class CircuitBoardBlockEntityMixin {
 
 	@Inject(method = "bakeCircuit", at = @At("TAIL"))
 	private void thingymabobs$bakeCircuit(CallbackInfo ci) {
-		/*if (baked == null) return;
+		Object2ObjectOpenHashMap<UUID, PlacedComponent> uuidMap = new Object2ObjectOpenHashMap<>(baked.tickedComponents.size());
+		for (PlacedComponent placed : baked.tickedComponents)
+			uuidMap.put(placed.uuid, placed);
+		for (ThermalUnit thermal : baked.thermalUnits) {
+			var placed = uuidMap.get(thermal);
+			if (!(placed instanceof PlacedComponentExt placedExt)) continue;
+			placedExt.getThermalUnits().add(thermal);
+		}
+			
+			
+			
+		if (baked == null) return;
 		var level = ((CircuitBoardBlockEntity)(Object) this).getLevel();
 		if (level == null) return;
 
@@ -65,7 +85,8 @@ public class CircuitBoardBlockEntityMixin {
 			}
 		}
 		if (toEnable.isEmpty()) return;
-		var eb = ((CircuitBoardBlockEntity)(Object) this).getElectricBehaviour();
+		Thingymabobs.LOGGER.info("Try add to network: "+toEnable);
+		/*var eb = ((CircuitBoardBlockEntity)(Object) this).getElectricBehaviour();
 		if (eb == null) return;
 
 		var network = GlobalElectricNetworks.getWorldNetworks(level).newNetwork();

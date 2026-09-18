@@ -135,7 +135,7 @@ public abstract class ARelay extends MirrorableComponent {
 			thermalSwitch.addHeatSource(sw.wire);
 		}
 
-		ThermalBuilder thermalCoil = CONFIG.getThermal(CONFIG_COIL).apply(thermals);
+		ThermalBuilder thermalCoil = CONFIG.getThermal(CONFIG_COIL).apply(thermals, 1.5f);
 		for (AbstractElectricWire coil : coils) {
 			thermalCoil.addHeatSource(coil);
 		}

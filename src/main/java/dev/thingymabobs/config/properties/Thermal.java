@@ -64,6 +64,11 @@ public class Thermal extends ASubProp  {
 			.setMaxPower(getPower(), getTemp())
 			.setThermalMass(getMass()).setOverheatTemperature(getOverheat());
 	}
+	public ThermalBuilder apply(ThermalBuilder.IEmitter thermals, float powerMultiplier) {
+		return thermals.builder()
+			.setMaxPower(getPower() * powerMultiplier, getTemp())
+			.setThermalMass(getMass()).setOverheatTemperature(getOverheat());
+	}
 
 	protected CProperties.Prop parent = null;
 	public CProperties.Prop build() {

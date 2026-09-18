@@ -40,7 +40,9 @@ Items appear in both a dedicated Thingymabobs tab and the vanilla Redstone Block
 		Then deploy glue 100% chance
 - [x] Duel coil relay
 - [x] Small low power relays
-- [ ] Thermocouple
+- [ ] Thermocouple(self powered, large range, expensive), Resistance Temperature Detectors(linear, medium range, cheap), Thermistors(inverse non linear, small, small range, expensive)
+	if air/no component next to, probe that extends out not rendered
+- [ ] Heat sync.  Crafted with copper sheet & iron bars?
 - [ ] Bimetalic switch(Heat switch)
 - [x] Linked reciever/transmitters/directional reciever
 - [x] Tall connector component
