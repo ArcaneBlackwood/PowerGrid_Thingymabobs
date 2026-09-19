@@ -12,7 +12,8 @@
 		"SocketEndpointMixin",
 		"LevelMixin",
 		"ChunkMapMixin",
-		"ChunkMapMixin$TrackedEntityMixin"
+		"ChunkMapMixin$TrackedEntityMixin",
+		"PlacedComponentMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

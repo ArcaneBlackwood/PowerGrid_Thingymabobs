@@ -58,6 +58,15 @@ public final class ModModels {
 	public static final PartialModel DIRECT_ANTENNA_H = component("transceivers/directional_reciever_antenna_h");
 	public static final PartialModel DIRECT_ANTENNA_V = component("transceivers/directional_reciever_antenna_v");
 
+	
+	public static final ResourceLocation THI_SHORT = Thingymabobs.asResource("temperature/thermistor_short");
+	public static final ResourceLocation THI_SHORT_C1 = Thingymabobs.asResource("temperature/thermistor_short_connected1");
+	public static final ResourceLocation THI_SHORT_C2 = Thingymabobs.asResource("temperature/thermistor_short_connected2");
+	public static final ResourceLocation THI_TALL = Thingymabobs.asResource("temperature/thermistor_tall");
+	public static final ResourceLocation THI_TALL_C1 = Thingymabobs.asResource("temperature/thermistor_tall_connected1");
+	public static final ResourceLocation THI_TALL_C2 = Thingymabobs.asResource("temperature/thermistor_tall_connected2");
+	public static final ResourceLocation THI_TALL_EX = Thingymabobs.asResource("temperature/thermistor_tall_external");
+
 
 	public static final PartialModel[] FURN_INTERNAL = {
 		block("electric_furnace/internal"),	block("electric_furnace/internal1-0"), block("electric_furnace/internal2-0"), block("electric_furnace/internal3-0"),

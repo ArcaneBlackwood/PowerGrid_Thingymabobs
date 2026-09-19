@@ -26,6 +26,7 @@ import dev.thingymabobs.component.SwitchDPSTComponent;
 import dev.thingymabobs.component.SwitchSPDTComponent;
 import dev.thingymabobs.component.SwitchTPSTComponent;
 import dev.thingymabobs.component.TallConnectorComponent;
+import dev.thingymabobs.component.ThermistorComponent;
 import dev.thingymabobs.component.TransformerComponent;
 import dev.thingymabobs.component.VariableBuzzerComponent;
 import dev.thingymabobs.component.base.ABuzzerComponent;
@@ -172,6 +173,14 @@ public final class ModComponents {
 				2.0f, 6f, 1e-6f, 2e-12f))
 			.registerThermal(0.05f, 10f)
 			.complete(LEDComponent::configUpdated);
+
+		CProperties.register(register("thermistor", new ThermistorComponent()))
+			.registerFloat(ThermistorComponent.CONFIG_RESISTANCE, 10_000f, 1000f, 100_000f, 
+				"Base resistance at base temperature.  Resistance calculated by: base resist * 2^(beta * (1.0f / (temp + 273.15f)) - 1.0f / (base temp + 273.15f))")
+			.registerFloat(ThermistorComponent.CONFIG_TEMPERATURE, 25f, "Degrees celsius")
+			.registerFloat(ThermistorComponent.CONFIG_BETA, 3500f)
+			.registerThermal(0.01f, 1f, CProperties.OVERHEAT_DEFAULT, CProperties.OVERHEAT_DEFAULT + 25f)
+			.complete(ThermistorComponent::configUpdated);
 
 		CProperties.register(register("switch_dpdt", new SwitchDPDTComponent()))
 			.registerResistance(0.1f)

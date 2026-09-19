@@ -94,6 +94,9 @@ public final class ModItems {
 	public static final DeferredItem<Item> GYROSCOPE =
 		ITEMS.registerSimpleItem("gyroscope", new Item.Properties());
 
+	public static final DeferredItem<Item> THERMISTOR =
+		ITEMS.registerSimpleItem("thermistor", new Item.Properties());
+
 	public static final DeferredItem<BlockItem> LV_SWITCH_DPDT =
 		ITEMS.registerSimpleBlockItem("lv_switch_dpdt", ModBlocks.LV_SWITCH_DPDT,
 			new Item.Properties());
@@ -151,7 +154,7 @@ public final class ModItems {
 	
 	public static final DeferredItem<?>[] ALL_ITEMS = {
 		SEMICONDUCTOR_CRUDE, SEMICONDUCTOR_CRYSTAL,
-		TRANSFORMER, DRY_CELL, BUZZER, VARIABLE_BUZZER, LED, SHUNT,
+		TRANSFORMER, DRY_CELL, BUZZER, VARIABLE_BUZZER, LED, SHUNT, THERMISTOR,
 		TRANSMITTER, RECIEVER, DIRECTIONAL_RECIEVER, DISTANCE_RECIEVER, ACCELEROMETER, GYROSCOPE,
 		
 		MICRO_RELAY_DPST, MICRO_RELAY, DUEL_COIL_RELAY, DUEL_COIL_RELAY_DPST, SMALL_BJT_NPN, SMALL_BJT_PNP, CERAMIC_CAPACITOR,

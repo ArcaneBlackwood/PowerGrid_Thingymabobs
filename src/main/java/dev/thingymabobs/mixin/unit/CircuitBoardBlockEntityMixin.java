@@ -1,15 +1,12 @@
 package dev.thingymabobs.mixin.unit;
 
-import java.lang.ref.Reference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
 import org.patryk3211.powergrid.circuits.circuitboard.BakedCircuit;
 import org.patryk3211.powergrid.circuits.circuitboard.CircuitBoardBlockEntity;
 import org.patryk3211.powergrid.circuits.schematic.PlacedComponent;
 import org.patryk3211.powergrid.circuits.thermal.ThermalUnit;
-import org.patryk3211.powergrid.electricity.GlobalElectricNetworks;
 import org.patryk3211.powergrid.electricity.sim.node.ICouplingNode;
 import org.patryk3211.powergrid.electricity.sim.node.INode;
 import org.spongepowered.asm.mixin.Mixin;
@@ -17,7 +14,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 import dev.thingymabobs.Thingymabobs;
 import dev.thingymabobs.mixin.ISynchronizedComponent;
 import dev.thingymabobs.mixin.PlacedComponentExt;
@@ -67,7 +63,7 @@ public abstract class CircuitBoardBlockEntityMixin {
 		for (PlacedComponent placed : baked.tickedComponents)
 			uuidMap.put(placed.uuid, placed);
 		for (ThermalUnit thermal : baked.thermalUnits) {
-			var placed = uuidMap.get(thermal);
+			var placed = uuidMap.get(thermal.getId());
 			if (!(placed instanceof PlacedComponentExt placedExt)) continue;
 			placedExt.getThermalUnits().add(thermal);
 		}

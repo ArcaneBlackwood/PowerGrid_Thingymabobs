@@ -5,6 +5,7 @@ import org.joml.Vector3f;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormatElement;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -80,5 +81,27 @@ public class BakedQuadEditor {
 		vertices[offset] = Float.floatToIntBits(pos.x);
 		vertices[offset + 1] = Float.floatToIntBits(pos.y);
 		vertices[offset + 2] = Float.floatToIntBits(pos.z);
+	}
+	public BoundingBox getBounds() {
+		if (!format.hasPosition() || vertices.length < size)
+			return new BoundingBox(0,0,0,0,0,0);
+		float minX = 2, minY = 2, minZ = 2, maxX = -1, maxY = -1, maxZ = -1;
+		final int offsetPos = format.getOffset(VertexFormatElement.POSITION) / 4;
+		for (int index = 0, end = vertices.length; index < end; index += size) {
+			int offset = index + offsetPos;
+			float x = Float.intBitsToFloat(vertices[offset]),
+				y = Float.intBitsToFloat(vertices[offset+1]),
+				z = Float.intBitsToFloat(vertices[offset+2]);
+			if (x < minX) minX = x;
+			if (x > maxX) maxX = x;
+			if (y < minY) minY = y;
+			if (y > maxY) maxY = y;
+			if (z < minZ) minZ = z;
+			if (z > maxZ) maxZ = z;
+		}
+		float halfPixel = 0.5f / 16f;
+		return new BoundingBox(
+			(int)((minX+halfPixel)*16), (int)((minY+halfPixel)*16), (int)((minZ+halfPixel)*16),
+			(int)((maxX+halfPixel)*16), (int)((maxY+halfPixel)*16), (int)((maxZ+halfPixel)*16));
 	}
 }

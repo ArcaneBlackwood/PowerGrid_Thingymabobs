@@ -40,6 +40,7 @@ Items appear in both a dedicated Thingymabobs tab and the vanilla Redstone Block
 		Then deploy glue 100% chance
 - [x] Duel coil relay
 - [x] Small low power relays
+- [ ] Small potentiometer(have to use tool to modify?)
 - [ ] Thermocouple(self powered, large range, expensive), Resistance Temperature Detectors(linear, medium range, cheap), Thermistors(inverse non linear, small, small range, expensive)
 	if air/no component next to, probe that extends out not rendered
 - [ ] Heat sync.  Crafted with copper sheet & iron bars?
@@ -48,13 +49,14 @@ Items appear in both a dedicated Thingymabobs tab and the vanilla Redstone Block
 - [x] Tall connector component
 - [x] Small Bulb
 - [x] Shunt resistor
+- [ ] Coverable circuit boards (Add "Display when covered" to display type components, default true. Moves components to 1 above surface for visible)
 - [ ] Over/underboard jumper?
 - [ ] Small logic level thyratron, electron tube, triode
 - [ ] Multi position stackable rotaty switch (With non stackable component) (4 can stack in single block?)
 	- [ ] Electrically operated variant
 - [ ] Aeronautics stuff
 	- [ ] Tilt switch /w variants (Off placed axis, approaching axis)
-	- [ ] Gyroscope (Spun up flywheel off axis rotation detected by coil)
+	- [x] Gyroscope (Spun up flywheel off axis rotation detected by coil)
 	- [x] Accelerometer (Spring bound magnetic mass detected by coil)
 	- [ ] Altitude (Acts like a potentiometer?)
 - [ ] Fancy dispalys (Compatable with modular display block)
