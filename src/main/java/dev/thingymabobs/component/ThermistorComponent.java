@@ -142,7 +142,7 @@ public class ThermistorComponent extends OrientableComponent {
 		double resistance = calcResistance(
 			placed.get(RESISTANCE), state.temperature);
 		state.wire.setResistance(resistance);
-		Thingymabobs.LOGGER.info("Thermistor res: "+resistance+", temp: "+state.temperature+", temp other: "+temp);
+		//Thingymabobs.LOGGER.info("Thermistor res: "+resistance+", temp: "+state.temperature+", temp other: "+temp);
 		
 		return true;
 	}

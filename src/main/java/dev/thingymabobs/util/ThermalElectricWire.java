@@ -2,8 +2,6 @@ package dev.thingymabobs.util;
 
 import org.patryk3211.powergrid.electricity.sim.AbstractElectricWire;
 
-import dev.thingymabobs.Thingymabobs;
-
 public class ThermalElectricWire extends AbstractElectricWire {
 	protected float dissipation;
 	protected double nextPower;
@@ -20,7 +18,6 @@ public class ThermalElectricWire extends AbstractElectricWire {
 
 	@Override
 	public double power() {
-		Thingymabobs.LOGGER.info("ThermalElectricWire power: "+nextPower);
 		return nextPower;
 	}
 
