@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
 import org.joml.Vector2ic;
+import org.patryk3211.powergrid.circuits.circuitboard.CircuitBoardBlock;
 import org.patryk3211.powergrid.circuits.circuitboard.CircuitBoardBlockEntity;
 import org.patryk3211.powergrid.circuits.circuitboard.ComponentCircuitBuilder;
 import org.patryk3211.powergrid.circuits.components.ComponentModels;
@@ -21,14 +22,17 @@ import org.patryk3211.powergrid.circuits.schematic.ComponentFootprint;
 import org.patryk3211.powergrid.circuits.schematic.PlacedComponent;
 import org.patryk3211.powergrid.circuits.thermal.ThermalBuilder;
 import org.patryk3211.powergrid.circuits.thermal.ThermalUnit;
+import org.patryk3211.powergrid.electricity.base.AThermalBehaviour;
 import org.patryk3211.powergrid.electricity.base.ThermalBehaviour;
 import org.patryk3211.powergrid.electricity.sim.ElectricWire;
 import org.patryk3211.powergrid.utility.Unit;
 import com.google.common.collect.ImmutableCollection;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import dev.thingymabobs.Thingymabobs;
 import dev.thingymabobs.component.properties.DynamicFloatProperty;
 import dev.thingymabobs.component.properties.LazyConstantProperty;
+import dev.thingymabobs.component.trancievers.ATrancieverComponent;
 import dev.thingymabobs.config.properties.CProperties;
 import dev.thingymabobs.mixin.PlacedComponentExt;
 import dev.thingymabobs.registry.ModModels;
@@ -39,7 +43,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Direction.Axis;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -130,38 +139,66 @@ public class ThermistorComponent extends OrientableComponent {
 			state.firstTick = false;
 		}
 
-		if (state.monitoring.size() == 0) return true;
 		double temp = 0;
-		for (ThermalUnit thermal : state.monitoring) {
-			temp += thermal.getTemperature();
+
+		Connection newState = null;
+		IF: if (state.monitorBlockPos != null) {
+			if (state.monitorBlock == null || state.monitorBlock.blockEntity.isRemoved()) {
+				if (placed.get(CONNECTION) != Connection.NONE.toProp())
+					newState = Connection.NONE;
+				state.monitorBlock = null;
+				if (!placed.getWorld().isLoaded(state.monitorBlockPos)) break IF;
+				BlockEntity be = placed.getWorld().getBlockEntity(state.monitorBlockPos);
+				if (be == null) break IF;
+				var thermal = BlockEntityBehaviour.get(be, AThermalBehaviour.TYPE);
+				if (thermal == null) break IF;
+				state.monitorBlock = thermal;
+				newState = Connection.EXTERNAL;
+			}
+			temp = state.monitorBlock.getTemperature();
+		} else {
+			if (state.monitoring.size() == 0) break IF;
+			for (ThermalUnit thermal : state.monitoring) {
+				temp += thermal.getTemperature();
+			}
+			temp /= state.monitoring.size();
 		}
-		temp /= state.monitoring.size();
+		if (newState != null) {
+			placed.set(CONNECTION, newState.toProp());
+			placed.notifyClients(CONNECTION);
+		}
 
 		state.thermal.setTemperature(state.ambient, (float)temp);
 		updateThermals(state, (float)(state.thermal.power() + state.wire.power()));
 		double resistance = calcResistance(
 			placed.get(RESISTANCE), state.temperature);
 		state.wire.setResistance(resistance);
-		//Thingymabobs.LOGGER.info("Thermistor res: "+resistance+", temp: "+state.temperature+", temp other: "+temp);
 		
 		return true;
 	}
 	@OnlyIn(Dist.CLIENT)
 	public boolean tickClient(@NotNull PlacedComponent placed) {
-		int stateHash = getStateHash(placed);
 		StateClient state;
 		if (placed.customData instanceof StateClient state2) {
 			state = state2;
-			if (stateHash == state.lastStateHash) return true;
 		} else {
 			state = new StateClient();
 			placed.customData = state;
 		}
-		state.lastStateHash = stateHash;
-		updateConnectionsClient(placed);
-		modelChanged(placed.getPos());
-		return true;
+
+		if (state.firstTick) {
+			if (!updateConnectionsClient(placed)) return true;
+			state.firstTick = false;
+			modelChanged(placed.getPos());
+		}
+		return false;
 	}
+	@Override
+	public void stateUpdated(@NotNull PlacedComponent placed) {
+		if (!placed.isClient()) return;
+		modelChanged(placed.getPos());
+	}
+
 
 
 
@@ -171,67 +208,101 @@ public class ThermistorComponent extends OrientableComponent {
 		else
 			return updateConnectionsServer(placed);
 	}
-	///TODO: Add side checking.  If on edge and facing out, try get thermals of adjasent block
 	protected boolean updateConnectionsServer(@NotNull PlacedComponent placed) {
 		if (!(placed.customData instanceof State state)) return false;
-		if (!(placed.getWorld().getBlockEntity(placed.getPos()) instanceof CircuitBoardBlockEntity board)) return false;
-
 		state.monitoring.clear();
-		Connection connect = Connection.NONE;
-		Stream<PlacedComponent> search = board.getComponentsStream();
-		for (var iter = search.iterator(); iter.hasNext(); ) {
-			PlacedComponent other = iter.next();
-			Connection con = effectsThermalReading(placed, other);
-			if (con == Connection.NONE) continue;
-			List<ThermalUnit> thermals = getThermalUnits(other);
-			if (thermals.isEmpty()) continue;
-			state.monitoring.addAll(thermals);
-			connect = connect.combine(con);
-		}
-		if (connect == Connection.BACK) {
-			placed.set(ORIENTATION, placed.get(ORIENTATION).getOpposite());
-		}
-		placed.set(CONNECTION, connect.toProp());
-		return true;
+
+		boolean result = updateConnections(placed, (other, con, units) -> {
+			state.monitoring.addAll(units);
+		}, (pos, thermal) -> {
+			state.monitorBlock = thermal;
+			state.monitorBlockPos = pos;
+		});
+		placed.notifyClients(CONNECTION);
+		placed.notifyClients(FRONT_ONLY);
+		placed.notifyClients(ORIENTATION);
+		return result;
 	}
 	protected boolean updateConnectionsClient(@NotNull PlacedComponent placed) {
 		if (!(placed.customData instanceof StateClient state)) return false;
-		if (placed.get(CONNECTION) == Connection.EXTERNAL.ordinal()) {
-			state.tall = true;
-			return true;
-		}
-		if (!(placed.getWorld().getBlockEntity(placed.getPos()) instanceof CircuitBoardBlockEntity board)) return false;
-
-		Connection connect = Connection.NONE;
 		state.tall = true;
-		Stream<PlacedComponent> search = board.getComponentsStream();
-		for (var iter = search.iterator(); iter.hasNext(); ) {
-			PlacedComponent other = iter.next();
-			Connection con = effectsThermalReading(placed, other);
-			if (con == Connection.NONE) continue;
-			List<ThermalUnit> thermals = getThermalUnits(other);
-			if (thermals.isEmpty()) continue;
-			connect = connect.combine(con);
+
+		return updateConnections(placed, (other, con, units) -> {
 			int height = getComponentHeight(other);
-			if (height < 2) state.tall = false;
+			if (height < 3) state.tall = false;
+		}, null);
+	}
+	@FunctionalInterface
+	protected static interface OnComponent {
+		public void run(PlacedComponent other, Connection con, List<ThermalUnit> units);
+	}
+	@FunctionalInterface
+	protected static interface OnBlock {
+		public void run(BlockPos pos, @Nullable AThermalBehaviour thermal);
+	}
+	protected boolean updateConnections(@NotNull PlacedComponent placed, OnComponent onComponent, OnBlock onBlock) {
+		Connection connect = Connection.NONE;
+		COMPLETE: {
+			if (!(placed.getWorld().getBlockEntity(placed.getPos()) instanceof CircuitBoardBlockEntity board)) {
+				placed.set(CONNECTION, Connection.NONE.toProp());
+				return false;
+			}
+			IF: if (placed.get(FRONT_ONLY)) {
+				Orientation facing = placed.get(ORIENTATION);
+				if (!(placed.x==0 && facing == Orientation.DOWN) && !(placed.x==15 && facing == Orientation.UP)
+					&&!(placed.y==0 && facing == Orientation.RIGHT) && !(placed.y==15 && facing == Orientation.LEFT)) break IF;
+				connect = Connection.EXTERNAL;
+				BlockPos pos = placed.getPos().relative(getFacing(placed));
+				
+				@Nullable AThermalBehaviour thermal = null;
+				if (placed.getWorld().isLoaded(pos)) {
+					BlockEntity be = placed.getWorld().getBlockEntity(pos);
+					if (be != null)
+						thermal = BlockEntityBehaviour.get(be, AThermalBehaviour.TYPE);
+				}
+				if (onBlock != null)
+					onBlock.run(pos, thermal);
+				break COMPLETE;
+			}
+
+			Stream<PlacedComponent> search = board.getComponentsStream();
+			for (var iter = search.iterator(); iter.hasNext(); ) {
+				PlacedComponent other = iter.next();
+				Connection con = effectsThermalReading(placed, other);
+				if (con == Connection.NONE) continue;
+				List<ThermalUnit> thermals = getThermalUnits(other);
+				if (thermals.isEmpty()) continue;
+				if (onComponent != null) onComponent.run(other, con, thermals);
+				connect = connect.combine(con);
+			}
+			break COMPLETE;
 		}
-		if (connect == Connection.BACK) {
-			placed.set(ORIENTATION, placed.get(ORIENTATION).getOpposite());
+		if (connect == Connection.NONE) {
+			placed.set(CONNECTION, Connection.NONE.toProp());
+		} else if (connect == Connection.EXTERNAL) {
+			placed.set(CONNECTION, Connection.EXTERNAL.toProp());
+		} else {
+			if (connect == Connection.BACK) {
+				placed.set(ORIENTATION, placed.get(ORIENTATION).getOpposite());
+			}
+			placed.set(CONNECTION, connect.toProp());
 		}
-		placed.set(CONNECTION, connect.toProp());
 		return true;
 	}
-	//Custom thermals just for resistance tracking.  Purpose is to shadow main theremal, but without extra dissipation factor
+
+
+
+	//Custom thermals just for resistance tracking.  Purpose is to shadow main theremal, but without extra dissipation factor of fans
 	protected void updateThermals(State state, float sourcePower) {
          float power = -state.dissipation * (state.temperature - state.ambient)
 		 	+ sourcePower;
-
          state.temperature += power / 20.0F / state.mass;
          if (!Float.isFinite(state.temperature))
             state.temperature = state.ambient;
          if (state.temperature < state.ambient)
             state.temperature = state.ambient;
 	}
+
 
 
 	@Override
@@ -259,6 +330,45 @@ public class ThermistorComponent extends OrientableComponent {
 
 
 
+	public static Direction getFacing(PlacedComponent placed) {
+		Direction compFacing = switch (placed.get(ATrancieverComponent.ORIENTATION)) {
+			case LEFT -> Direction.NORTH;
+			case UP -> Direction.EAST;
+			case RIGHT -> Direction.SOUTH;
+			case DOWN -> Direction.WEST;
+		};
+		if (placed.getPos() == null) return compFacing;
+
+		BlockState board = placed.getWorld().getBlockState(placed.getPos());
+		Direction facing = board.getValue(CircuitBoardBlock.HORIZONTAL_FACING);
+
+
+		Direction compFacingVertical = compFacing.getCounterClockWise(Axis.X);
+		return switch (board.getValue(CircuitBoardBlock.ROTATION)) {
+			case 0 -> switch(facing) {
+				case NORTH -> compFacing;
+				case EAST -> compFacing.getClockWise();
+				case SOUTH -> compFacing.getOpposite();
+				case WEST -> compFacing.getCounterClockWise();
+				default -> null;
+			};
+			case 2 -> switch(facing) {
+				case NORTH -> compFacing;
+				case EAST -> compFacing.getCounterClockWise();
+				case SOUTH -> compFacing.getOpposite();
+				case WEST -> compFacing.getClockWise();
+				default -> null;
+			};
+			case 1 -> switch(facing) {
+				case NORTH -> compFacingVertical;
+				case EAST -> compFacingVertical.getClockWise();
+				case SOUTH -> compFacingVertical.getOpposite();
+				case WEST -> compFacingVertical.getCounterClockWise();
+				default -> null;
+			};
+			default -> null;
+		};
+	}
 	@OnlyIn(Dist.CLIENT)
 	public static int getComponentHeight(@NotNull PlacedComponent placed) {
 		IF: if (placed.component instanceof IInteractableComponent interact) {
@@ -290,13 +400,6 @@ public class ThermistorComponent extends OrientableComponent {
 		List<ThermalUnit> units = placedExt.getThermalUnits();
 		return units.isEmpty() ? null : units.getFirst();
 	}
-	public static int getStateHash(PlacedComponent placed) {
-		if (!(placed.customData instanceof StateClient state)) return -10;
-		return placed.get(ORIENTATION).ordinal() | (state.tall ? 1<<2 : 0) | (placed.get(CONNECTION) << 3);
-	}
-	public static double calcResistance(float resistance, float temp) {
-		return resistance * TMath.fastLog2(BETA * (1.0f / (temp + 273.15f)) - 1.0f / RESISTANCE_TEMP);
-	}
 	public static Connection effectsThermalReading(PlacedComponent placed, PlacedComponent other) {
 		if (other==placed) return Connection.NONE;
 		Orientation variant = placed.get(ORIENTATION);
@@ -319,6 +422,10 @@ public class ThermistorComponent extends OrientableComponent {
 			case LEFT -> LEFT;
 			case UP -> UP;
 		};
+	}
+	public static double calcResistance(float resistance, float temp) {
+		//Math.exp
+		return resistance * TMath.fastPow2(BETA * (1.0f / (temp + TEMP_C2K) - 1.0f / RESISTANCE_TEMP));
 	}
 
 	
@@ -348,17 +455,18 @@ public class ThermistorComponent extends OrientableComponent {
 
 
 	protected static class State {
-		ArrayList<ThermalUnit> monitoring = new ArrayList<ThermalUnit>();
 		boolean firstTick = true;
+		ArrayList<ThermalUnit> monitoring = new ArrayList<ThermalUnit>();
+		AThermalBehaviour monitorBlock = null;
+		BlockPos monitorBlockPos = null;
+
 		ThermalElectricWire thermal;
 		ElectricWire wire;
-		float ambient = 25f;
-		boolean tall = true;
-		Connection connect;
-		float temperature, mass, dissipation;
+
+		float temperature, mass, dissipation, ambient = 25f;
 	}
 	protected static class StateClient {
-		int lastStateHash = -1;
+		boolean firstTick = true;
 		boolean tall = true;
 	}
 	protected static enum Connection {
