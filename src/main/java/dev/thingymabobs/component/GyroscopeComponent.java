@@ -18,14 +18,13 @@ import dev.thingymabobs.component.base.AVertMirrorComponent;
 import dev.thingymabobs.component.base.CouplingWireProxy;
 import dev.thingymabobs.component.properties.DynamicFloatProperty;
 import dev.thingymabobs.component.properties.LazyConstantProperty;
-import dev.thingymabobs.component.trancievers.DirectionalRecieverComponent;
 import dev.thingymabobs.config.properties.CProperties;
+import dev.thingymabobs.util.ComponentUtils;
 import dev.thingymabobs.util.SableUtils;
 import dev.thingymabobs.util.SableUtils.PoseMotion;
 import dev.thingymabobs.util.TMath;
 import net.createmod.catnip.math.VecHelper;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
@@ -137,7 +136,7 @@ public class GyroscopeComponent extends AVertMirrorComponent {
 		if (placed.isClient()) playEffect(placed, motorCurrent * PARTICLE_SPAWN_RATE); 
 		PoseMotion motion = SableUtils.getPoseMotion(placed.getWorld().getBlockEntity(placed.getPos()));
 		if (motion == null) return 0;
-		float rot = motion.getAngularVelocity(motion.getDirectionGlobal(getDirection(placed)));
+		float rot = motion.getAngularVelocity(motion.getDirectionGlobal(ComponentUtils.getGlobalFacingVertical(placed)));
 		return rot * motorCurrent;
 	}
 	@OnlyIn(Dist.CLIENT)
@@ -158,10 +157,6 @@ public class GyroscopeComponent extends AVertMirrorComponent {
 		pos = VecHelper.rotateCentered(pos, CircuitBoardBlock.getAngleX(state), Axis.X);
 		pos = VecHelper.rotateCentered(pos, CircuitBoardBlock.getAngleY(state), Axis.Y);
 		return pos.add(blockPos.getX(), blockPos.getY(), blockPos.getZ());
-	}
-
-	public Direction getDirection(PlacedComponent placed) {
-		return DirectionalRecieverComponent.getFacing(placed);
 	}
 
 	@Override

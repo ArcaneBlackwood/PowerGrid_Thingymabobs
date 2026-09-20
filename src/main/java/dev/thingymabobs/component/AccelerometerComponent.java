@@ -18,8 +18,8 @@ import dev.thingymabobs.component.base.AVertMirrorComponent;
 import dev.thingymabobs.component.base.CouplingWireProxy;
 import dev.thingymabobs.component.properties.DynamicFloatProperty;
 import dev.thingymabobs.component.properties.LazyConstantProperty;
-import dev.thingymabobs.component.trancievers.DirectionalRecieverComponent;
 import dev.thingymabobs.config.properties.CProperties;
+import dev.thingymabobs.util.ComponentUtils;
 import dev.thingymabobs.util.SableUtils;
 import dev.thingymabobs.util.TMath;
 import dev.thingymabobs.util.SableUtils.PoseMotion;
@@ -101,15 +101,11 @@ public class AccelerometerComponent extends AVertMirrorComponent {
 	protected float tickMotion(PlacedComponent placed) {
 		PoseMotion motion = SableUtils.getPoseMotion(placed.getWorld().getBlockEntity(placed.getPos()));
 		if (motion == null) return 0;
-		Vector3f direc = motion.getDirectionGlobal(getDirection(placed));
+		Vector3f direc = motion.getDirectionGlobal(ComponentUtils.getGlobalFacingVertical(placed));
 		float accel = motion.getAcceleration(
 			direc,
 			motion.getPositionGlobal(placed.getExactPos().toVector3f()));
 		return accel + direc.dot(GRAVITY);
-	}
-
-	public Direction getDirection(PlacedComponent placed) {
-		return DirectionalRecieverComponent.getFacing(placed);
 	}
 
 	@Override

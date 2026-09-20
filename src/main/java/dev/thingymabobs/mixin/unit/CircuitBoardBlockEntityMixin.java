@@ -15,6 +15,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import dev.thingymabobs.Thingymabobs;
+import dev.thingymabobs.mixin.IDestroyComponent;
 import dev.thingymabobs.mixin.ISynchronizedComponent;
 import dev.thingymabobs.mixin.PlacedComponentExt;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -91,4 +92,14 @@ public abstract class CircuitBoardBlockEntityMixin {
 		}
 		eb.tracedAdd(toEnable);*/
 	}
+
+	@Inject(method = "destroy", at = @At("HEAD"))
+	private void thingymabobs$destroy(CallbackInfo ci) {
+		for (var placed : baked.tickedComponents) {
+			if (!(placed.component instanceof IDestroyComponent sync)) continue;
+			sync.onDestroy(placed);
+		}
+	}
+
+	
 }
