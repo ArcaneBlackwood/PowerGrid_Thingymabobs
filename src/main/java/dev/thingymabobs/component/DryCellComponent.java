@@ -51,11 +51,11 @@ public class DryCellComponent extends OrientableComponent implements IComponentG
 		.addPad(5, 1, 1, "Negative", "-")
 		.withItem().withOutline().build();
 
-	protected static CProperties.Prop CONFIG = null;
+	protected static CProperties.PropDevice CONFIG = null;
 	protected static BatterySpec SPEC;
 	protected static Thermal THERMAL;
 	protected static float REVERSE_DAMAGE_MULTIPLIER;
-	public static void configUpdated(CProperties.Prop prop) {
+	public static void configUpdated(CProperties.PropDevice prop) {
 		CONFIG = prop;
 		SPEC = prop.getBattery();
 		THERMAL = prop.getThermal();

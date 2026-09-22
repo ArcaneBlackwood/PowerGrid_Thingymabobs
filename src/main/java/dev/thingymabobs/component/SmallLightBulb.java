@@ -44,9 +44,9 @@ public class SmallLightBulb extends VerticallyOrientableComponent implements IRe
 		.addPad(1, 0, 1)
 		.withItem().withOutline().build();
 
-	protected static CProperties.Prop CONFIG = null;
+	protected static CProperties.PropDevice CONFIG = null;
 	protected static float RES_MAX;
-	public static void configUpdated(CProperties.Prop prop) {
+	public static void configUpdated(CProperties.PropDevice prop) {
 		CONFIG = prop;
 		RES_MAX = CONFIG.getResistance().get();
 		VOLTAGE.markDirty();

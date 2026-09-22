@@ -64,7 +64,7 @@ public abstract class ATrancieverComponent extends MirrorableComponent implement
 			.withArrow()
 			.withItem().withOutline().build();
 	
-	protected static CProperties.Prop CONFIG = null;
+	protected static CProperties.PropDevice CONFIG = null;
 	protected static Config CONFIG_TRANS;
 	public static float POWER_WATTS;
 	public static float POWER_WATTS_MIN;
@@ -73,7 +73,7 @@ public abstract class ATrancieverComponent extends MirrorableComponent implement
 	public static float TRANSMIT_RESISTANCE;
 
 	public static float POWER_RESISTANCE, POWER_CURRENT, TRANSMIT_CURRENT_FULL;
-	public static void configUpdated(CProperties.Prop prop) {
+	public static void configUpdated(CProperties.PropDevice prop) {
 		CONFIG = prop;
 		CONFIG_TRANS = prop.get(Config.class, Config.KEY);
 		POWER_WATTS = CONFIG.getThermal().getPower();

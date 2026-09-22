@@ -117,7 +117,7 @@ public class ElectricFurnaceRenderer extends SafeBlockEntityRenderer<ElectricFur
 				be.getBlockState(), null, be.getLevel().random, ModelData.EMPTY, null
 			);
 			if (quads.size() == 0) return;
-			quad = new BakedQuadEditor(quads.get(0), DefaultVertexFormat.BLOCK);
+			quad = BakedQuadEditor.fromClone(quads.get(0), DefaultVertexFormat.BLOCK);
 		}
 		
 		quad.setUV(2, quad.getUV(1).lerp(quad.getUV(2), value));

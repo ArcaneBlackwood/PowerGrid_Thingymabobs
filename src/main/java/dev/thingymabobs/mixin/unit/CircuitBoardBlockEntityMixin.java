@@ -7,6 +7,7 @@ import org.patryk3211.powergrid.circuits.circuitboard.BakedCircuit;
 import org.patryk3211.powergrid.circuits.circuitboard.CircuitBoardBlockEntity;
 import org.patryk3211.powergrid.circuits.schematic.PlacedComponent;
 import org.patryk3211.powergrid.circuits.thermal.ThermalUnit;
+import org.patryk3211.powergrid.electricity.base.ElectricBlockEntity;
 import org.patryk3211.powergrid.electricity.sim.node.ICouplingNode;
 import org.patryk3211.powergrid.electricity.sim.node.INode;
 import org.spongepowered.asm.mixin.Mixin;
@@ -22,7 +23,11 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.network.FriendlyByteBuf;
 
 @Mixin(CircuitBoardBlockEntity.class)
-public abstract class CircuitBoardBlockEntityMixin {
+public abstract class CircuitBoardBlockEntityMixin extends ElectricBlockEntity {
+	public CircuitBoardBlockEntityMixin() {
+		super(null, null, null);
+	}
+
 	@Shadow
 	private BakedCircuit baked;
 	
@@ -92,9 +97,9 @@ public abstract class CircuitBoardBlockEntityMixin {
 		}
 		eb.tracedAdd(toEnable);*/
 	}
-
-	@Inject(method = "destroy", at = @At("HEAD"))
-	private void thingymabobs$destroy(CallbackInfo ci) {
+	@Override
+	public void destroy() {
+		super.destroy();
 		for (var placed : baked.tickedComponents) {
 			if (!(placed.component instanceof IDestroyComponent sync)) continue;
 			sync.onDestroy(placed);

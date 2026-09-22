@@ -33,13 +33,13 @@ public class PotatoBatteryArrayEntity extends BatteryBlockEntity implements Elec
 	protected float electrocuteVolume = 0f;
 	public boolean hasAudioSource = false;
 	
-	protected static CProperties.Prop CONFIG_POTATO = null, CONFIG_POISON = null;
+	protected static CProperties.PropDevice CONFIG_POTATO = null, CONFIG_POISON = null;
 	protected static BatterySpec SPEC_POTATO, SPEC_POISON;
-	public static void configUpdatedPotato(CProperties.Prop prop) {
+	public static void configUpdatedPotato(CProperties.PropDevice prop) {
 		CONFIG_POTATO = prop;
 		SPEC_POTATO = prop.getBattery();
 	}
-	public static void configUpdatedPoison(CProperties.Prop prop) {
+	public static void configUpdatedPoison(CProperties.PropDevice prop) {
 		CONFIG_POISON = prop;
 		SPEC_POISON = prop.getBattery();
 	}

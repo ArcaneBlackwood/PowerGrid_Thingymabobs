@@ -22,6 +22,7 @@ public class Resistance extends ASubProp {
 	@Override
 	public void onLoad() {
 		unloaded = false;
+		super.onLoad();
 	}
 	@Override
 	public Class<?> getType() {

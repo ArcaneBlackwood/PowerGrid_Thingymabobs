@@ -57,10 +57,10 @@ public class GyroscopeComponent extends AVertMirrorComponent {
 	public static final String CONFIG_SENSITIVITY = "sensitivity";
 	public static final String CONFIG_FALLOFF = "falloff_smoothing";
 	public static final String CONFIG_PARTICLES = "particle_spawn_rate";
-	protected static CProperties.Prop CONFIG = null;
+	protected static CProperties.PropDevice CONFIG = null;
 	public static float VOLTAGE, MOTOR_CURRENT_MIN, PARTICLE_SPAWN_RATE;
 	protected static final TMath.SoftMax SOFT_MAX = new TMath.SoftMax();
-	public static void configUpdated(CProperties.Prop prop) {
+	public static void configUpdated(CProperties.PropDevice prop) {
 		CONFIG = prop;
 		float motorPower = prop.getFloat(CONFIG_MOTOR_POWER).get();
 		float sigalPower = prop.getThermal().getPower() - motorPower;

@@ -60,12 +60,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCapability.Provider, IHaveGoggleInformation, MenuProvider, SoundScapeSource {
-	protected static CProperties.Prop CONFIG = null;
+	protected static CProperties.PropDevice CONFIG = null;
 	protected static Thermal THERMAL;
 	protected static ElectricFurnaceConfig EF_CONFIG;
 	protected static float DISSIPATOIN_DOOR_OPEN;
 	protected static float BLOW_POWER;
-	public static void configUpdated(CProperties.Prop prop) {
+	public static void configUpdated(CProperties.PropDevice prop) {
 		CONFIG = prop;
 		EF_CONFIG = prop.get(ElectricFurnaceConfig.class, "ef");
 		THERMAL = prop.getThermal();

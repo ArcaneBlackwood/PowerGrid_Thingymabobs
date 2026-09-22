@@ -26,7 +26,6 @@ import org.patryk3211.powergrid.circuits.components.IInteractableComponent;
 import org.patryk3211.powergrid.circuits.components.IGoggleLabel;
 import org.patryk3211.powergrid.circuits.components.Component;
 import org.patryk3211.powergrid.circuits.components.SwitchComponent;
-
 import java.util.Collection;
 import java.util.List;
 
@@ -38,8 +37,8 @@ public class SwitchSPDTComponent extends OrientableComponent implements IInterac
 		.addPad(4, 1, 2, "Normally Closed", "NC")
 		.withItem().withOutline().build();
 	
-	protected static CProperties.Prop CONFIG = null;
-	public static void configUpdated(CProperties.Prop prop) {
+	protected static CProperties.PropDevice CONFIG = null;
+	public static void configUpdated(CProperties.PropDevice prop) {
 		CONFIG = prop;
 		MAX_CURRENT.markDirty();
 		RESISTANCE.markDirty();

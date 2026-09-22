@@ -31,6 +31,11 @@ import dev.thingymabobs.component.TransformerComponent;
 import dev.thingymabobs.component.VariableBuzzerComponent;
 import dev.thingymabobs.component.base.ABuzzerComponent;
 import dev.thingymabobs.component.base.ARelay;
+import dev.thingymabobs.component.heatsink.AHeatSink;
+import dev.thingymabobs.component.heatsink.HeatSinkConfig;
+import dev.thingymabobs.component.heatsink.LargeHeatSink;
+import dev.thingymabobs.component.heatsink.MediumHeatSink;
+import dev.thingymabobs.component.heatsink.SmallHeatSink;
 import dev.thingymabobs.component.trancievers.ATrancieverComponent;
 import dev.thingymabobs.component.trancievers.DirectionalRecieverComponent;
 import dev.thingymabobs.component.trancievers.DistanceRecieverComponent;
@@ -40,12 +45,13 @@ import dev.thingymabobs.config.properties.CProperties;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.RegisterEvent;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import org.patryk3211.powergrid.circuits.components.Component;
 import org.patryk3211.powergrid.circuits.components.ComponentRegistry;
+import org.patryk3211.powergrid.circuits.components.Components;
+
+import com.mojang.datafixers.util.Pair;
 
 public final class ModComponents {
 	private static List<ComponentEntry> COMPONENT_QUEUE = new ArrayList<>();
@@ -181,6 +187,23 @@ public final class ModComponents {
 			.registerFloat(ThermistorComponent.CONFIG_BETA, 3500f)
 			.registerThermal(0.01f, 1f, CProperties.OVERHEAT_DEFAULT, CProperties.OVERHEAT_DEFAULT + 25f)
 			.complete(ThermistorComponent::configUpdated);
+		{
+			CProperties.register(Thingymabobs.asResource("config.heatsink"), HeatSinkConfig.register(
+					40f, 0.95f,
+					new Pair<ResourceLocation, Float>(Components.LIGHT_BULB.getId(), 0.05f)
+				)).complete();
+			AHeatSink sink;
+			CProperties.register(1, "large", register("heatsink_large", sink = new LargeHeatSink()))
+				.registerThermal(2f, 100f, 400, 800)
+				.complete(sink::configUpdated);
+			CProperties.register(1, "medium", register("heatsink_medium", sink = new MediumHeatSink()))
+				.registerThermal(1f, 50f, 400, 800)
+				.complete(sink::configUpdated);
+			CProperties.register(1, "small", register("heatsink_small", sink = new SmallHeatSink()))
+				.registerThermal(0.5f, 15f, 400, 800)
+				.complete(sink::configUpdated);
+		}
+
 
 		CProperties.register(register("switch_dpdt", new SwitchDPDTComponent()))
 			.registerResistance(0.1f)

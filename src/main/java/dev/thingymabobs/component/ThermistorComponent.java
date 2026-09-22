@@ -54,10 +54,10 @@ public class ThermistorComponent extends OrientableComponent {
 	public static final String CONFIG_TEMPERATURE = "base_temperature";
 	public static final String CONFIG_BETA = "beta";
 	public static final float TEMP_C2K = 273.15f;
-	protected static CProperties.Prop CONFIG = null;
+	protected static CProperties.PropDevice CONFIG = null;
 	protected static float RESISTANCE_TEMP = 298.15f;
 	protected static float BETA;
-	public static void configUpdated(CProperties.Prop prop) {
+	public static void configUpdated(CProperties.PropDevice prop) {
 		CONFIG = prop;
 		RESISTANCE_TEMP = prop.getFloat(CONFIG_TEMPERATURE).get() + TEMP_C2K;
 		BETA = prop.getFloat(CONFIG_BETA).get();
@@ -149,8 +149,7 @@ public class ThermistorComponent extends OrientableComponent {
 
 		Connection newState = null;
 		EXIT_EARLY: if (state.monitorBlock == null || state.monitorBlock.blockEntity.isRemoved()) {
-			if (placed.get(CONNECTION) != Connection.NONE.toProp())
-				newState = Connection.NONE;
+			newState = Connection.NONE;
 			state.monitorBlock = null;
 			if (!placed.getWorld().isLoaded(state.monitorBlockPos)) break EXIT_EARLY;
 			BlockEntity be = placed.getWorld().getBlockEntity(state.monitorBlockPos);
@@ -160,7 +159,7 @@ public class ThermistorComponent extends OrientableComponent {
 			state.monitorBlock = thermal;
 			newState = Connection.EXTERNAL;
 		}
-		if (newState != null) {
+		if (newState != null && newState.ordinal() != placed.get(CONNECTION)) {
 			placed.set(CONNECTION, newState.toProp());
 			placed.notifyClients(CONNECTION);
 		}
@@ -231,7 +230,7 @@ public class ThermistorComponent extends OrientableComponent {
 			return Connection.FRONT;
 		if (placed.get(FRONT_ONLY)) return Connection.NONE;
 		if (ComponentUtils.isTouchingInDirection(placed, facing.getOpposite(), other))
-			return Connection.FRONT;
+			return Connection.BACK;
 		return Connection.NONE;
 	}
 

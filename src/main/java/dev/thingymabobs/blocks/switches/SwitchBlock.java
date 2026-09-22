@@ -104,7 +104,7 @@ public abstract class SwitchBlock extends ElectricBlock implements IBE<SwitchBlo
 	}
 
 	abstract public void useSound(Level world, BlockPos pos, boolean open);
-	abstract protected CProperties.Prop getConfig();
+	abstract protected CProperties.PropDevice getConfig();
 
 	@Override
 	public Class<SwitchBlockEntity> getBlockEntityClass() {

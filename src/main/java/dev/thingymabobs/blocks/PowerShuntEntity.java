@@ -29,8 +29,8 @@ public class PowerShuntEntity extends ElectricBlockEntity {
 	protected PowerShuntValueBehaviour value;
 	protected SwitchedWire wire;
 
-	protected static CProperties.Prop CONFIG = null;
-	public static void configUpdated(CProperties.Prop prop) {
+	protected static CProperties.PropDevice CONFIG = null;
+	public static void configUpdated(CProperties.PropDevice prop) {
 		CONFIG = prop;
 	}
 	protected static int getPrecision() {

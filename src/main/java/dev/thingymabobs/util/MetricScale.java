@@ -47,9 +47,9 @@ public enum MetricScale {
 			.registerInt("unit_style", 0, 0, 1, 
 				"Used for property fields in components, it specifies how metric numbers are formatted.  0 has the format '1k2', 1 has the format '1.2k'");
 	}
-	protected static CProperties.Prop CONFIG = null;
+	protected static CProperties.PropDevice CONFIG = null;
 	protected static int UNIT_STYLE = 0;
-	public static void configUpdated(CProperties.Prop prop) {
+	public static void configUpdated(CProperties.PropDevice prop) {
 		CONFIG = prop;
 		UNIT_STYLE = prop.getInt("unit_style").get();
 	}

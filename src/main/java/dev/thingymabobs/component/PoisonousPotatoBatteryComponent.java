@@ -51,9 +51,9 @@ public final class PoisonousPotatoBatteryComponent extends OrientableComponent i
 			.withItem().withOutline().build();
 
 
-	protected static CProperties.Prop CONFIG = null;
+	protected static CProperties.PropDevice CONFIG = null;
 	protected static BatterySpec SPEC;
-	public static void configUpdated(CProperties.Prop prop) {
+	public static void configUpdated(CProperties.PropDevice prop) {
 		CONFIG = prop;
 		SPEC = prop.getBattery();
 	}

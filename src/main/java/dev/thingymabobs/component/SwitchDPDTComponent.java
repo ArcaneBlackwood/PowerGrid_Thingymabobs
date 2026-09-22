@@ -3,11 +3,8 @@ package dev.thingymabobs.component;
 import dev.thingymabobs.Thingymabobs;
 import dev.thingymabobs.component.properties.LazyConstantProperty;
 import dev.thingymabobs.config.properties.CProperties;
-import dev.thingymabobs.registry.ModSounds;
-
 import com.google.common.collect.ImmutableCollection;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -44,8 +41,8 @@ public class SwitchDPDTComponent extends OrientableComponent implements IInterac
 		.addPad(4, 2, 5, "Normally Closed", "NC")
 		.withItem().withOutline().build();
 	
-	protected static CProperties.Prop CONFIG = null;
-	public static void configUpdated(CProperties.Prop prop) {
+	protected static CProperties.PropDevice CONFIG = null;
+	public static void configUpdated(CProperties.PropDevice prop) {
 		CONFIG = prop;
 		MAX_CURRENT.markDirty();
 		RESISTANCE.markDirty();

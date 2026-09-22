@@ -7,7 +7,6 @@ import dev.thingymabobs.component.properties.LazyConstantProperty;
 import dev.thingymabobs.config.properties.CProperties;
 import dev.thingymabobs.config.properties.CProperties.ASubProp;
 import dev.thingymabobs.config.properties.CProperties.Builder;
-
 import com.google.common.collect.ImmutableCollection;
 import net.createmod.catnip.config.ConfigBase;
 import net.minecraft.network.chat.Component;
@@ -37,9 +36,9 @@ public class TransformerComponent extends OrientableComponent implements ICompon
 		.addPad(4, 3, 3, "Secondary 2", "S2")
 		.withItem().withOutline().build();
 
-	protected static CProperties.Prop CONFIG = null;
+	protected static CProperties.PropDevice CONFIG = null;
 	protected static Config CONFIG_TRANS;
-	public static void configUpdated(CProperties.Prop prop) {
+	public static void configUpdated(CProperties.PropDevice prop) {
 		CONFIG = prop;
 		CONFIG_TRANS = CONFIG.get(Config.class, Config.KEY);
 		TOTAL_TURNS.markDirty();

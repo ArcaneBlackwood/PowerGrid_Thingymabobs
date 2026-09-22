@@ -30,9 +30,9 @@ public class VariableBuzzerComponent extends ABuzzerComponent {
 		.addPad(2, 3, 3, "Pitch -", "P-")
 		.withItem().withOutline().build();
 	
-	protected static CProperties.Prop CONFIG = null;
+	protected static CProperties.PropDevice CONFIG = null;
 	protected static float VOLUME_POWER_MIN, VOLUME_POWER_MAX;
-	public static void configUpdated(CProperties.Prop prop) {
+	public static void configUpdated(CProperties.PropDevice prop) {
 		CONFIG = prop;
 		VOLUME_POWER_MIN = prop.getFloat(CONFIG_VOLUME0).get();
 		VOLUME_POWER_MAX = prop.getFloat(CONFIG_VOLUME1).get();

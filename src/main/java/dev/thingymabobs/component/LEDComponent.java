@@ -37,11 +37,11 @@ public class LEDComponent extends OrientableComponent implements IRenderedCompon
 		.withItem().withOutline().build();
 
 	public static String CONFIG_MIN_POWER = "power_min";
-	protected static CProperties.Prop CONFIG = null;
+	protected static CProperties.PropDevice CONFIG = null;
 	protected static SmallDiodeComponent.Config CONFIG_DIODE = null;
 	protected static float POWER_MIN_OFFSET;
 	protected static float POWER_DIFF_INV;
-	public static void configUpdated(CProperties.Prop prop) {
+	public static void configUpdated(CProperties.PropDevice prop) {
 		CONFIG = prop;
 		POWER_MIN_OFFSET = prop.getFloat(CONFIG_MIN_POWER).get();
 		POWER_DIFF_INV = 255 / (prop.getThermal().getPower() - POWER_MIN_OFFSET);

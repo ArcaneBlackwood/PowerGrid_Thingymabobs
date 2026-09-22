@@ -42,10 +42,10 @@ public class AccelerometerComponent extends AVertMirrorComponent {
 		
 	public static final String CONFIG_SENSITIVITY = "sensitivity";
 	public static final String CONFIG_FALLOFF = "falloff_smoothing";
-	protected static CProperties.Prop CONFIG = null;
+	protected static CProperties.PropDevice CONFIG = null;
 	public static float VOLTAGE;
 	protected static final TMath.SoftMax SOFT_MAX = new TMath.SoftMax();
-	public static void configUpdated(CProperties.Prop prop) {
+	public static void configUpdated(CProperties.PropDevice prop) {
 		CONFIG = prop;
 		VOLTAGE = Mth.sqrt(prop.getThermal().getPower() * prop.getResistance().get());
 		SOFT_MAX.setSmooth(prop.getFloat(CONFIG_FALLOFF).get());

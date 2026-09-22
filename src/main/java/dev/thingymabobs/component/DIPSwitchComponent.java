@@ -40,8 +40,8 @@ public class DIPSwitchComponent extends OrientableComponent implements IInteract
 		.addPad(1, 0, 1)
 		.withItem().withOutline().build();
 	
-	protected static CProperties.Prop CONFIG = null;
-	public static void configUpdated(CProperties.Prop prop) {
+	protected static CProperties.PropDevice CONFIG = null;
+	public static void configUpdated(CProperties.PropDevice prop) {
 		CONFIG = prop;
 		MAX_CURRENT.markDirty();
 		RESISTANCE.markDirty();

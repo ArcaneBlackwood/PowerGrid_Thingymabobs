@@ -31,8 +31,8 @@ public abstract class ARelay extends MirrorableComponent {
 	public static final String CONFIG_COIL= "coil";
 	public static final String CONFIG_SWITCH = "switch";
 	
-	protected CProperties.Prop CONFIG = null;
-	public void configUpdated(CProperties.Prop prop) {
+	protected CProperties.PropDevice CONFIG = null;
+	public void configUpdated(CProperties.PropDevice prop) {
 		CONFIG = prop;
 		if (THRESHOLD_VOLTAGE == null)
 			throw new IllegalStateException("Parameters not initialized.  Make sure to run initializeProperties in your addProperties.");

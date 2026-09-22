@@ -1,8 +1,6 @@
 package dev.thingymabobs.util.interaction;
 
 import java.util.UUID;
-
-import dev.thingymabobs.Thingymabobs;
 import dev.thingymabobs.registry.network.BiPacket;
 import dev.thingymabobs.registry.network.PacketTargets;
 import net.minecraft.client.Minecraft;

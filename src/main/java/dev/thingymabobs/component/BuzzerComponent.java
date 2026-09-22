@@ -27,9 +27,9 @@ public class BuzzerComponent extends ABuzzerComponent {
 		.addPad(2, 1, 1, "Volume", "V")
 		.withItem().withOutline().build();
 
-	protected static CProperties.Prop CONFIG = null;
+	protected static CProperties.PropDevice CONFIG = null;
 	protected static float VOLUME_POWER_MIN, VOLUME_POWER_MAX;
-	public static void configUpdated(CProperties.Prop prop) {
+	public static void configUpdated(CProperties.PropDevice prop) {
 		CONFIG = prop;
 		SOUND_PITCH_INV = 1f / prop.getFloat(CONFIG_SOUND_PITCH).get();
 		VOLUME_POWER_MIN = prop.getFloat(CONFIG_VOLUME0).get();

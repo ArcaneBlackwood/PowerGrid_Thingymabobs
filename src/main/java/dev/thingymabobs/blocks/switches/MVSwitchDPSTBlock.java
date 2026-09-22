@@ -7,9 +7,8 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.patryk3211.powergrid.collections.ModdedSoundEvents;
 import org.patryk3211.powergrid.electricity.base.IDecoratedTerminal;
 import org.patryk3211.powergrid.electricity.base.TerminalBoundingBox;
-
 import dev.thingymabobs.config.properties.CProperties;
-import dev.thingymabobs.config.properties.CProperties.Prop;
+import dev.thingymabobs.config.properties.CProperties.PropDevice;
 
 
 public class MVSwitchDPSTBlock extends SwitchBlock {
@@ -20,12 +19,12 @@ public class MVSwitchDPSTBlock extends SwitchBlock {
 			new TerminalBoundingBox(IDecoratedTerminal.CONNECTOR, 4.5, 0, 2.5, 7.5, 2, 4.5)
 	};
 
-	protected static CProperties.Prop CONFIG = null;
-	public static void configUpdated(CProperties.Prop prop) {
+	protected static CProperties.PropDevice CONFIG = null;
+	public static void configUpdated(CProperties.PropDevice prop) {
 		CONFIG = prop;
 	}
 	@Override
-	protected Prop getConfig() {
+	protected PropDevice getConfig() {
 		return CONFIG;
 	}
 

@@ -14,13 +14,11 @@ import org.patryk3211.powergrid.electricity.light.bulb.GrowthLamp;
 import org.patryk3211.powergrid.electricity.particles.SparkParticleData;
 import org.patryk3211.powergrid.electricity.sim.AbstractElectricWire;
 import org.patryk3211.powergrid.electricity.sim.SwitchedWire;
-import dev.thingymabobs.Thingymabobs;
 import dev.thingymabobs.config.properties.CProperties;
 import dev.thingymabobs.config.properties.CProperties.ASubProp;
 import dev.thingymabobs.registry.ModAttachments;
 import dev.thingymabobs.registry.ModBlockEntities;
 import dev.thingymabobs.registry.network.PacketTargets;
-
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.tterrag.registrate.util.entry.ItemEntry;
 import net.createmod.catnip.config.ConfigBase;
@@ -78,13 +76,13 @@ public class LavaLampEntity extends ElectricBlockEntity implements ElectricBehav
 		}
 	}
 
-	protected static CProperties.Prop CONFIG = null;
+	protected static CProperties.PropDevice CONFIG = null;
 	protected static Config CONFIG_PROPS;
 	protected static LavaLampThermalBehaviour.Properties CONFIG_THERMAL;
 	public static final ItemEntry<GrowthLamp> BULB = ModdedItems.GROWTH_LAMP;
 	public static float RESISTANCE_MIN;
 	public static float RESISTANCE_MAX;
-	public static void configUpdated(CProperties.Prop prop) {
+	public static void configUpdated(CProperties.PropDevice prop) {
 		CONFIG = prop;
 		CONFIG_PROPS = prop.get(Config.class, "llp");
 		CONFIG_THERMAL = prop.get(LavaLampThermalBehaviour.Properties.class, "llt");

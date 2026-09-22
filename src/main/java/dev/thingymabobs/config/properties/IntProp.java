@@ -1,6 +1,5 @@
 package dev.thingymabobs.config.properties;
 
-import dev.thingymabobs.Thingymabobs;
 import dev.thingymabobs.config.properties.CProperties.ASubProp;
 import net.createmod.catnip.config.ConfigBase;
 
@@ -36,6 +35,7 @@ public class IntProp extends ASubProp {
 	@Override
 	public void onLoad() {
 		unloaded = false;
+		super.onLoad();
 	}
 	@Override
 	public Class<?> getType() {

@@ -31,9 +31,9 @@ public class SmallDiodeComponent extends VerticallyOrientableComponent {
 		.addPad(1, 0, 1, "-Anode", "-A")
 		.withItem().withOutline().build();
 	
-	protected static CProperties.Prop CONFIG = null;
+	protected static CProperties.PropDevice CONFIG = null;
 	protected static Config CONFIG_DIODE = null;
-	public static void configUpdated(CProperties.Prop prop) {
+	public static void configUpdated(CProperties.PropDevice prop) {
 		CONFIG = prop;
 		CONFIG_DIODE = prop.get(Config.class, Config.KEY);
 		BREAKDOWN_VOLTAGE.markDirty();

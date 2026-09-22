@@ -39,6 +39,8 @@ neoForge {
 		mappingsVersion = parchment_mappings_version
 		minecraftVersion = minecraft_version
 	}
+	validateAccessTransformers = true
+	accessTransformers.from "src/main/resources/META-INF/accesstransformer.cfg"
 	
 	runs {
 		client {

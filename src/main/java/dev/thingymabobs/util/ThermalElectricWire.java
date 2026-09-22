@@ -20,8 +20,15 @@ public class ThermalElectricWire extends AbstractElectricWire {
 	public double power() {
 		return nextPower;
 	}
+	@Override
+	public boolean isConverged() {
+		return true;
+	}
 
 	public void setTemperature(float ambientTemp, float target) {
 		nextPower = dissipation*(target - ambientTemp);
+	}
+	public void setPower(float power) {
+		nextPower = power;
 	}
 }

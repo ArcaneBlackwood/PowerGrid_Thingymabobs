@@ -3,7 +3,6 @@ package dev.thingymabobs.component;
 import dev.thingymabobs.Thingymabobs;
 import dev.thingymabobs.component.properties.LazyConstantProperty;
 import dev.thingymabobs.config.properties.CProperties;
-
 import com.google.common.collect.ImmutableCollection;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -27,7 +26,6 @@ import org.patryk3211.powergrid.circuits.components.IInteractableComponent;
 import org.patryk3211.powergrid.circuits.components.IGoggleLabel;
 import org.patryk3211.powergrid.circuits.components.Component;
 import org.patryk3211.powergrid.circuits.components.SwitchComponent;
-
 import java.util.Collection;
 import java.util.List;
 
@@ -40,8 +38,8 @@ public class SwitchDPSTComponent extends OrientableComponent implements IInterac
 		.addPad(3, 2, 3, "Normally Open", "NO")
 		.withItem().withOutline().build();
 	
-	protected static CProperties.Prop CONFIG = null;
-	public static void configUpdated(CProperties.Prop prop) {
+	protected static CProperties.PropDevice CONFIG = null;
+	public static void configUpdated(CProperties.PropDevice prop) {
 		CONFIG = prop;
 		MAX_CURRENT.markDirty();
 		RESISTANCE.markDirty();

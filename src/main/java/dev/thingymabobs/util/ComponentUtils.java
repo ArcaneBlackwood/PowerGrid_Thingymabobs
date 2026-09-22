@@ -2,29 +2,36 @@ package dev.thingymabobs.util;
 
 import java.util.List;
 import java.util.stream.Stream;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
 import org.joml.Vector2ic;
 import org.patryk3211.powergrid.circuits.circuitboard.CircuitBoardBlock;
 import org.patryk3211.powergrid.circuits.circuitboard.CircuitBoardBlockEntity;
+import org.patryk3211.powergrid.circuits.components.ComponentModels;
+import org.patryk3211.powergrid.circuits.components.IInteractableComponent;
 import org.patryk3211.powergrid.circuits.components.VerticallyOrientableComponent;
 import org.patryk3211.powergrid.circuits.components.properties.Orientation;
 import org.patryk3211.powergrid.circuits.schematic.PlacedComponent;
 import org.patryk3211.powergrid.circuits.thermal.ThermalUnit;
 import org.patryk3211.powergrid.electricity.base.AThermalBehaviour;
-
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
-
-import dev.thingymabobs.component.trancievers.ATrancieverComponent;
-import dev.thingymabobs.component.trancievers.AVertTrancieverComponent;
 import dev.thingymabobs.mixin.PlacedComponentExt;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.model.data.ModelData;
 
 public final class ComponentUtils {
 	
@@ -133,7 +140,9 @@ public final class ComponentUtils {
 	}
 	public static @Nullable AThermalBehaviour getThermalExternal(@NotNull PlacedComponent placed, Direction direction) {
 		BlockPos pos = placed.getPos().relative(ComponentUtils.getGlobalFacing(placed));
-
+		return getThermalExternal(placed, pos);
+	}
+	public static @Nullable AThermalBehaviour getThermalExternal(@NotNull PlacedComponent placed, BlockPos pos) {
 		AThermalBehaviour thermal = null;
 		if (placed.getWorld().isLoaded(pos)) {
 			BlockEntity be = placed.getWorld().getBlockEntity(pos);
@@ -145,8 +154,10 @@ public final class ComponentUtils {
 
 	public static boolean isOnEdge(@NotNull PlacedComponent placed) {
 		Orientation facing = placed.get(Orientation.PROPERTY);
-		if (!(placed.x==0 && facing == Orientation.LEFT) && !(placed.x==15 && facing == Orientation.RIGHT)
-			&&!(placed.y==0 && facing == Orientation.UP) && !(placed.y==15 && facing == Orientation.DOWN)) return false;
+		float w = placed.footprint().getWidth();
+		float h = placed.footprint().getHeight();
+		if (!(placed.x==0 && facing == Orientation.LEFT) && !(placed.x+w==16 && facing == Orientation.RIGHT)
+			&&!(placed.y==0 && facing == Orientation.UP) && !(placed.y+h==16 && facing == Orientation.DOWN)) return false;
 		return true;
 	}
 	public static boolean isTouchingInDirection(@NotNull PlacedComponent placed, Orientation facing, PlacedComponent other) {
@@ -156,6 +167,28 @@ public final class ComponentUtils {
 				placed.footprint().getWidth(), placed.footprint().getHeight()))
 			return true;
 		return false;
+	}
+
+	@OnlyIn(Dist.CLIENT)
+	public static float getHeight(@NotNull PlacedComponent placed) {
+		if (placed.component instanceof IInteractableComponent comp) {
+			AABB bounds = comp.getShape(placed).bounds();
+			return (float)(bounds.maxY - bounds.minY) * 16;
+		}
+
+		ResourceLocation modelId = placed.component.getModelId(placed);
+		if (modelId == null) return 16;
+        var manager = Minecraft.getInstance().getModelManager();
+        BakedModel model = manager.getModel(ComponentModels.modelId(modelId));
+		if (model == manager.getMissingModel()) return 16;
+		List<BakedQuad> quads = model.getQuads(placed.getWorld().getBlockState(placed.getPos()), null, null, ModelData.EMPTY, RenderType.SOLID);
+		double min = 16, max = 0;
+		for (BakedQuad quad : quads) {
+			AABB bounds = BakedQuadEditor.fromLinked(quad, DefaultVertexFormat.BLOCK).getBounds();
+			if (bounds.minY < min) min = bounds.minY;
+			if (bounds.maxY > max) max = bounds.maxY;
+		}
+		return (float)(min > max ? 16 : (max-min) * 16);
 	}
 	
 	//private static final Vector2ic UP = new Vector2i(1,0), DOWN = new Vector2i(-1,0),

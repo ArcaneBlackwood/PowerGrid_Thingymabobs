@@ -65,6 +65,14 @@ public final class ModModels {
 	public static final ResourceLocation THI_B = Thingymabobs.asResource("temperature/thermistor_connected_b");
 	public static final ResourceLocation THI_EX = Thingymabobs.asResource("temperature/thermistor_external");
 
+	public static final ResourceLocation HEAT_SMALL = Thingymabobs.asResource("temperature/heat_sink_small");
+	public static final ResourceLocation HEAT_MEDIUM = Thingymabobs.asResource("temperature/heat_sink_medium");
+	public static final ResourceLocation HEAT_LARGE = Thingymabobs.asResource("temperature/heat_sink_large");
+	public static final ResourceLocation HEAT_SMALL_EXT = Thingymabobs.asResource("temperature/heat_sink_small_external");
+	public static final ResourceLocation HEAT_MEDIUM_EXT = Thingymabobs.asResource("temperature/heat_sink_medium_external");
+	public static final ResourceLocation HEAT_LARGE_EXT = Thingymabobs.asResource("temperature/heat_sink_large_external");
+	public static final PartialModel HEAT_PAD = component("temperature/heat_sink_pad");
+
 
 	public static final PartialModel[] FURN_INTERNAL = {
 		block("electric_furnace/internal"),	block("electric_furnace/internal1-0"), block("electric_furnace/internal2-0"), block("electric_furnace/internal3-0"),

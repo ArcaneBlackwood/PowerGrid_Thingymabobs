@@ -31,7 +31,7 @@ import dev.thingymabobs.registry.ModBlockEntities;
 public class PoisonousPotatoBattery extends AbstractBatteryBlock<PoisonousPotatoBatteryEntity> {
 	public static final String CONFIG_RECHARGE = "recharge_power";
 
-	public static float getRecharge(CProperties.Prop prop) {
+	public static float getRecharge(CProperties.PropDevice prop) {
 		return prop.getFloat(CONFIG_RECHARGE).get();
 	}
 

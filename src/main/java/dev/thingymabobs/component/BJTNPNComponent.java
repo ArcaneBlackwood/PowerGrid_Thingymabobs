@@ -25,8 +25,8 @@ public class BJTNPNComponent extends OrientableComponent {
 
 
 	public static final String CONFIG_GAIN = "gain";
-	protected static CProperties.Prop CONFIG = null;
-	public static void configUpdated(CProperties.Prop prop) {
+	protected static CProperties.PropDevice CONFIG = null;
+	public static void configUpdated(CProperties.PropDevice prop) {
 		CONFIG = prop;
 		GAIN.markDirty();
 	}

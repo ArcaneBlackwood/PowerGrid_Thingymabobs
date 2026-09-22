@@ -56,6 +56,7 @@ public class BatterySpec extends ASubProp implements org.patryk3211.powergrid.el
 	public void onLoad() {
 		unloaded = false;
 		precompute();
+		super.onLoad();
 	}
 	public void precompute() {
 		float diff = getResistMax() - getResistMin();

@@ -41,7 +41,7 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
 	protected int colorBase, colorGlass, colorPlasma;
 	protected int state;
 
-	protected static CProperties.Prop CONFIG = null;
+	protected static CProperties.PropDevice CONFIG = null;
 	public static final String CONFIG_MAX_TENDRILS = "max_tendrils";
 	public static final String CONFIG_TENDRIL_LIFE = "tendril_lifetime";
 	public static final String CONFIG_TENDRIL_LIFE_VARY = "tendril_lifetime_vary";
@@ -57,7 +57,7 @@ public class PlasmaGlobeEntity extends ElectricBlockEntity implements ElectricBe
 	protected static int TRNDRIL_LIFE = 220;
 	protected static int TRNDRIL_LIFE_VARY = 180;
 	protected static int RANDOM_INT_MAX;
-	public static void configUpdated(CProperties.Prop prop) {
+	public static void configUpdated(CProperties.PropDevice prop) {
 		CONFIG = prop;
 
 		float power = prop.getThermal().getPower();
