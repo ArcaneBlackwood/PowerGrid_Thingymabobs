@@ -43,19 +43,19 @@ import net.neoforged.api.distmarker.OnlyIn;
 
 public class ThermalRTDComponent extends Component implements IRenderableUIComponent {
 	private static final ComponentFootprint FOOTPRINT = new ComponentFootprint.Builder(
-			3,3, null, Thingymabobs.MOD_ID + ".component.rtd")
-		.addPadSharedText(0, 0, 0, "0")
-		.addPadSharedText(0, 2, 1, "0")
+			3,3, null, null)
+		.addPad(0, 0, 0)
+		.addPad(0, 2, 1)
 		.withItem().withOutline().withArrow(Orientation.RIGHT).build();
 	private static final ComponentFootprint FOOTPRINT_DOWN = new ComponentFootprint.Builder(
-			3,3, null, Thingymabobs.MOD_ID + ".component.rtd")
-		.addPadSharedText(1, 0, 0, "0")
-		.addPadSharedText(1, 2, 1, "0")
+			3,3, null, null)
+		.addPad(1, 0, 0)
+		.addPad(1, 2, 1)
 		.withItem().withOutline().build();
 	private static final ComponentFootprint FOOTPRINT_UP = new ComponentFootprint.Builder(
-			3,3, null, Thingymabobs.MOD_ID + ".component.rtd")
-		.addPadSharedText(1, 0, 0, "0")
-		.addPadSharedText(1, 2, 1, "0")
+			3,3, null, null)
+		.addPad(1, 0, 0)
+		.addPad(1, 2, 1)
 		.withItem().withOutline().build();
 	private static final ComponentFootprint[] FOOTPRINT_ROTS = new ComponentFootprint[4];
 	private static final ComponentFootprint[] FOOTPRINT_DOWN_ROTS = new ComponentFootprint[2];

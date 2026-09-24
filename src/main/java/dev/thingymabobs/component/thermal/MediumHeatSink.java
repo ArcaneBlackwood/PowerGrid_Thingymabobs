@@ -6,15 +6,14 @@ import org.jetbrains.annotations.NotNull;
 import org.patryk3211.powergrid.circuits.components.properties.Orientation;
 import org.patryk3211.powergrid.circuits.schematic.ComponentFootprint;
 import org.patryk3211.powergrid.circuits.schematic.PlacedComponent;
-import dev.thingymabobs.Thingymabobs;
 import dev.thingymabobs.registry.ModModels;
 import net.minecraft.resources.ResourceLocation;
 
 public class MediumHeatSink extends AHeatSink {
 	private static final ComponentFootprint FOOTPRINT = new ComponentFootprint.Builder(
-			3, 8, null, Thingymabobs.MOD_ID + ".heatsink")
-		.addPadSharedText(1, 1, 0, "0")
-		.addPadSharedText(1, 6, 0, "1")
+			3, 8, null, null)
+		.addPad(1, 1, 0)
+		.addPad(1, 6, 0)
 		.withItem().withOutline().withArrow(Orientation.RIGHT).build();
 
 	public MediumHeatSink() {
