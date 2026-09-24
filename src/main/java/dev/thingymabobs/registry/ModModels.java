@@ -65,6 +65,13 @@ public final class ModModels {
 	public static final ResourceLocation THI_B = Thingymabobs.asResource("temperature/thermistor_connected_b");
 	public static final ResourceLocation THI_EX = Thingymabobs.asResource("temperature/thermistor_external");
 
+	public static final ResourceLocation RTD = Thingymabobs.asResource("temperature/rtd");
+	public static final ResourceLocation RTD_EX= Thingymabobs.asResource("temperature/rtd_external");
+	public static final ResourceLocation RTD_UP = Thingymabobs.asResource("temperature/rtd_up");
+	public static final ResourceLocation RTD_UP_EX= Thingymabobs.asResource("temperature/rtd_up_external");
+	public static final ResourceLocation RTD_DOWN = Thingymabobs.asResource("temperature/rtd_down");
+	public static final ResourceLocation RTD_DOWN_EX= Thingymabobs.asResource("temperature/rtd_down_external");
+
 	public static final ResourceLocation HEAT_SMALL = Thingymabobs.asResource("temperature/heat_sink_small");
 	public static final ResourceLocation HEAT_MEDIUM = Thingymabobs.asResource("temperature/heat_sink_medium");
 	public static final ResourceLocation HEAT_LARGE = Thingymabobs.asResource("temperature/heat_sink_large");
@@ -94,6 +101,9 @@ public final class ModModels {
 	public static final PartialModel FURN_TEMPERATURE = block("electric_furnace/temperature");
 
 	public static final PartialModel PLASMA_GLOBE = block("plasma_globe/plasmaglobe");
+
+
+   	public static final ResourceLocation ARROWS_INOUT = texture("gui/circuit_arrows_inout");
 	
 	@OnlyIn(Dist.CLIENT)
 	public static void registerClient() {
@@ -104,5 +114,8 @@ public final class ModModels {
 	}
 	public static PartialModel component(String path) {
 		return PartialModel.of(Thingymabobs.asResource("component/"+path));
+	}
+	public static ResourceLocation texture(String path) {
+		return Thingymabobs.asResource("textures/" + path + ".png");
 	}
 }

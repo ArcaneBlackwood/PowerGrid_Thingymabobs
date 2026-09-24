@@ -26,16 +26,17 @@ import dev.thingymabobs.component.SwitchDPSTComponent;
 import dev.thingymabobs.component.SwitchSPDTComponent;
 import dev.thingymabobs.component.SwitchTPSTComponent;
 import dev.thingymabobs.component.TallConnectorComponent;
-import dev.thingymabobs.component.ThermistorComponent;
 import dev.thingymabobs.component.TransformerComponent;
 import dev.thingymabobs.component.VariableBuzzerComponent;
 import dev.thingymabobs.component.base.ABuzzerComponent;
 import dev.thingymabobs.component.base.ARelay;
-import dev.thingymabobs.component.heatsink.AHeatSink;
-import dev.thingymabobs.component.heatsink.HeatSinkConfig;
-import dev.thingymabobs.component.heatsink.LargeHeatSink;
-import dev.thingymabobs.component.heatsink.MediumHeatSink;
-import dev.thingymabobs.component.heatsink.SmallHeatSink;
+import dev.thingymabobs.component.thermal.AHeatSink;
+import dev.thingymabobs.component.thermal.HeatSinkConfig;
+import dev.thingymabobs.component.thermal.LargeHeatSink;
+import dev.thingymabobs.component.thermal.MediumHeatSink;
+import dev.thingymabobs.component.thermal.SmallHeatSink;
+import dev.thingymabobs.component.thermal.ThermalRTDComponent;
+import dev.thingymabobs.component.thermal.ThermistorComponent;
 import dev.thingymabobs.component.trancievers.ATrancieverComponent;
 import dev.thingymabobs.component.trancievers.DirectionalRecieverComponent;
 import dev.thingymabobs.component.trancievers.DistanceRecieverComponent;
@@ -187,6 +188,14 @@ public final class ModComponents {
 			.registerFloat(ThermistorComponent.CONFIG_BETA, 3500f)
 			.registerThermal(0.01f, 1f, CProperties.OVERHEAT_DEFAULT, CProperties.OVERHEAT_DEFAULT + 25f)
 			.complete(ThermistorComponent::configUpdated);
+		CProperties.register(register("rtd", new ThermalRTDComponent()))
+			.registerFloat(ThermalRTDComponent.CONFIG_RESISTANCE, 100f, 10f, 1000f, 
+				"Base resistance at base temperature.  Resistance calculated by: base resist + beta * (temp - base temp)")
+			.registerFloat(ThermalRTDComponent.CONFIG_TEMPERATURE, 0f, "Degrees celsius")
+			.registerFloat(ThermalRTDComponent.CONFIG_BETA, 0.385f, "Represents ohms per degree.")
+			.registerResistance(CProperties.MIN, 2f)
+			.registerThermal(0.02f, 20f, 950, 1100)
+			.complete(ThermalRTDComponent::configUpdated);
 		{
 			CProperties.register(Thingymabobs.asResource("config.heatsink"), HeatSinkConfig.register(
 					40f, 0.95f,

@@ -44,35 +44,7 @@ public final class ComponentUtils {
 		};
 		if (placed.getPos() == null) return compFacing;
 
-		BlockState board = placed.getWorld().getBlockState(placed.getPos());
-		Direction facing = board.getValue(CircuitBoardBlock.HORIZONTAL_FACING);
-
-
-		Direction compFacingVertical = compFacing.getCounterClockWise(Axis.X);
-		return switch (board.getValue(CircuitBoardBlock.ROTATION)) {
-			case 0 -> switch(facing) {
-				case NORTH -> compFacing;
-				case EAST -> compFacing.getClockWise();
-				case SOUTH -> compFacing.getOpposite();
-				case WEST -> compFacing.getCounterClockWise();
-				default -> null;
-			};
-			case 2 -> switch(facing) {
-				case NORTH -> compFacing;
-				case EAST -> compFacing.getCounterClockWise();
-				case SOUTH -> compFacing.getOpposite();
-				case WEST -> compFacing.getClockWise();
-				default -> null;
-			};
-			case 1 -> switch(facing) {
-				case NORTH -> compFacingVertical;
-				case EAST -> compFacingVertical.getClockWise();
-				case SOUTH -> compFacingVertical.getOpposite();
-				case WEST -> compFacingVertical.getCounterClockWise();
-				default -> null;
-			};
-			default -> null;
-		};
+		return getGlobalDirection(placed, compFacing);
 	}
 	public static Direction getGlobalFacingVertical(PlacedComponent placed) {
 		boolean compVertical = placed.get(VerticallyOrientableComponent.VERTICAL);
@@ -85,20 +57,22 @@ public final class ComponentUtils {
 			};
 		if (placed.getPos() == null) return compFacing;
 
+		return getGlobalDirection(placed, compFacing);
+	}
+	public static Direction getGlobalDirection(PlacedComponent placed, Direction compFacing) {
 		BlockState board = placed.getWorld().getBlockState(placed.getPos());
 		Direction facing = board.getValue(CircuitBoardBlock.HORIZONTAL_FACING);
 
-
 		Direction compFacingVertical = compFacing.getCounterClockWise(Axis.X);
 		return switch (board.getValue(CircuitBoardBlock.ROTATION)) {
-			case 0 -> compVertical ? compFacing : switch(facing) {
+			case 0 -> compFacing.getAxis() == Axis.Y ? compFacing : switch(facing) {
 				case NORTH -> compFacing;
 				case EAST -> compFacing.getClockWise();
-				case SOUTH -> compVertical ? compFacing : compFacing.getOpposite();
+				case SOUTH -> compFacing.getOpposite();
 				case WEST -> compFacing.getCounterClockWise();
 				default -> null;
 			};
-			case 2 -> compVertical ? compFacing.getOpposite() : switch(facing) {
+			case 2 -> compFacing.getAxis() == Axis.Y ? compFacing : switch(facing) {
 				case NORTH -> compFacing;
 				case EAST -> compFacing.getCounterClockWise();
 				case SOUTH -> compFacing.getOpposite();
@@ -139,7 +113,7 @@ public final class ComponentUtils {
 		return units.isEmpty() ? null : units.getFirst();
 	}
 	public static @Nullable AThermalBehaviour getThermalExternal(@NotNull PlacedComponent placed, Direction direction) {
-		BlockPos pos = placed.getPos().relative(ComponentUtils.getGlobalFacing(placed));
+		BlockPos pos = placed.getPos().relative(ComponentUtils.getGlobalDirection(placed, direction));
 		return getThermalExternal(placed, pos);
 	}
 	public static @Nullable AThermalBehaviour getThermalExternal(@NotNull PlacedComponent placed, BlockPos pos) {
@@ -154,6 +128,9 @@ public final class ComponentUtils {
 
 	public static boolean isOnEdge(@NotNull PlacedComponent placed) {
 		Orientation facing = placed.get(Orientation.PROPERTY);
+		return isOnEdge(placed, facing);
+	}
+	public static boolean isOnEdge(@NotNull PlacedComponent placed, Orientation facing) {
 		float w = placed.footprint().getWidth();
 		float h = placed.footprint().getHeight();
 		if (!(placed.x==0 && facing == Orientation.LEFT) && !(placed.x+w==16 && facing == Orientation.RIGHT)

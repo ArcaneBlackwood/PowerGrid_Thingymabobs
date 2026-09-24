@@ -24,6 +24,9 @@ import net.neoforged.neoforge.common.ModConfigSpec.ConfigValue;
 public final class CProperties extends ConfigBase implements ResistanceValues.Provider, ThermalValues.Provider {
 	public static final String VOLTAGE = "voltage";
 	public static final String POWER = "power";
+	public static final String CURRENT = "current";
+	public static final String MIN = "minimum";
+	public static final String MAX = "maximum";
 
 	public static final CProperties INSTANCE = new CProperties();
 	public static final float TEMP_MAX_DEFAULT = 150f;

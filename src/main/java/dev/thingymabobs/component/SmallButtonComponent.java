@@ -17,7 +17,7 @@ import org.patryk3211.powergrid.electricity.sim.SwitchedWire;
 import org.patryk3211.powergrid.utility.Unit;
 import com.google.common.collect.ImmutableCollection;
 import dev.thingymabobs.Thingymabobs;
-import dev.thingymabobs.component.base.VariantComponent.Variant;
+import dev.thingymabobs.component.base.AVariantComponent.Variant;
 import dev.thingymabobs.component.base.VariantOrientableComponent;
 import dev.thingymabobs.component.properties.LazyConstantProperty;
 import dev.thingymabobs.config.properties.CProperties;

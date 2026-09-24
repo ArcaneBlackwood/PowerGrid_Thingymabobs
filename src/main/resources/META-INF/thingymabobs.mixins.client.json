@@ -8,7 +8,8 @@
 		"HumanoidModelMixin",
 		"SoundBufferMixin",
 		"SoundEngineMixin",
-		"KeyMappingMixin"
+		"KeyMappingMixin",
+		"ComponentFootprintMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

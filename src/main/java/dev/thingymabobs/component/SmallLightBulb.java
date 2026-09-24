@@ -3,12 +3,14 @@ package dev.thingymabobs.component;
 import dev.thingymabobs.Thingymabobs;
 import dev.thingymabobs.component.properties.LazyConstantProperty;
 import dev.thingymabobs.config.properties.CProperties;
+import dev.thingymabobs.mixin.ISynchronizedComponent;
 import dev.thingymabobs.registry.ModModels;
 import com.google.common.collect.ImmutableCollection;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.foundation.render.RenderTypes;
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 import net.createmod.catnip.render.CachedBuffers;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.DyeColor;
@@ -32,7 +34,7 @@ import org.patryk3211.powergrid.utility.Unit;
 import java.util.Collection;
 import java.util.List;
 
-public class SmallLightBulb extends VerticallyOrientableComponent implements IRenderedComponent, IGoggleLabel {
+public class SmallLightBulb extends VerticallyOrientableComponent implements IRenderedComponent, IGoggleLabel, ISynchronizedComponent {
 	private static final ComponentFootprint FOOTPRINT_L = new ComponentFootprint.Builder(
 			2,2, Thingymabobs.MOD_ID + ".component.light_bulb", null)
 		.addPad(0, 0, 0)
@@ -84,19 +86,34 @@ public class SmallLightBulb extends VerticallyOrientableComponent implements IRe
 				if (T < 10) T = 10f;
 				wire.setResistance(20f + (RES_MAX - 20f) / 1450f * T);
 				var x = Mth.clamp((T - 600f) / (1400f - 600f), 0, 1);
-				data.current = x * x;
+				data.next = x * x;
 			});
 	}
 
 
 	@Override
 	public boolean tick(@NotNull PlacedComponent placed) {
-		if(!placed.isClient())
-			return false;
-	  	if (placed.customData != null && placed.customData instanceof FloatPair data)
-			data.prev = data.current;
+		if(!placed.isClient()) return true;
+	  	if (!(placed.customData != null && placed.customData instanceof FloatPair data)) return true;
+
+		data.prev = data.current;
+		data.current = data.next;
 		return true;
 	}
+	@Override
+	public void writeToSync(PlacedComponent placed, FriendlyByteBuf buf) {
+	  	if (!(placed.customData != null && placed.customData instanceof FloatPair data)) return;
+		byte intensity = (byte)(Math.clamp(data.next * 255, 0, 255));
+		buf.writeByte(intensity);
+	}
+	@Override
+	public void readFromSync(PlacedComponent placed, FriendlyByteBuf buf) {
+	  	if (!(placed.customData != null && placed.customData instanceof FloatPair data)) return;
+		data.next = (buf.readByte() & 0xFF) / 255f;
+	}
+
+
+
 	@Override
 	public void render(CircuitBoardBlockEntity be, PlacedComponent placed, float partialTicks, PoseStack ms, net.minecraft.client.renderer.MultiBufferSource bufferSource, int light, int overlay) {
 		int color = placed.get(COLOR).getTextureDiffuseColor();
@@ -156,6 +173,7 @@ public class SmallLightBulb extends VerticallyOrientableComponent implements IRe
 	public static class FloatPair {
 		public float prev;
 		public float current;
+		public float next;
 		public FloatPair() { }
 		public float lerped(float partial) {
 			return Mth.lerp(partial, this.prev, this.current);

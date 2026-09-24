@@ -1,6 +1,5 @@
 package dev.thingymabobs.blocks.electricfurnace;
 
-import dev.thingymabobs.Thingymabobs;
 import dev.thingymabobs.client.SoundScapeSource;
 import dev.thingymabobs.config.properties.CProperties;
 import dev.thingymabobs.config.properties.Thermal;
@@ -69,7 +68,6 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
 		CONFIG = prop;
 		EF_CONFIG = prop.get(ElectricFurnaceConfig.class, "ef");
 		THERMAL = prop.getThermal();
-		Thingymabobs.LOGGER.info("ElectricFurnaceEntity config: "+prop+", thermals: "+THERMAL);
 		DISSIPATOIN_DOOR_OPEN = ThermalBehaviour.dissipationFactor(THERMAL.getPower(), EF_CONFIG.getDoorOpenTemp()) 
 			- ThermalBehaviour.dissipationFactor(THERMAL.getPower(), THERMAL.getTemp());
 		BLOW_POWER = THERMAL.getPower() * 18 / 13 * EF_CONFIG.getCoilPowerMul();
@@ -226,14 +224,22 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
 			shadow.add(inputInventory.getItem(i));
 		return shadow;
 	}
-	private List<ItemStack> getShadowCopy() {
+	private List<ItemStack> getShadowOutput() {
+		List<ItemStack> shadow = inventoryShadow.get();
+		if (shadow == null) inventoryShadow.set(shadow = new ArrayList<>(SLOTS_INPUT));
+		shadow.clear();
+		for (int i = 0; i < SLOTS_INPUT; i++)
+			shadow.add(outputInventory.getItem(i));
+		return shadow;
+	}
+	/*private List<ItemStack> getShadowCopy() {
 		List<ItemStack> shadow = inventoryShadow.get();
 		if (shadow == null) inventoryShadow.set(shadow = new ArrayList<>(SLOTS_INPUT));
 		shadow.clear();
 		for (int i = 0; i < SLOTS_INPUT; i++)
 			shadow.add(inputInventory.getItem(i).copy());
 		return shadow;
-	}
+	}*/
 
 
 	@Override
@@ -252,21 +258,22 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
 		if (level.isClientSide) {
 			doorState = ElectricFurnaceRenderer.approach(doorState, isDoorOpen() ? 1 : 0,
 				ElectricFurnaceRenderer.DOOR_SPEED * 0.05f);
-			return;
 		}
-		if (thermalBehaviour == null) return;
-		if (cachedAmbientTemperature < -500) 
-			cachedAmbientTemperature = AThermalBehaviour.getAmbientTemperature(level, getBlockPos());
-		if (isDoorOpen())
-			thermalBehaviour.applyTickPower(-DISSIPATOIN_DOOR_OPEN * (thermalBehaviour.getTemperature() - cachedAmbientTemperature));
 		if (contentsChanged) {
 			contentsChanged = false;
 			if (recipe == null)
 				findRecipe();
 			else if (recipe.testRecipe(level, getShadow(), EF_CONFIG.getItemsPerProcess(), null) != recipe.getMultiplier() || recipe.getMultiplier() == 0)
 				findRecipe();
-			notifyUpdate();
+			if (!level.isClientSide) notifyUpdate();
 		}
+		if (level.isClientSide) return;
+
+		if (thermalBehaviour == null) return;
+		if (cachedAmbientTemperature < -500) 
+			cachedAmbientTemperature = AThermalBehaviour.getAmbientTemperature(level, getBlockPos());
+		if (isDoorOpen())
+			thermalBehaviour.applyTickPower(-DISSIPATOIN_DOOR_OPEN * (thermalBehaviour.getTemperature() - cachedAmbientTemperature));
 
 		float temp = thermalBehaviour.getTemperature();
 		for (int i = 0; i < SLOTS_OUTPUT; i++) {
@@ -286,9 +293,7 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
 			if (burnTimeOutputs[i] >= EF_CONFIG.getBurnTicks()) {
 				burnTimeOutputs[i] = 0;
 				List<ItemStack> outputs = ElectricFurnaceRecipe.Either.getBurntOutputItem(level.random, EF_CONFIG.getItemsPerProcess(), slot);
-				Thingymabobs.LOGGER.info("Burnt output: "+i+" "+slot+" into #"+outputs.size());
 				for (ItemStack output : outputs) {
-					Thingymabobs.LOGGER.info("   item: "+output);
 					addToOutput(output, i);
 				}
 			}
@@ -324,12 +329,15 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
 		}
 	}
 	private void applyRecipe() {
+		if (contentsChanged) return;
 		List<ItemStack> outputs = recipe.applyRecipe(level, getShadow(), EF_CONFIG.getItemsPerProcess(), thermalBehaviour.getTemperature());
 		progress = 0;
 		recipe = null;
 		contentsChanged = true;
-		for (ItemStack output : outputs)
+		for (ItemStack output : outputs) {
 			addToOutput(output, -1);
+		}
+		notifyUpdate();
 	}
 	private void addToOutput(ItemStack item, int preferSlot) {
 		if (item.isEmpty()) return;
@@ -361,7 +369,8 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
 		spawnAtLocation(item, 0.52f);
 	}
 	private void findRecipe() {
-		progress = 0;
+		if (!level.isClientSide)
+			progress = 0;
 		List<ItemStack> shadow = getShadow();
 		recipe = ElectricFurnaceRecipe.tryMatch(level, shadow);
 		if (recipe == null) {
@@ -369,27 +378,8 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
 			return;
 		}
 		recipe.realizeRecipe(level, shadow, EF_CONFIG.getItemsPerProcess(), isProcessing);
-		List<ItemStack> outputs = recipe.getResults();
-		List<ItemStack> slots = getShadowCopy();
-		mainLoop: for (ItemStack output : outputs) {
-			if (output.isEmpty()) continue;
-			int count = output.getCount();
-			for (ItemStack slot : slots) {
-				if (slot.isEmpty() || !ItemStack.isSameItem(output, slot)) continue;
-				int transfer = Math.min(count, slot.getMaxStackSize() - slot.getCount());
-				count -= transfer;
-				slot.grow(transfer);
-				if (count == 0) continue mainLoop;
-			}
-			if (count == 0) continue;
-			for (ItemStack slot : slots) {
-				if (!slot.isEmpty()) continue;
-				continue mainLoop;
-			}
-			recipeFits = false;
-			return;
-		}
-		recipeFits = true;
+		if (!level.isClientSide)
+	 		recipeFits = recipe.testRecipeFits(getShadowOutput());
 	}
 	public ItemEntity spawnAtLocation(ItemStack stack, float offset) {
 		if (stack.isEmpty()) {
@@ -440,14 +430,14 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
 		if (!doorOpen) return;
 		doorOpen = false;
 		if (level.isClientSide)
-			level.playSound(null, getBlockPos(), ModSounds.ELECTRIC_FURNACE_CLOSE.get(), SoundSource.BLOCKS, .5f, 1f);
+			level.playLocalSound(getBlockPos(), ModSounds.ELECTRIC_FURNACE_CLOSE.get(), SoundSource.BLOCKS, .5f, 1f, false);
 	}
 	protected void onOpen() {
 		if (!level.isClientSide) notifyUpdate();
 		if (doorOpen) return;
 		doorOpen = true;
 		if (level.isClientSide)
-			level.playSound(null, getBlockPos(), ModSounds.ELECTRIC_FURNACE_OPEN.get(), SoundSource.BLOCKS, .5f, 1f);
+			level.playLocalSound(getBlockPos(), ModSounds.ELECTRIC_FURNACE_OPEN.get(), SoundSource.BLOCKS, .5f, 1f, false);
 	}
 	@OnlyIn(Dist.CLIENT)
 	public void playBlowEffect() {
@@ -456,16 +446,18 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
 		var pos = this.worldPosition.getCenter();
 		var facing = getBlockState().getValue(FuseHolderBlock.FACING);
 		SparkParticleData.explodeParticles(level, (float) pos.x, (float) pos.y, (float) pos.z, facing.getOpposite(), 5);
-		level.playSound(null, getBlockPos(), SoundEvents.FIREWORK_ROCKET_BLAST, SoundSource.BLOCKS, 0.8F, 1.6F);
+		level.playLocalSound(getBlockPos(), SoundEvents.FIREWORK_ROCKET_BLAST, SoundSource.BLOCKS,
+			0.8F, 1.6F, false);
 	}
 	@OnlyIn(Dist.CLIENT)
 	public void playRepairEffect() {
-		level.playSound(null, getBlockPos(), SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.PLAYERS, .2f,
-			1f + level.getRandom().nextFloat());
+		level.playLocalSound(getBlockPos(), SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.PLAYERS, .2f,
+			1f + level.getRandom().nextFloat(), false);
 	}
 	@OnlyIn(Dist.CLIENT)
 	public void playButtonEffect(boolean press) {
-		level.playSound(null, getBlockPos(), press ? ModSounds.ELECTRIC_FURNACE_ON.get() : ModSounds.ELECTRIC_FURNACE_OFF.get(), SoundSource.BLOCKS, 0.5f, 1.0f);
+		level.playLocalSound(getBlockPos(), press ? ModSounds.ELECTRIC_FURNACE_ON.get() : ModSounds.ELECTRIC_FURNACE_OFF.get(), SoundSource.BLOCKS,
+			0.5f, 1.0f, false);
 	}
 	public void setBlown(boolean blown) {
 		BlockState state = getBlockState();
@@ -522,8 +514,18 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
 		if (thermalBehaviour == null || CONFIG == null) return 0f;
 		return thermalBehaviour.getTemperature() / THERMAL.getOverheat();
 	}
+	public float getTemp() {
+		if (thermalBehaviour == null || CONFIG == null) return 0f;
+		return thermalBehaviour.getTemperature();
+	}
+	public boolean isProcessing(int slot) {
+		return isProcessing[slot];
+	}
+	public boolean willBurn(int slot) {
+		return goingToBurn && isProcessing[slot];
+	}
 	public float getProgress(int slot) {
-		return goingToBurn || !isProcessing[slot] ? 0 : recipe == null ? progress : progress / recipe.getProcessingTime();
+		return goingToBurn || !isProcessing[slot] ? 0 : level.isClientSide ? progress : progress / recipe.getProcessingTime();
 	}
 	public float getBurnProgress(boolean input, int slot) {
 		if (CONFIG == null) return 0;
@@ -546,6 +548,8 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
 		}
 		if (!clientPacket) return;
 
+		if (recipe != null && !recipeFits)
+			tag.putBoolean("NFits", true);
 		if (recipe != null && progress > 0.5f) {
 			tag.putBoolean("BurnI", goingToBurn);
 			byte inputs = 0;
@@ -579,8 +583,12 @@ public class ElectricFurnaceEntity extends ElectricBlockEntity implements ItemCa
 		} else {
 			progress = 0;
 		}
-		if (!clientPacket) return;
+		if (!clientPacket) {
+			if (recipe != null) progress *= recipe.getProcessingTime();
+			return;
+		};
 
+		recipeFits = !tag.contains("NFits");
 		if (tag.contains("Prog")) {
 			goingToBurn = tag.getBoolean("BurnI");
 			byte inputs = tag.getByte("Inputs");

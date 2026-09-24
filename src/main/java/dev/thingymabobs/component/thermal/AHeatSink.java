@@ -1,4 +1,4 @@
-package dev.thingymabobs.component.heatsink;
+package dev.thingymabobs.component.thermal;
 
 import java.util.ArrayList;
 import java.util.List;

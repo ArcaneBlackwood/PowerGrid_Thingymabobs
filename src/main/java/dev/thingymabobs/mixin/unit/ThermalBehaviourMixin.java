@@ -12,8 +12,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import com.simibubi.create.foundation.blockEntity.behaviour.BehaviourType;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
-
-import dev.thingymabobs.Thingymabobs;
 import dev.thingymabobs.mixin.ThermalEffector;
 import dev.thingymabobs.mixin.ThermalExt;
 import net.minecraft.core.BlockPos;
@@ -64,7 +62,6 @@ public abstract class ThermalBehaviourMixin implements ThermalExt {
 		)
 	)
 	private void onTemperatureSet(CallbackInfo ci) {
-		Thingymabobs.LOGGER.info("ThermalBehaviourMixin tick");
 		for (var iter = effectors.iterator(); iter.hasNext(); ) {
 			if (iter.next().effect(this)) continue;
 			iter.remove();

@@ -96,6 +96,8 @@ public final class ModItems {
 
 	public static final DeferredItem<Item> THERMISTOR =
 		ITEMS.registerSimpleItem("thermistor", new Item.Properties());
+	public static final DeferredItem<Item> THERMAL_RTD =
+		ITEMS.registerSimpleItem("rtd", new Item.Properties());
 	public static final DeferredItem<Item> HEATSINK_LARGE =
 		ITEMS.registerSimpleItem("heatsink_large", new Item.Properties());
 	public static final DeferredItem<Item> HEATSINK_MEDIUM =
@@ -161,7 +163,7 @@ public final class ModItems {
 	public static final DeferredItem<?>[] ALL_ITEMS = {
 		SEMICONDUCTOR_CRUDE, SEMICONDUCTOR_CRYSTAL,
 		TRANSFORMER, DRY_CELL, BUZZER, VARIABLE_BUZZER, LED, SHUNT,
-		THERMISTOR, HEATSINK_LARGE, HEATSINK_MEDIUM, HEATSINK_SMALL,
+		THERMISTOR, THERMAL_RTD, HEATSINK_LARGE, HEATSINK_MEDIUM, HEATSINK_SMALL,
 		TRANSMITTER, RECIEVER, DIRECTIONAL_RECIEVER, DISTANCE_RECIEVER, ACCELEROMETER, GYROSCOPE,
 		
 		MICRO_RELAY_DPST, MICRO_RELAY, DUEL_COIL_RELAY, DUEL_COIL_RELAY_DPST, SMALL_BJT_NPN, SMALL_BJT_PNP, CERAMIC_CAPACITOR,

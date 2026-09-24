@@ -86,17 +86,4 @@ public class ElectricFurnaceMenu extends MenuBase<ElectricFurnaceEntity> {
 		}
 		return itemstack;
 	}
-
-	public float getTempNorm() {
-		return contentHolder.getTempNorm();
-	}
-	public float getProgress(int slot) {
-		return contentHolder.getProgress(slot);
-	}
-	public float getBurnProgress(boolean input, int slot) {
-		return contentHolder.getBurnProgress(input, slot);
-	}
-	public boolean isPowered() {
-		return contentHolder.getCoilLevel() != 0;
-	}
 }

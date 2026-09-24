@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import dev.thingymabobs.Thingymabobs;
 import dev.thingymabobs.registry.ModRecipies;
 import dev.thingymabobs.registry.ModRecipies.ARecipe;
 import dev.thingymabobs.registry.ModRecipies.IRecipeFactory;
@@ -121,6 +119,40 @@ public class ElectricFurnaceRecipe extends ARecipe<ElectricFurnaceRecipe.Paramet
 					multiplier += 1;
 			return multiplier;
 		}
+		public boolean testRecipeFits(List<ItemStack> outputs) {
+			List<Integer> useCache = getUseCache(outputs);
+			int im = outputs.size();
+			for (ItemStack result : results) {
+				if (result.isEmpty()) continue;
+				int count = result.getCount();
+
+				// 1. Merge into matching partial stacks
+				for (int i=0; i < im; i++) {
+					ItemStack slot = outputs.get(i);
+					int slotCount = useCache.get(i);
+					if (slotCount==0 || !ItemStack.isSameItemSameComponents(result, slot)) continue;
+					int transfer = Math.min(count, slot.getMaxStackSize() - slotCount);
+					slotCount += transfer;
+					useCache.set(i, slotCount);
+					count -= transfer;
+					if (count == 0) break;
+				}
+
+				// 2. Fill empty slots, marking each as used
+				for (int i = 0; i < im && count > 0; i++) {
+					int slotCount = useCache.get(i);
+					if (slotCount > 0) continue;
+					int put = Math.min(count, result.getMaxStackSize());
+					slotCount = put;
+					useCache.set(i, slotCount);
+					count -= put;
+				}
+
+				if (count > 0) return false;
+			}
+			return true;
+			
+		}
 		private List<ItemStack> results = null;
 		private int multiplier = 0;
 		public List<ItemStack> realizeRecipe(Level world, List<ItemStack> inputs, int maxMultiply, boolean[] isProcessing) {
@@ -156,7 +188,8 @@ public class ElectricFurnaceRecipe extends ARecipe<ElectricFurnaceRecipe.Paramet
 					inputs.get(i).setCount(useCache.get(i));
 			}
 			if (expectedMul != multiplier)
-				throw new IllegalStateException("Expected recipe count does not match precomputed("+expectedMul+"!="+multiplier+").  Re-run realizeRecipe");
+				return List.of();
+				//throw new IllegalStateException("Expected recipe count does not match precomputed("+expectedMul+"!="+multiplier+").  Re-run realizeRecipe");
 			if (temp > getMaxTemp()) {
 				results.clear();
 				List<ProcessingOutput> outputs = isElectric ? electric.params.burntOutput : Parameters.BURNT_OUTPUT_DEFAULT;
@@ -169,9 +202,7 @@ public class ElectricFurnaceRecipe extends ARecipe<ElectricFurnaceRecipe.Paramet
 					if (item.isEmpty()) continue;
 					results.add(item);
 				}
-				Thingymabobs.LOGGER.info("Burn recipe: into #"+results.size());
-			} else 
-				Thingymabobs.LOGGER.info("Apply recipe: into #"+results.size());
+			}
 			return results;
 		}
 		public int getMultiplier() {
@@ -192,6 +223,10 @@ public class ElectricFurnaceRecipe extends ARecipe<ElectricFurnaceRecipe.Paramet
 		public float getMaxTemp() {
 			return isElectric ? electric.params.temps.maxTemp : vanillaIsSmoking ? 
 				ElectricFurnaceEntity.EF_CONFIG.getTempSmokeMax() : ElectricFurnaceEntity.THERMAL.getOverheat();
+		}
+		public float getBurnTemp() {
+			return isElectric ? electric.params.temps.burnTemp : vanillaIsSmoking ? 
+				ElectricFurnaceEntity.EF_CONFIG.getTempSmokeBurn() : ElectricFurnaceEntity.THERMAL.getOverheat();
 		}
 		public boolean shouldBurnInput(float temp) {
 			return temp >= getMaxTemp();
@@ -320,6 +355,34 @@ public class ElectricFurnaceRecipe extends ARecipe<ElectricFurnaceRecipe.Paramet
 		}
 		return false;
 	}
+
+
+	/*public static boolean outputsFit(List<ItemStack> results, List<ItemStack> slotsShadow) {
+		for (ItemStack result : results) {
+			if (result.isEmpty()) continue;
+			int count = result.getCount();
+
+			// 1. Merge into matching partial stacks
+			for (ItemStack slot : slotsShadow) {
+				if (slot.isEmpty() || !ItemStack.isSameItemSameComponents(result, slot)) continue;
+				int transfer = Math.min(count, slot.getMaxStackSize() - slot.getCount());
+				slot.grow(transfer);
+				count -= transfer;
+				if (count == 0) break;
+			}
+
+			// 2. Fill empty slots, marking each as used
+			for (int i = 0; i < slotsShadow.size() && count > 0; i++) {
+				if (!slotsShadow.get(i).isEmpty()) continue;
+				int put = Math.min(count, result.getMaxStackSize());
+				slotsShadow.set(i, result.copyWithCount(put));
+				count -= put;
+			}
+
+			if (count > 0) return false;
+		}
+		return true;
+	}*/
 
 	
 

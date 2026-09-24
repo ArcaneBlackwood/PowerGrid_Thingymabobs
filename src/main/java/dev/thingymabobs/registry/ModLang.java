@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import org.patryk3211.powergrid.utility.NumberFormats;
-import org.patryk3211.powergrid.utility.Unit;
 import dev.thingymabobs.Thingymabobs;
 import net.createmod.catnip.lang.LangBuilder;
 import net.minecraft.network.chat.Component;
@@ -31,14 +30,6 @@ public class ModLang {
 	
 	public static LangBuilder translate(String langKey) {
 		return builder().translate(langKey);
-	}
-
-	public static LangBuilder unit(String unit) {
-		return builder().translate("generic.unit." + unit, new Object[0]);
-	}
-
-	public static LangBuilder unit(Unit unit) {
-		return builder().translate(unit.getTranslationKey(), new Object[0]);
 	}
 
 	public static LangBuilder text(String literal) {

@@ -42,8 +42,9 @@ Items appear in both a dedicated Thingymabobs tab and the vanilla Redstone Block
 - [x] Small low power relays
 - [ ] Small potentiometer(have to use tool to modify?)
 - [ ] Thermocouple(self powered, large range, expensive), Resistance Temperature Detectors(linear, medium range, cheap), Thermistors(inverse non linear, small, small range, expensive)
+	RTD crafted with nickel
 	if air/no component next to, probe that extends out not rendered
-- [ ] Heat sync.  Crafted with copper sheet & iron bars?
+- [x] Heat sync.  Crafted with copper sheet & iron bars?
 - [ ] Bimetalic switch(Heat switch)
 - [x] Linked reciever/transmitters/directional reciever
 - [x] Tall connector component
@@ -82,6 +83,7 @@ Items appear in both a dedicated Thingymabobs tab and the vanilla Redstone Block
 - [ ] Self extendable cable from holdable item.  Connects to portable battery.
 - [ ] Retractable cable block
 - [x] Electric furnace
+	- [ ] Glass window variant
 - [ ] Particle spawner?
 - [ ] Midi keyboard/precussion switch?
 - [ ] Add sequenced recipes for most components, gives double output

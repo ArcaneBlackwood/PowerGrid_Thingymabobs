@@ -1,7 +1,10 @@
 package dev.thingymabobs.blocks.electricfurnace;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import org.joml.Matrix4f;
-
+import org.patryk3211.powergrid.utility.Unit;
 import dev.thingymabobs.Thingymabobs;
 import dev.thingymabobs.registry.ModLang;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -11,12 +14,16 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat.Mode;
 import com.simibubi.create.foundation.gui.menu.AbstractSimiContainerScreen;
+import com.simibubi.create.foundation.utility.CreateLang;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -35,24 +42,28 @@ public class ElectricFurnaceScreen extends AbstractSimiContainerScreen<ElectricF
 		gui.drawCenteredString(font, TITLE, leftPos + 97, topPos + 4, 0x404040);
 		gui.blit(SPRITE_SHEET, leftPos, topPos, 0, 0, imageWidth, imageHeight);
 		{
-			int height = Mth.floor(menu.getTempNorm() * 72);
+			//Temperature
+			int height = Mth.floor(menu.contentHolder.getTempNorm() * 72);
 			if (height != 0)
 				gui.blit(SPRITE_SHEET, leftPos+9, topPos+80 - height, imageWidth, 72-height, 5, height);
 		} {
-			boolean powered = menu.isPowered();
+			//Power button
+			boolean powered = menu.contentHolder.getCoilLevel() != 0;
 			gui.blit(SPRITE_SHEET, leftPos+36, topPos+39, imageWidth + (powered ? 0 : 10), 72, 10, 10);
 		} {
+			//Input slots progress
 			int slotTopStart = leftPos + 97 - ElectricFurnaceEntity.SLOTS_INPUT * 9;
-			for (int i = 0, j = 0; i < ElectricFurnaceEntity.SLOTS_INPUT * 18; i+=18, j++) {
+			for (int i = 0, j = 0, im = ElectricFurnaceEntity.SLOTS_INPUT * 18; i < im; i+=18, j++) {
 				gui.blit(SPRITE_SHEET, slotTopStart + i, topPos+17, imageWidth + 5, 0, 18, 36);
-				int progress = Mth.floor(menu.getProgress(j) * 10);
+				int progress = Mth.floor(menu.contentHolder.getProgress(j) * 10);
 				if (progress != 0)
 					gui.blit(SPRITE_SHEET, slotTopStart + i + 3, topPos+39, imageWidth + 5, 54, 11, progress);
 			}
 				
 		} {
+			//Output slots burning
 			int slotTopStart = leftPos + 97 - ElectricFurnaceEntity.SLOTS_OUTPUT * 9;
-			for (int i = 0; i < ElectricFurnaceEntity.SLOTS_OUTPUT * 18; i+=18)
+			for (int i = 0, im = ElectricFurnaceEntity.SLOTS_OUTPUT * 18; i < im; i+=18)
 				gui.blit(SPRITE_SHEET, slotTopStart + i, topPos+53, imageWidth + 5, 36, 18, 18);
 		}
 	}
@@ -62,8 +73,8 @@ public class ElectricFurnaceScreen extends AbstractSimiContainerScreen<ElectricF
 		super.renderForeground(gui, mouseX, mouseY, partialTicks);
 		{
 			int slotTopStart = leftPos + 98 - ElectricFurnaceEntity.SLOTS_INPUT * 9;
-			for (int i = 0, j = 0; i < ElectricFurnaceEntity.SLOTS_INPUT * 18; i+=18, j++) {
-				float progressNorm = menu.getBurnProgress(true, j);
+			for (int i = 0, j = 0, im = ElectricFurnaceEntity.SLOTS_INPUT * 18; i < im; i+=18, j++) {
+				float progressNorm = menu.contentHolder.getBurnProgress(true, j);
 				int progress = Mth.floor(progressNorm * 16);
 				if (progress == 0) continue;
 				float alpha = 0.75f*progressNorm + 0.25f;
@@ -71,14 +82,77 @@ public class ElectricFurnaceScreen extends AbstractSimiContainerScreen<ElectricF
 			}
 		} {
 			int slotTopStart = leftPos + 98 - ElectricFurnaceEntity.SLOTS_OUTPUT * 9;
-			for (int i = 0, j = 0; i < ElectricFurnaceEntity.SLOTS_OUTPUT * 18; i+=18, j++) {
-				float progressNorm = menu.getBurnProgress(false, j);
+			for (int i = 0, j = 0, im = ElectricFurnaceEntity.SLOTS_OUTPUT * 18; i < im; i+=18, j++) {
+				float progressNorm = menu.contentHolder.getBurnProgress(false, j);
 				int progress = Mth.floor(progressNorm * 16);
 				if (progress == 0) continue;
 				float alpha = 0.75f*progressNorm + 0.25f;
 				blitColor(gui, SPRITE_SHEET, slotTopStart + i, topPos+69-progress, 300, imageWidth, 97-progress, 16, progress, 1, 1, 1, alpha);
 			}
 		}
+	}
+	int i = 0;
+	@Override
+	protected void renderTooltip(GuiGraphics gui, int x, int y) {
+		i++;
+		if (i>=20) i=0;
+		//super.renderTooltip(guiGraphics, x, y);
+		List<Component> tooltip = null;
+		Optional<TooltipComponent> image = Optional.empty();
+		ItemStack stack = ItemStack.EMPTY;
+        if (this.menu.getCarried().isEmpty() && this.hoveredSlot != null && this.hoveredSlot.hasItem()) {
+            stack = this.hoveredSlot.getItem();
+			tooltip = this.getTooltipFromContainerItem(stack);
+			image = stack.getTooltipImage();
+        }
+		ElectricFurnaceRecipe.Either recipe = menu.contentHolder.recipe;
+		if (isHovering(7, 7, 26, 74, x, y)) {
+			if (tooltip == null) tooltip = new ArrayList<>();
+			float temp = menu.contentHolder.getTemp();
+			int color;
+			if (recipe == null) {
+				color = switch (menu.contentHolder.getTempLevel()) {
+					case 0 -> 0x34a9ff;
+					case 1 -> 0x02ff5a;
+					case 2 -> 0xffe935;
+					default -> 0xff3030;
+				};
+			} else {
+				if (temp < recipe.getMinTemp()) color = 0x34a9ff;
+				else if (temp < recipe.getBurnTemp()) color = 0x02ff5a;
+				else if (temp < recipe.getMaxTemp()) color = 0xffe935;
+				else color = 0xff3030;
+			}
+			tooltip.add(ModLang.translate("gui.electric_furnace.temperature",
+				Unit.TEMPERATURE.format(temp)).color(color).component());
+		}
+		if (recipe != null) {
+			int slotTopStart = 99 - ElectricFurnaceEntity.SLOTS_INPUT * 9;
+			for (int i = 0, j = 0, im = ElectricFurnaceEntity.SLOTS_INPUT * 18; i < im; i+=18, j++) {
+				if (!isHovering(slotTopStart + i, 19, 16, 16, x, y)) continue;
+				if (menu.contentHolder.recipeFits && !menu.contentHolder.isProcessing(j)) continue;
+
+				if (tooltip == null) tooltip = new ArrayList<>();
+				if (!menu.contentHolder.recipeFits)
+					tooltip.add(ModLang.translate("gui.electric_furnace.recipe_doesnt_fit").color(0xff3030).component());
+				tooltip.add(ModLang.translate("gui.electric_furnace.temperature_min",
+					Unit.TEMPERATURE.format(recipe.getMinTemp())).color(0x02ff5a).component());
+				tooltip.add(ModLang.translate("gui.electric_furnace.temperature_burn",
+					Unit.TEMPERATURE.format(recipe.getBurnTemp())).color(0xffe935).component());
+				tooltip.add(ModLang.translate("gui.electric_furnace.temperature_max",
+					Unit.TEMPERATURE.format(recipe.getMaxTemp())).color(0xff3030).component());
+				tooltip.add(ModLang.translate("gui.electric_furnace.recipe_outputs").color(0xAAAAAA).component());
+				for (ItemStack result : recipe.getResults()) {
+					tooltip.add(ModLang.text("  ")
+						.add(Component.translatable(result.getDescriptionId()).withStyle(ChatFormatting.WHITE))
+						.add(CreateLang.text(" x" + result.getCount()).style(ChatFormatting.GRAY))
+					.component());
+				}
+				break;
+			}
+		}
+		if (tooltip == null) return;
+        gui.renderTooltip(this.font, tooltip, image, stack, x, y);
 	}
 
 	public static void blitColor(GuiGraphics gui, ResourceLocation resource, int x, int y, int z, int u, int v, int w, int h, float r, float g, float b, float a) {

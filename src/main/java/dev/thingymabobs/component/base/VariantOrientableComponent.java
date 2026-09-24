@@ -14,7 +14,7 @@ import org.patryk3211.powergrid.circuits.schematic.ComponentFootprint;
 import org.patryk3211.powergrid.circuits.schematic.PlacedComponent;
 import com.google.common.collect.ImmutableCollection;
 import dev.thingymabobs.Thingymabobs;
-import dev.thingymabobs.component.base.VariantComponent.Variant;
+import dev.thingymabobs.component.base.AVariantComponent.Variant;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.resources.ResourceLocation;
 

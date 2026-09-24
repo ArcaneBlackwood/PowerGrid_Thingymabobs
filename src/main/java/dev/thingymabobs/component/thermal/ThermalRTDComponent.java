@@ -1,17 +1,18 @@
-package dev.thingymabobs.component;
+package dev.thingymabobs.component.thermal;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
+
+import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.patryk3211.powergrid.circuits.circuitboard.CircuitBoardBlockEntity;
 import org.patryk3211.powergrid.circuits.circuitboard.ComponentCircuitBuilder;
-import org.patryk3211.powergrid.circuits.components.OrientableComponent;
-import org.patryk3211.powergrid.circuits.components.properties.BooleanProperty;
+import org.patryk3211.powergrid.circuits.components.Component;
 import org.patryk3211.powergrid.circuits.components.properties.ComponentProperty;
-import org.patryk3211.powergrid.circuits.components.properties.IntProperty;
+import org.patryk3211.powergrid.circuits.components.properties.EnumProperty;
 import org.patryk3211.powergrid.circuits.components.properties.Orientation;
 import org.patryk3211.powergrid.circuits.schematic.ComponentFootprint;
 import org.patryk3211.powergrid.circuits.schematic.PlacedComponent;
@@ -22,53 +23,80 @@ import org.patryk3211.powergrid.electricity.base.ThermalBehaviour;
 import org.patryk3211.powergrid.electricity.sim.ElectricWire;
 import org.patryk3211.powergrid.utility.Unit;
 import com.google.common.collect.ImmutableCollection;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import dev.thingymabobs.Thingymabobs;
 import dev.thingymabobs.component.properties.DynamicFloatProperty;
 import dev.thingymabobs.component.properties.LazyConstantProperty;
 import dev.thingymabobs.config.properties.CProperties;
+import dev.thingymabobs.mixin.IRenderableUIComponent;
 import dev.thingymabobs.registry.ModModels;
 import dev.thingymabobs.util.ComponentUtils;
-import dev.thingymabobs.util.TMath;
 import dev.thingymabobs.util.ThermalElectricWire;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
-public class ThermistorComponent extends OrientableComponent {
-	private static final ComponentFootprint FOOTPRINT_FACE = new ComponentFootprint.Builder(
-			1,2, Thingymabobs.MOD_ID + ".component.small_resistor", null)
-		.addPad(0, 0, 0)
-		.addPad(0, 1, 1)
-		.withItem().withOutline().withArrow(Orientation.RIGHT).build();
+public class ThermalRTDComponent extends Component implements IRenderableUIComponent {
 	private static final ComponentFootprint FOOTPRINT = new ComponentFootprint.Builder(
-			1,2, Thingymabobs.MOD_ID + ".component.small_resistor", null)
-		.addPad(0, 0, 0)
-		.addPad(0, 1, 1)
+			3,3, null, Thingymabobs.MOD_ID + ".component.rtd")
+		.addPadSharedText(0, 0, 0, "0")
+		.addPadSharedText(0, 2, 1, "0")
+		.withItem().withOutline().withArrow(Orientation.RIGHT).build();
+	private static final ComponentFootprint FOOTPRINT_DOWN = new ComponentFootprint.Builder(
+			3,3, null, Thingymabobs.MOD_ID + ".component.rtd")
+		.addPadSharedText(1, 0, 0, "0")
+		.addPadSharedText(1, 2, 1, "0")
 		.withItem().withOutline().build();
+	private static final ComponentFootprint FOOTPRINT_UP = new ComponentFootprint.Builder(
+			3,3, null, Thingymabobs.MOD_ID + ".component.rtd")
+		.addPadSharedText(1, 0, 0, "0")
+		.addPadSharedText(1, 2, 1, "0")
+		.withItem().withOutline().build();
+	private static final ComponentFootprint[] FOOTPRINT_ROTS = new ComponentFootprint[4];
+	private static final ComponentFootprint[] FOOTPRINT_DOWN_ROTS = new ComponentFootprint[2];
+	private static final ComponentFootprint[] FOOTPRINT_UP_ROTS = new ComponentFootprint[2];
+	static {
+		for (int i=0; i<4; i++) {
+			FOOTPRINT_ROTS[i] = FOOTPRINT.rotated(Orientation.values()[i]);
+		}
+		for (int i=0; i<2; i++) {
+			FOOTPRINT_DOWN_ROTS[i] = FOOTPRINT_DOWN.rotated(Orientation.values()[i]);
+			FOOTPRINT_UP_ROTS[i] = FOOTPRINT_UP.rotated(Orientation.values()[i]);
+		}
+	}
 
 	public static final int lazyTickRate = 40;
+
 
 	public static final String CONFIG_RESISTANCE = "base_resistance";
 	public static final String CONFIG_TEMPERATURE = "base_temperature";
 	public static final String CONFIG_BETA = "beta";
-	public static final float TEMP_C2K = 273.15f;
 	protected static CProperties.PropDevice CONFIG = null;
-	protected static float RESISTANCE_TEMP = 298.15f;
+	protected static float RESISTANCE_TEMP = 25f;
+	protected static float RESISTANCE_MIN = 10f;
 	protected static float BETA;
 	public static void configUpdated(CProperties.PropDevice prop) {
 		CONFIG = prop;
-		RESISTANCE_TEMP = prop.getFloat(CONFIG_TEMPERATURE).get() + TEMP_C2K;
+		RESISTANCE_TEMP = prop.getFloat(CONFIG_TEMPERATURE).get();
+		RESISTANCE_MIN = prop.getResistance(CProperties.MIN).get();
 		BETA = prop.getFloat(CONFIG_BETA).get();
 		POWER.markDirty();
 	}
 
-	public static final BooleanProperty FRONT_ONLY = new BooleanProperty(Thingymabobs.MOD_ID, "thermistor.front_only", false).hidden().cast();
-	public static final IntProperty CONNECTION = new IntProperty(Thingymabobs.MOD_ID, "thermistor.connect", 0, 0, 4).hidden().cast();
+
+   	public static final EnumProperty<Variant> VARIANT = new EnumProperty<>(Thingymabobs.MOD_ID, "variant",
+		Variant.class).hidden().cast();
+	public static final EnumProperty<Connection> CONNECTION = new EnumProperty<>(Thingymabobs.MOD_ID, "rtd.connect",
+		Connection.class).hidden().cast();
+   	public static final EnumProperty<Orientation> ORIENTATION = Orientation.PROPERTY; //Shadow property
 
 	public static final DynamicFloatProperty RESISTANCE = new DynamicFloatProperty(
-		Thingymabobs.MOD_ID, "resistor_temp_value", () -> CONFIG.getFloat(CONFIG_RESISTANCE)).useMetrics();
+		Thingymabobs.MOD_ID, "rtd.resistance", () -> CONFIG.getFloat(CONFIG_RESISTANCE)).useMetrics();
 	public static final LazyConstantProperty POWER = new LazyConstantProperty(
 		Thingymabobs.MOD_ID, "power",
 		() -> Unit.POWER.formatWithPrefixes(CONFIG.getThermal().getPower()).string());
@@ -76,13 +104,13 @@ public class ThermistorComponent extends OrientableComponent {
 
 	
 
-	public ThermistorComponent() {
+	public ThermalRTDComponent() {
 		super(null);
 	}
 	@Override
 	protected void addProperties(ImmutableCollection.Builder<ComponentProperty<?>> properties) {
 		super.addProperties(properties);
-		properties.add(RESISTANCE, POWER, FRONT_ONLY, CONNECTION);
+		properties.add(RESISTANCE, POWER, VARIANT, CONNECTION, ORIENTATION);
 	}
 	@Override
 	public void bake(@NotNull PlacedComponent placed, @NotNull ComponentCircuitBuilder builder, ThermalBuilder.@NotNull IEmitter thermals) {
@@ -96,8 +124,7 @@ public class ThermistorComponent extends OrientableComponent {
 		state.thermal = new ThermalElectricWire(state.dissipation);
 
 		therm.apply(thermals)
-			.addHeatSource(state.wire)
-			.addHeatSource(state.thermal);
+			.addHeatSource(state.wire);
 	}
 
 
@@ -113,7 +140,7 @@ public class ThermistorComponent extends OrientableComponent {
 		if (!(placed.getWorld().getBlockEntity(placed.getPos()) instanceof CircuitBoardBlockEntity board)) return false;
 
 		if (state.firstTick) {
-			if (!updateConnections(placed, state)) return true;
+			updateConnections(placed, state);
             state.temperature = state.ambient = ThermalBehaviour.getAmbientTemperature(board.getLevel(), placed.getPos());
 			state.firstTick = false;
 		}
@@ -131,6 +158,7 @@ public class ThermistorComponent extends OrientableComponent {
 	}
 	@Override
 	public void stateUpdated(@NotNull PlacedComponent placed) {
+		placed.set(ORIENTATION, placed.get(VARIANT).rotation);
 		if (!placed.isClient()) return;
 		modelChanged(placed.getPos());
 	}
@@ -149,7 +177,7 @@ public class ThermistorComponent extends OrientableComponent {
 
 		Connection newState = null;
 		EXIT_EARLY: if (state.monitorBlock == null || state.monitorBlock.blockEntity.isRemoved()) {
-			newState = Connection.NONE;
+			newState = Connection.EXTERNAL;
 			state.monitorBlock = null;
 			if (!placed.getWorld().isLoaded(state.monitorBlockPos)) break EXIT_EARLY;
 			BlockEntity be = placed.getWorld().getBlockEntity(state.monitorBlockPos);
@@ -157,10 +185,10 @@ public class ThermistorComponent extends OrientableComponent {
 			var thermal = BlockEntityBehaviour.get(be, AThermalBehaviour.TYPE);
 			if (thermal == null) break EXIT_EARLY;
 			state.monitorBlock = thermal;
-			newState = Connection.EXTERNAL;
+			newState = Connection.EXTERNAL_ACTIVE;
 		}
-		if (newState != null && newState.ordinal() != placed.get(CONNECTION)) {
-			placed.set(CONNECTION, newState.toProp());
+		if (newState != null && newState != placed.get(CONNECTION)) {
+			placed.set(CONNECTION, newState);
 			placed.notifyClients(CONNECTION);
 		}
 		return state.monitorBlock == null ? state.ambient : state.monitorBlock.getTemperature();
@@ -176,109 +204,125 @@ public class ThermistorComponent extends OrientableComponent {
             state.temperature = state.ambient;
 	}
 	public static double calcResistance(float resistance, float temp) {
-		//Math.exp
-		return resistance * TMath.fastPow2(BETA * (1.0f / (temp + TEMP_C2K) - 1.0f / RESISTANCE_TEMP));
+		return Math.max(resistance + BETA * (temp - RESISTANCE_TEMP), RESISTANCE_MIN); 
 	}
 
 
 
 
-	protected boolean updateConnections(@NotNull PlacedComponent placed, State state) {
+	protected void updateConnections(@NotNull PlacedComponent placed, State state) {
 		Connection connect = Connection.NONE;
 		state.monitoring.clear();
 		state.monitorBlockPos = null;
-		if (placed.get(FRONT_ONLY))
-			connect = updateConnectionExternal(placed, state);
+		Variant variant = placed.get(VARIANT);
+		connect = updateConnectionExternal(placed, state, variant);
 		if (connect == Connection.NONE)
-			connect = updateConnectionInternal(placed, state);
-		placed.set(CONNECTION, connect.toProp());
+			connect = updateConnectionInternal(placed, state, variant);
+		placed.set(CONNECTION, connect);
+		placed.set(VARIANT, variant);
+		placed.set(ORIENTATION, placed.get(VARIANT).rotation);
+		placed.notifyClients(VARIANT);
 		placed.notifyClients(CONNECTION);
-		placed.notifyClients(FRONT_ONLY);
-		placed.notifyClients(ORIENTATION);
-		return connect != Connection.INTERNAL;
 	}
-	protected Connection updateConnectionExternal(@NotNull PlacedComponent placed, State state) {
-		if (!ComponentUtils.isOnEdge(placed)) return Connection.NONE;
-		Direction direction = ComponentUtils.getGlobalFacing(placed);
+	protected Connection updateConnectionExternal(@NotNull PlacedComponent placed, State state, Variant variant) {
+		if (variant.facing != null && !ComponentUtils.isOnEdge(placed, variant.facing)) return Connection.NONE;
+		Direction direction = ComponentUtils.getGlobalDirection(placed, variant.direction);
 		@Nullable AThermalBehaviour thermal = ComponentUtils.getThermalExternal(placed, direction);
 		state.monitorBlock = thermal;
 		state.monitorBlockPos = placed.getPos().relative(direction);
-		return Connection.EXTERNAL;
+		return thermal == null ? Connection.EXTERNAL : Connection.EXTERNAL_ACTIVE;
 	}
-	protected Connection updateConnectionInternal(@NotNull PlacedComponent placed, State state) {
+	protected Connection updateConnectionInternal(@NotNull PlacedComponent placed, State state, Variant variant) {
+		if (variant.facing == null) return Connection.NONE;
 		Stream<PlacedComponent> search = ComponentUtils.getAllOtherBoardComponents(placed);
-		if (search == null) return Connection.INTERNAL;
+		if (search == null) return Connection.NONE;
 		Connection connect = Connection.NONE;
 		for (var iter = search.iterator(); iter.hasNext(); ) {
 			PlacedComponent other = iter.next();
-			Connection con = isTouching(placed, other);
+			Connection con = isTouching(placed, variant.facing, other);
 			if (con == Connection.NONE) continue;
 
 			List<ThermalUnit> thermals = ComponentUtils.getThermalUnits(other);
 			if (thermals.isEmpty()) continue;
 
-			connect = connect.combine(con);
+			connect = Connection.INTERNAL;
 			state.monitoring.addAll(thermals);
 		}
 		return connect;
 	}
 
 
-	public static Connection isTouching(PlacedComponent placed, PlacedComponent other) {
-		Orientation facing = placed.get(ORIENTATION);
+	public static Connection isTouching(PlacedComponent placed, Orientation facing, PlacedComponent other) {
 		if (ComponentUtils.isTouchingInDirection(placed, facing, other))
-			return Connection.FRONT;
-		if (placed.get(FRONT_ONLY)) return Connection.NONE;
-		if (ComponentUtils.isTouchingInDirection(placed, facing.getOpposite(), other))
-			return Connection.BACK;
+			return Connection.INTERNAL;
 		return Connection.NONE;
 	}
 
 
 
+	@OnlyIn(Dist.CLIENT)
+	@Override
+	public void renderUI(GuiGraphics ctx, ComponentFootprint that, int x, int y, boolean hovering) {
+		boolean isDown = ArrayUtils.contains(FOOTPRINT_DOWN_ROTS, that);
+		boolean isUp = ArrayUtils.contains(FOOTPRINT_UP_ROTS, that);
+		if (!isDown && !isUp) return;
+      	PoseStack ms = ctx.pose();
+
+		float offX = 0.5f, offY = 0.5f;
+		if (isDown) {
+			if (that == FOOTPRINT_DOWN_ROTS[0]) offX = 1f;
+			else offY = 0f;
+		} else if (isUp) {
+			if (that == FOOTPRINT_UP_ROTS[0]) offX = 1f;
+			else offY = 0f;
+		}
+
+		ms.translate(
+			(float)x + that.getWidth() * offX,
+			(float)y + that.getHeight() * offY,
+			0.0F);
+		ms.scale(0.25F, 0.25F, 1.0F);
+		ms.translate(-3.5f, -3.5f, 25.0f);
+
+		if (isDown) {
+			ctx.blit(ModModels.ARROWS_INOUT, 0, 0, 8, 0, 7, 7, 16, 16);
+		} else if (isUp) {
+			ctx.blit(ModModels.ARROWS_INOUT, 0, 0, 0, 0, 7, 7, 16, 16);
+		}
+	}
 	@Override
 	public boolean rotate(@NotNull PlacedComponent placed, boolean counterClockwise) {
-		Orientation orientation = (Orientation)placed.get(Orientation.PROPERTY);
-		boolean frontOnly = placed.get(FRONT_ONLY);
-		if (frontOnly) {
-			frontOnly = orientation != (counterClockwise ? Orientation.RIGHT : Orientation.UP);
-			if (frontOnly)
-				orientation = counterClockwise ? orientation.getCounterClockwise() : orientation.getClockwise();
-			else
-				orientation = counterClockwise ? Orientation.DOWN : Orientation.RIGHT;
-		} else {
-			frontOnly = orientation == (counterClockwise ? Orientation.RIGHT : Orientation.DOWN);
-			if (!frontOnly)
-				orientation = counterClockwise ? Orientation.RIGHT : Orientation.DOWN;
-			else
-				orientation = counterClockwise ? Orientation.UP : Orientation.RIGHT;
-		}
-		placed.set(Orientation.PROPERTY, orientation);
-		placed.set(FRONT_ONLY, frontOnly);
+		Variant variant = placed.get(VARIANT);
+		if (counterClockwise) variant = variant.previous();
+		else variant = variant.next();
+		placed.set(VARIANT, variant);
+		placed.set(ORIENTATION, placed.get(VARIANT).rotation);
 		return true;
 	}
 
 	
 	@Override
 	public ComponentFootprint footprint(@Nullable PlacedComponent placed) {
-		if (placed==null) return FOOTPRINT;
-		return (placed.get(FRONT_ONLY) ? FOOTPRINT_FACE : FOOTPRINT).rotated((Orientation)placed.get(ORIENTATION));
+		if (placed == null) return FOOTPRINT;
+		Variant variant = placed.get(VARIANT);
+		return (switch (variant) {
+			case RIGHT, DOWN, LEFT, UP -> FOOTPRINT_ROTS;
+			case UP_V, UP_H -> FOOTPRINT_UP_ROTS;
+			case DOWN_V, DOWN_H -> FOOTPRINT_DOWN_ROTS;
+		})[variant.rotation.ordinal()];
 	}
 	@Override
 	public @NotNull ResourceLocation getModelId(@NotNull PlacedComponent placed) {
-		return switch (Connection.fromProp(placed.get(CONNECTION))) {
-			case NONE, INTERNAL -> ModModels.THI;
-			case FRONT -> ModModels.THI_F; 
-			case BACK -> ModModels.THI_B;
-			case BOTH -> ModModels.THI_FB;
-			case EXTERNAL -> ModModels.THI_EX;
+		boolean external = placed.get(CONNECTION) == Connection.EXTERNAL_ACTIVE;
+		return switch (placed.get(VARIANT)) {
+			case RIGHT, DOWN, LEFT, UP -> external ? ModModels.RTD_EX : ModModels.RTD;
+			case UP_V, UP_H -> external ? ModModels.RTD_UP_EX : ModModels.RTD_UP;
+			case DOWN_V, DOWN_H -> external ? ModModels.RTD_DOWN_EX : ModModels.RTD_DOWN;
 		};
 	}
 	@Override
 	public @NotNull Collection<ResourceLocation> requestedModels() {
-		return List.of(
-			ModModels.THI, ModModels.THI_F, ModModels.THI_FB, ModModels.THI_B, ModModels.THI_EX
-		);
+		return List.of(ModModels.RTD, ModModels.RTD_EX, ModModels.RTD_DOWN, ModModels.RTD_DOWN_EX, ModModels.RTD_UP, ModModels.RTD_UP_EX);
 	}
 
 
@@ -294,23 +338,42 @@ public class ThermistorComponent extends OrientableComponent {
 		float temperature, mass, dissipation, ambient = 25f;
 	}
 	protected static enum Connection {
-		NONE, FRONT, BACK, BOTH, EXTERNAL,   INTERNAL;
-		public Connection combine(Connection that) {
-			if (this==EXTERNAL || that==EXTERNAL) return EXTERNAL;
-			if (that==INTERNAL || this==that) return this;
-			boolean isFront = this==FRONT || this==BOTH || that==FRONT || that==BOTH;
-			boolean isBack = this==BACK || this==BOTH || that==BACK || that==BOTH;
-			if (isFront == isBack)
-				return isFront ? BOTH : NONE;
-			else
-				return isFront ? FRONT : BACK;
+		NONE, INTERNAL, EXTERNAL, EXTERNAL_ACTIVE;
+	}
+	public enum Variant {
+		RIGHT(Direction.EAST, Orientation.RIGHT),
+		DOWN(Direction.SOUTH, Orientation.DOWN),
+		LEFT(Direction.WEST, Orientation.LEFT),
+		UP(Direction.NORTH, Orientation.UP),
+		DOWN_V(Direction.DOWN, null, Orientation.RIGHT),
+		DOWN_H(Direction.DOWN, null, Orientation.UP),
+		UP_V(Direction.UP, null, Orientation.RIGHT),
+		UP_H(Direction.UP, null, Orientation.UP);
+		public static final Variant[] VALUES = values();
+		public static final int SIZE = VALUES.length;
+		public final Direction direction;
+		public final Orientation facing;
+		public final Orientation rotation;
+		private Variant(Direction direction, Orientation facing) {
+			this.direction = direction;
+			this.facing = facing;
+			this.rotation = facing;
 		}
-		public static Connection fromProp(int index) {
-			return values()[index];
+		private Variant(Direction direction, Orientation facing, Orientation rotation) {
+			this.direction = direction;
+			this.facing = facing;
+			this.rotation = rotation;
 		}
-		public int toProp() {
-			if (this==INTERNAL) return 0;
-			return ordinal();
+
+		public Variant next() {
+			int index = ordinal() + 1;
+			if (index >= SIZE) index = 0;
+			return VALUES[index];
+		}
+		public Variant previous() {
+			int index = ordinal();
+			if (index <= 0) index = SIZE;
+			return VALUES[index-1];
 		}
 	}
 }

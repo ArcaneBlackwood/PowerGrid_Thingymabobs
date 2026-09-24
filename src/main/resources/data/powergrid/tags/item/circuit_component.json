@@ -33,6 +33,7 @@
 	"thingymabobs:duel_coil_relay_dpst",
 	"thingymabobs:led",
 	"thingymabobs:thermistor",
+	"thingymabobs:rtd",
 	"thingymabobs:heatsink_large",
 	"thingymabobs:heatsink_medium",
 	"thingymabobs:heatsink_small"
